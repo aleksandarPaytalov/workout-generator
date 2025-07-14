@@ -1,0 +1,731 @@
+/**
+ * Components CSS - BEM Component Library
+ * Reusable UI components with consistent styling
+ */
+
+/* ==========================================================================
+   BUTTON COMPONENTS
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-base);
+  
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  
+  /* Minimum touch target size for accessibility */
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button Variants */
+.btn--primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-base);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--secondary {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+  color: var(--color-text-primary);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--color-gray-200);
+  border-color: var(--color-gray-400);
+}
+
+.btn--outline {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
+.btn--danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+
+/* Button Sizes */
+.btn--small {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  min-height: 36px;
+}
+
+.btn--large {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  min-height: 52px;
+}
+
+/* Button Elements */
+.btn__icon {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.btn__text {
+  line-height: 1;
+}
+
+.btn__shortcut {
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  margin-left: var(--space-2);
+}
+
+/* ==========================================================================
+   FORM CONTROLS
+   ========================================================================== */
+
+/* Range Input */
+.control-group__input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.control-group__range {
+  flex: 1;
+  height: 6px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.control-group__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  border: 2px solid var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.control-group__range::-webkit-slider-thumb:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.1);
+}
+
+.control-group__range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  border: 2px solid var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.control-group__range:focus::-webkit-slider-thumb {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.control-group__output {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  min-width: 3ch;
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
+/* ==========================================================================
+   RADIO BUTTON COMPONENTS
+   ========================================================================== */
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.radio-group__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: var(--color-white);
+}
+
+.radio-group__option:hover {
+  border-color: var(--color-border);
+  background-color: var(--color-gray-50);
+}
+
+.radio-group__option:has(.radio-group__input:checked) {
+  border-color: var(--color-primary);
+  background-color: #F0F8FF;
+  box-shadow: 0 0 0 1px var(--color-primary-light);
+}
+
+.radio-group__input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.radio-group__label {
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  flex: 1;
+}
+
+.radio-help {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+  line-height: var(--line-height-normal);
+}
+
+/* ==========================================================================
+   CHECKBOX COMPONENTS
+   ========================================================================== */
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.checkbox-grid__option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: var(--color-white);
+  text-align: center;
+  min-height: 80px;
+  justify-content: center;
+}
+
+.checkbox-grid__option:hover {
+  border-color: var(--color-border);
+  background-color: var(--color-gray-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.checkbox-grid__option:has(.checkbox-grid__input:checked) {
+  border-color: var(--color-primary);
+  background-color: #F0F8FF;
+  box-shadow: 0 0 0 1px var(--color-primary-light);
+}
+
+.checkbox-grid__input {
+  width: 18px;
+  height: 18px;
+  margin: 0 auto;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-grid__label {
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+}
+
+.checkbox-help {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+  margin-top: var(--space-1);
+}
+
+/* ==========================================================================
+   EXERCISE CARD COMPONENTS
+   ========================================================================== */
+
+.exercise-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  
+  transition: all var(--transition-fast);
+  position: relative;
+  
+  /* Minimum touch target for mobile */
+  min-height: 60px;
+}
+
+.exercise-card:hover {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-base);
+  transform: translateY(-1px);
+}
+
+.exercise-card--dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-dropdown);
+}
+
+.exercise-card--drag-over {
+  border-color: var(--color-primary);
+  background-color: #F0F8FF;
+  transform: scale(1.02);
+}
+
+/* Exercise card elements */
+.exercise-card__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  flex-shrink: 0;
+}
+
+.exercise-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.exercise-card__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.exercise-card__muscle-group {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.exercise-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.exercise-card__drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-muted);
+  cursor: grab;
+  
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.exercise-card__drag-handle:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-gray-100);
+}
+
+.exercise-card__drag-handle:active {
+  cursor: grabbing;
+}
+
+.exercise-card__drag-handle::before {
+  content: '⋮⋮';
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+/* ==========================================================================
+   DROPDOWN COMPONENTS (for exercise replacement)
+   ========================================================================== */
+
+.exercise-dropdown {
+  position: relative;
+  min-width: 180px;
+}
+
+.exercise-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  
+  transition: all var(--transition-fast);
+}
+
+.exercise-dropdown__trigger:hover {
+  border-color: var(--color-border-focus);
+  background-color: var(--color-gray-50);
+}
+
+.exercise-dropdown__trigger:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.exercise-dropdown__trigger--open {
+  border-color: var(--color-border-focus);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.exercise-dropdown__icon {
+  font-size: var(--font-size-xs);
+  transition: transform var(--transition-fast);
+}
+
+.exercise-dropdown__trigger--open .exercise-dropdown__icon {
+  transform: rotate(180deg);
+}
+
+.exercise-dropdown__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown);
+  
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-focus);
+  border-top: none;
+  border-radius: 0 0 var(--radius-base) var(--radius-base);
+  
+  box-shadow: var(--shadow-lg);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.exercise-dropdown__option {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  text-align: left;
+  
+  border: none;
+  background: none;
+  cursor: pointer;
+  
+  transition: background-color var(--transition-fast);
+}
+
+.exercise-dropdown__option:hover {
+  background-color: var(--color-gray-50);
+}
+
+.exercise-dropdown__option:focus {
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+  outline: none;
+}
+
+.exercise-dropdown__option--selected {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.exercise-dropdown__option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   MUSCLE GROUP BADGE COMPONENTS
+   ========================================================================== */
+
+.muscle-group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+/* Muscle group specific colors */
+.muscle-group-badge--chest {
+  background-color: #FFE5E5;
+  border-color: #FFB3B3;
+  color: #8B0000;
+}
+
+.muscle-group-badge--back {
+  background-color: #E5F3FF;
+  border-color: #B3D9FF;
+  color: #003D82;
+}
+
+.muscle-group-badge--legs {
+  background-color: #E5FFE5;
+  border-color: #B3FFB3;
+  color: #006400;
+}
+
+.muscle-group-badge--shoulders {
+  background-color: #FFF0E5;
+  border-color: #FFD6B3;
+  color: #CC5500;
+}
+
+.muscle-group-badge--arms {
+  background-color: #F0E5FF;
+  border-color: #D6B3FF;
+  color: #4B0082;
+}
+
+.muscle-group-badge--core {
+  background-color: #FFFDE5;
+  border-color: #FFF9B3;
+  color: #8B8000;
+}
+
+/* ==========================================================================
+   PROGRESS AND STATUS COMPONENTS
+   ========================================================================== */
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-base);
+  
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-indicator--success {
+  background-color: #E6FFFA;
+  border: 1px solid #B2F5EA;
+  color: #065F46;
+}
+
+.status-indicator--warning {
+  background-color: #FFFBEB;
+  border: 1px solid #FED7AA;
+  color: #92400E;
+}
+
+.status-indicator--error {
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+/* ==========================================================================
+   ANIMATION AND INTERACTION STATES
+   ========================================================================== */
+
+/* Hover grow effect for interactive cards */
+.hover-grow {
+  transition: transform var(--transition-fast);
+}
+
+.hover-grow:hover {
+  transform: scale(1.02);
+}
+
+/* Loading skeleton for exercise cards */
+.exercise-card--skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Fade in animation for new content */
+.fade-in {
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide in animation for validation feedback */
+.slide-up {
+  animation: slideUp var(--transition-base);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE COMPONENT ADJUSTMENTS
+   ========================================================================== */
+
+/* Mobile-specific component adjustments will be handled in mobile.css */
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .exercise-card {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border-width: 2px;
+  }
+  
+  .checkbox-grid__option,
+  .radio-group__option {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion adjustments */
+@media (prefers-reduced-motion: reduce) {
+  .exercise-card,
+  .btn,
+  .checkbox-grid__option,
+  .radio-group__option,
+  .exercise-dropdown__trigger {
+    transition: none;
+  }
+  
+  .loading-state__spinner {
+    animation: none;
+  }
+  
+  .exercise-card--skeleton {
+    animation: none;
+    background: var(--color-gray-200);
+  }
+}

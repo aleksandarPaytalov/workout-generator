@@ -1,0 +1,571 @@
+/**
+ * Mobile CSS - Responsive Design & Touch Optimization
+ * Mobile-first responsive breakpoints and touch-friendly interactions
+ */
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   Mobile-first approach: Default styles are for mobile, then scale up
+   ========================================================================== */
+
+/* 
+   Default: Mobile (320px - 767px) - styles are in main.css and components.css
+   Small tablets: 768px - 1023px
+   Desktop: 1024px+
+*/
+
+/* ==========================================================================
+   SMALL MOBILE OPTIMIZATIONS (320px - 479px)
+   ========================================================================== */
+
+@media (max-width: 479px) {
+  /* Tighter spacing on very small screens */
+  .workout-app {
+    padding: var(--space-3);
+    gap: var(--space-6);
+  }
+  
+  .workout-app__title {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .workout-controls {
+    padding: var(--space-4);
+  }
+  
+  /* Stack action buttons vertically */
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+  
+  /* Workout actions stack vertically */
+  .workout-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .workout-actions .btn {
+    width: 100%;
+  }
+  
+  /* Smaller checkbox grid on tiny screens */
+  .checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* More compact exercise cards */
+  .exercise-card {
+    padding: var(--space-3) var(--space-4);
+    min-height: 56px;
+  }
+  
+  .exercise-card__number {
+    width: 28px;
+    height: 28px;
+    font-size: var(--font-size-xs);
+  }
+  
+  /* Validation feedback takes more width */
+  .validation-feedback {
+    max-width: 95%;
+    left: 2.5%;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   MOBILE TOUCH OPTIMIZATIONS (320px - 767px)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Enhanced touch targets */
+  .btn {
+    min-height: 48px;
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .btn--small {
+    min-height: 44px;
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .btn--large {
+    min-height: 56px;
+    padding: var(--space-5) var(--space-8);
+  }
+  
+  /* Larger touch targets for form controls */
+  .radio-group__option,
+  .checkbox-grid__option {
+    min-height: 56px;
+    padding: var(--space-4);
+  }
+  
+  .radio-group__input,
+  .checkbox-grid__input {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Exercise cards optimized for touch */
+  .exercise-card {
+    min-height: 64px;
+    padding: var(--space-4) var(--space-5);
+  }
+  
+  .exercise-card__drag-handle {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .exercise-card__drag-handle::before {
+    font-size: 16px;
+  }
+  
+  /* Dropdown touch optimization */
+  .exercise-dropdown__trigger {
+    min-height: 44px;
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .exercise-dropdown__option {
+    min-height: 44px;
+    padding: var(--space-4);
+  }
+  
+  /* Range slider touch optimization */
+  .control-group__range {
+    height: 8px;
+  }
+  
+  .control-group__range::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .control-group__range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Mobile-specific empty state */
+  .empty-state {
+    padding: var(--space-12) var(--space-4);
+  }
+  
+  .empty-state__instructions {
+    max-width: 100%;
+  }
+  
+  /* Hide keyboard shortcuts on mobile */
+  .btn__shortcut {
+    display: none;
+  }
+  
+  /* Mobile workout list instructions */
+  .workout-list__instructions {
+    padding: var(--space-3);
+  }
+  
+  .workout-list__instructions ul {
+    padding-left: var(--space-3);
+  }
+}
+
+/* ==========================================================================
+   TABLET OPTIMIZATIONS (768px - 1023px)
+   ========================================================================== */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Two-column layout for controls */
+  .workout-controls__form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    grid-template-areas:
+      "count mode"
+      "groups groups"
+      "actions actions"
+      "help help";
+  }
+  
+  .control-group:nth-child(2) { /* Exercise count */
+    grid-area: count;
+  }
+  
+  .control-group:nth-child(3) { /* Operation mode */
+    grid-area: mode;
+  }
+  
+  .control-group:nth-child(4) { /* Muscle groups */
+    grid-area: groups;
+  }
+  
+  .action-buttons {
+    grid-area: actions;
+  }
+  
+  .form-help-section {
+    grid-area: help;
+  }
+  
+  /* Three-column checkbox grid */
+  .checkbox-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Horizontal action buttons */
+  .action-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .workout-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  /* Improved exercise card layout */
+  .exercise-card {
+    padding: var(--space-5) var(--space-6);
+  }
+  
+  /* Better validation feedback positioning */
+  .validation-feedback {
+    max-width: 500px;
+  }
+}
+
+/* ==========================================================================
+   DESKTOP OPTIMIZATIONS (1024px+)
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  /* Larger base spacing */
+  .workout-app {
+    gap: var(--space-10);
+    padding: var(--space-8);
+  }
+  
+  /* Enhanced header */
+  .workout-app__header {
+    padding: var(--space-8) 0;
+  }
+  
+  .workout-app__title {
+    font-size: var(--font-size-4xl);
+  }
+  
+  /* Side-by-side layout option for controls */
+  .workout-controls__form {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--space-8);
+    grid-template-areas:
+      "count groups"
+      "mode groups"
+      "actions groups"
+      "help help";
+  }
+  
+  .control-group:nth-child(2) { /* Exercise count */
+    grid-area: count;
+  }
+  
+  .control-group:nth-child(3) { /* Operation mode */
+    grid-area: mode;
+  }
+  
+  .control-group:nth-child(4) { /* Muscle groups */
+    grid-area: groups;
+  }
+  
+  .action-buttons {
+    grid-area: actions;
+  }
+  
+  .form-help-section {
+    grid-area: help;
+  }
+  
+  /* Full-width checkbox grid */
+  .checkbox-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  /* Enhanced exercise cards */
+  .exercise-card {
+    padding: var(--space-6);
+  }
+  
+  /* Hover effects for desktop */
+  .exercise-card:hover .exercise-card__drag-handle {
+    opacity: 1;
+  }
+  
+  .exercise-card__drag-handle {
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+  }
+  
+  /* Better dropdown positioning */
+  .exercise-dropdown__menu {
+    min-width: 200px;
+  }
+  
+  /* Desktop-specific empty state */
+  .empty-state {
+    padding: var(--space-20) var(--space-8);
+  }
+  
+  /* Show keyboard shortcuts */
+  .btn__shortcut {
+    display: inline-block;
+  }
+}
+
+/* ==========================================================================
+   LARGE DESKTOP OPTIMIZATIONS (1200px+)
+   ========================================================================== */
+
+@media (min-width: 1200px) {
+  /* Maximum width constraint */
+  .workout-app {
+    max-width: 1200px;
+  }
+  
+  /* Two-column workout display */
+  .workout-display {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--space-8);
+    align-items: start;
+  }
+  
+  .workout-display__header {
+    grid-column: 1 / -1;
+  }
+  
+  .loading-state,
+  .error-state,
+  .empty-state {
+    grid-column: 1 / -1;
+  }
+  
+  .workout-list {
+    grid-column: 1;
+  }
+  
+  .workout-actions {
+    grid-column: 2;
+    flex-direction: column;
+    position: sticky;
+    top: var(--space-8);
+    padding: var(--space-6);
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+  }
+  
+  .workout-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   ULTRA-WIDE OPTIMIZATIONS (1600px+)
+   ========================================================================== */
+
+@media (min-width: 1600px) {
+  /* Prevent excessive stretching */
+  .workout-app {
+    max-width: 1400px;
+  }
+  
+  /* Three-column layout for exercise list */
+  .exercise-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  
+  .exercise-list li {
+    margin-bottom: 0;
+  }
+}
+
+/* ==========================================================================
+   TOUCH DEVICE SPECIFIC STYLES
+   ========================================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .exercise-card:hover,
+  .btn:hover,
+  .checkbox-grid__option:hover,
+  .radio-group__option:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  /* Always show drag handles on touch */
+  .exercise-card__drag-handle {
+    opacity: 1;
+  }
+  
+  /* Enhanced touch feedback */
+  .exercise-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  .btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+  }
+  
+  /* Larger dropdown options for touch */
+  .exercise-dropdown__option {
+    min-height: 48px;
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* ==========================================================================
+   ORIENTATION SPECIFIC STYLES
+   ========================================================================== */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Compact header in landscape mobile */
+  .workout-app__header {
+    padding: var(--space-4) 0;
+  }
+  
+  .workout-app__title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-1);
+  }
+  
+  .workout-app__subtitle {
+    font-size: var(--font-size-base);
+  }
+  
+  /* Compact empty state */
+  .empty-state {
+    padding: var(--space-8) var(--space-4);
+  }
+  
+  .empty-state__icon {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  /* Hide interactive elements */
+  .workout-controls,
+  .workout-actions,
+  .validation-feedback,
+  .loading-state,
+  .error-state,
+  .empty-state {
+    display: none !important;
+  }
+  
+  /* Optimize for print */
+  .workout-app {
+    padding: 0;
+    gap: var(--space-4);
+  }
+  
+  .workout-app__header {
+    border-bottom: 2px solid var(--color-black);
+    margin-bottom: var(--space-4);
+  }
+  
+  .workout-display__header {
+    border-bottom: 1px solid var(--color-black);
+  }
+  
+  /* Simplify exercise cards for print */
+  .exercise-card {
+    border: 1px solid var(--color-black);
+    background: white;
+    box-shadow: none;
+    break-inside: avoid;
+    margin-bottom: var(--space-2);
+  }
+  
+  .exercise-card__drag-handle {
+    display: none;
+  }
+  
+  .exercise-dropdown {
+    display: none;
+  }
+  
+  /* Print typography */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: black;
+  }
+  
+  h1, h2, h3 {
+    color: black;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY ENHANCEMENTS FOR DIFFERENT SCREEN SIZES
+   ========================================================================== */
+
+/* Larger focus indicators on mobile */
+@media (max-width: 767px) {
+  *:focus,
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure crisp borders and shadows */
+  .exercise-card,
+  .btn,
+  .workout-controls {
+    border-width: 0.5px;
+  }
+}
+
+/* Dark mode support (if user's system prefers dark) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-body: #1a1a1a;
+    --color-bg-surface: #2d2d2d;
+    --color-bg-elevated: #3a3a3a;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #b3b3b3;
+    --color-text-muted: #8a8a8a;
+    --color-border: #4a4a4a;
+    --color-border-light: #3a3a3a;
+  }
+  
+  .empty-state,
+  .workout-controls {
+    background-color: var(--color-bg-surface);
+  }
+  
+  .exercise-card {
+    background-color: var(--color-bg-elevated);
+  }
+}
