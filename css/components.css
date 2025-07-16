@@ -231,20 +231,3 @@
     font-size: 2.5rem;
   }
 }
-
-/* Print styles for workout list */
-@media print {
-  .workout-exercise {
-    break-inside: avoid;
-    border: 1px solid #ccc;
-    margin-bottom: 8px;
-  }
-  
-  .replace-dropdown-container {
-    display: none;
-  }
-  
-  .workout-actions {
-    display: none;
-  }
-}
