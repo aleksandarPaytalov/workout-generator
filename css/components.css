@@ -1,0 +1,250 @@
+/* ===================================================================
+   Workout Exercise List Components
+   ================================================================ */
+
+/* Workout list container */
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Individual exercise list item */
+.workout-exercise {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.workout-exercise:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Exercise information container */
+.exercise-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+/* Exercise number */
+.exercise-number {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Exercise name */
+.exercise-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+/* Exercise muscle group */
+.exercise-muscle-group {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background-color: var(--color-secondary-light);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}
+
+/* Replace dropdown container */
+.replace-dropdown-container {
+  flex-shrink: 0;
+  margin-left: var(--space-4);
+}
+
+/* Replace dropdown select */
+.replace-dropdown {
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 150px;
+}
+
+.replace-dropdown:hover {
+  border-color: var(--color-primary-light);
+}
+
+.replace-dropdown:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Workout info bar */
+.workout-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-background-alt);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.exercise-count {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.exercise-label {
+  color: var(--color-text-secondary);
+}
+
+.mode-indicator {
+  color: var(--color-text-muted);
+}
+
+/* Workout footer */
+.workout-footer {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  text-align: center;
+}
+
+.constraint-info {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Workout states */
+.workout-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+  min-height: 300px;
+}
+
+.state-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+}
+
+.state-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.state-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  max-width: 400px;
+  line-height: var(--line-height-relaxed);
+  margin-bottom: 0;
+}
+
+/* Loading state specific styling */
+.workout-state--loading .state-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Error state specific styling */
+.workout-state--error .state-icon {
+  color: var(--color-error);
+}
+
+.workout-state--error .state-title {
+  color: var(--color-error);
+}
+
+/* Empty state specific styling */
+.workout-state--empty .state-icon {
+  color: var(--color-primary);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 767px) {
+  .workout-exercise {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  
+  .exercise-info {
+    gap: var(--space-3);
+  }
+  
+  .exercise-number {
+    min-width: 28px;
+  }
+  
+  .exercise-muscle-group {
+    margin-left: auto;
+  }
+  
+  .replace-dropdown-container {
+    margin-left: 0;
+  }
+  
+  .replace-dropdown {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .workout-info {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .workout-state {
+    padding: var(--space-8) var(--space-4);
+    min-height: 250px;
+  }
+  
+  .state-icon {
+    font-size: 2.5rem;
+  }
+}
+
+/* Print styles for workout list */
+@media print {
+  .workout-exercise {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+  }
+  
+  .replace-dropdown-container {
+    display: none;
+  }
+  
+  .workout-actions {
+    display: none;
+  }
+}
