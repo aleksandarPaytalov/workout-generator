@@ -168,8 +168,10 @@ const UIController = (() => {
      * @public
      */
     const showLoadingState = () => {
+        console.log('UIController: Showing loading state');
         hideAllStates();
         elements.loadingState.hidden = false;
+        elements.loadingState.style.display = 'flex';
         elements.generateBtn.disabled = true;
         elements.generateBtn.textContent = 'Generating...';
     };
@@ -180,8 +182,10 @@ const UIController = (() => {
      * @public
      */
     const showErrorState = (message = 'An error occurred while generating the workout.') => {
+        console.log('UIController: Showing error state');
         hideAllStates();
         elements.errorState.hidden = false;
+        elements.errorState.style.display = 'flex';
         if (elements.errorMessage) {
             elements.errorMessage.textContent = message;
         }
@@ -193,8 +197,10 @@ const UIController = (() => {
      * @public
      */
     const showEmptyState = () => {
+        console.log('UIController: Showing empty state');
         hideAllStates();
         elements.emptyState.hidden = false;
+        elements.emptyState.style.display = 'flex';
         resetGenerateButton();
         currentWorkout = [];
         updateWorkoutActions();
@@ -205,8 +211,10 @@ const UIController = (() => {
      * @private
      */
     const showPopulatedState = () => {
+        console.log('UIController: Showing populated state');
         hideAllStates();
         elements.workoutListContainer.hidden = false;
+        elements.workoutListContainer.style.display = 'block';
         resetGenerateButton();
         updateWorkoutActions();
     };
@@ -216,10 +224,18 @@ const UIController = (() => {
      * @private
      */
     const hideAllStates = () => {
+        // Hide all states and ensure they're not displayed
         elements.emptyState.hidden = true;
+        elements.emptyState.style.display = 'none';
+        
         elements.loadingState.hidden = true;
+        elements.loadingState.style.display = 'none';
+        
         elements.errorState.hidden = true;
+        elements.errorState.style.display = 'none';
+        
         elements.workoutListContainer.hidden = true;
+        elements.workoutListContainer.style.display = 'none';
     };
     
     /**
@@ -482,7 +498,7 @@ const UIController = (() => {
                     console.error('UIController: Workout generation failed:', error);
                     showErrorState(error.message);
                 }
-            }, 300); // Small delay to show loading state
+            }, 500); // Slightly longer delay so user can see loading state
             
         } catch (error) {
             console.error('UIController: Form submission failed:', error);
