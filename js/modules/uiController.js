@@ -575,7 +575,7 @@ const UIController = (() => {
     };
     
     /**
-     * Handle shuffle workout (placeholder for drag & drop Task 11)
+     * Handle shuffle workout - generates only valid orderings
      * @private
      */
     const handleShuffleWorkout = () => {
@@ -584,19 +584,100 @@ const UIController = (() => {
         }
         
         try {
-            // Use ExerciseGenerator's shuffle function
-            const shuffledWorkout = ExerciseGenerator.shuffleArray(currentWorkout);
+            // Try to find a valid shuffle with multiple attempts
+            const maxAttempts = 50;
+            let validShuffle = null;
             
-            // Validate the shuffled workout maintains constraints
-            if (!Validators.isValidWorkout(shuffledWorkout)) {
-                throw new Error('Shuffled workout would violate muscle group constraints');
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                const shuffled = ExerciseGenerator.shuffleArray(currentWorkout);
+                
+                // Check if this shuffle maintains constraints
+                if (Validators.isValidWorkout(shuffled)) {
+                    validShuffle = shuffled;
+                    break;
+                }
             }
             
-            renderWorkoutList(shuffledWorkout);
+            // If no valid shuffle found, try to create one using constraint-aware reordering
+            if (!validShuffle) {
+                validShuffle = generateValidReordering(currentWorkout);
+            }
+            
+            // If still no valid shuffle, keep current order
+            if (!validShuffle) {
+                console.warn('UIController: Could not generate valid shuffle, keeping current order');
+                return;
+            }
+            
+            renderWorkoutList(validShuffle);
             
         } catch (error) {
             console.error('UIController: Shuffle failed:', error);
             showErrorState(`Failed to shuffle workout: ${error.message}`);
+        }
+    };
+    
+    /**
+     * Generate a valid reordering using constraint-aware algorithm
+     * @param {Array} workout - Current workout to reorder
+     * @returns {Array|null} Valid reordering or null if impossible
+     * @private
+     */
+    const generateValidReordering = (workout) => {
+        try {
+            // Group exercises by muscle group
+            const exercisesByGroup = {};
+            workout.forEach(exercise => {
+                if (!exercisesByGroup[exercise.muscleGroup]) {
+                    exercisesByGroup[exercise.muscleGroup] = [];
+                }
+                exercisesByGroup[exercise.muscleGroup].push(exercise);
+            });
+            
+            // Get muscle groups and shuffle them
+            const muscleGroups = Object.keys(exercisesByGroup);
+            const shuffledGroups = ExerciseGenerator.shuffleArray(muscleGroups);
+            
+            // Create valid ordering by alternating between different muscle groups
+            const validOrdering = [];
+            const groupCounters = {};
+            
+            // Initialize counters
+            shuffledGroups.forEach(group => {
+                groupCounters[group] = 0;
+            });
+            
+            // Build workout ensuring no consecutive same muscle groups
+            for (let i = 0; i < workout.length; i++) {
+                let exerciseAdded = false;
+                
+                // Try each muscle group in shuffled order
+                for (const group of shuffledGroups) {
+                    // Skip if this group was used in previous exercise
+                    if (i > 0 && validOrdering[i - 1].muscleGroup === group) {
+                        continue;
+                    }
+                    
+                    // Check if this group has remaining exercises
+                    if (groupCounters[group] < exercisesByGroup[group].length) {
+                        validOrdering.push(exercisesByGroup[group][groupCounters[group]]);
+                        groupCounters[group]++;
+                        exerciseAdded = true;
+                        break;
+                    }
+                }
+                
+                // If no exercise could be added, ordering is impossible
+                if (!exerciseAdded) {
+                    return null;
+                }
+            }
+            
+            return validOrdering;
+            
+        } catch (error) {
+            console.error('UIController: Valid reordering generation failed:', error);
+            return null;
         }
     };
     
