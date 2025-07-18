@@ -67,6 +67,11 @@ const UIController = (() => {
         if (typeof ExerciseGenerator === 'undefined' || !ExerciseGenerator.isReady()) {
             throw new Error('UIController: ExerciseGenerator module is required and must be ready');
         }
+
+        // PDFExport is optional for core functionality, but log warning if missing
+        if (typeof PDFExport === 'undefined' || !PDFExport.isReady()) {
+            console.warn('UIController: PDFExport module not available - export functionality will be limited');
+        }
         
         // Cache all DOM elements
         cacheElements();
@@ -566,12 +571,48 @@ const UIController = (() => {
     };
     
     /**
-     * Handle PDF export (placeholder for Task 12)
+     * Handle PDF export
      * @private
      */
     const handleExportPdf = () => {
-        console.log('UIController: PDF export not yet implemented (Task 12)');
-        // Will be implemented in Task 12
+        if (currentWorkout.length === 0) {
+            console.warn('UIController: No workout to export');
+            return;
+        }
+        
+        try {
+            // Check if PDFExport module is available
+            if (typeof PDFExport === 'undefined' || !PDFExport.isReady()) {
+                throw new Error('PDF export module is not available');
+            }
+            
+            // Show brief loading state on button
+            const originalText = elements.exportPdfBtn.textContent;
+            elements.exportPdfBtn.disabled = true;
+            elements.exportPdfBtn.textContent = 'Exporting...';
+            
+            // Export workout (with fallback to text if PDF fails)
+            PDFExport.exportWorkout(currentWorkout, {
+                format: 'pdf',
+                fallbackToText: true
+            });
+            
+            // Reset button after a brief delay
+            setTimeout(() => {
+                elements.exportPdfBtn.disabled = false;
+                elements.exportPdfBtn.textContent = originalText;
+            }, 1000);
+            
+        } catch (error) {
+            console.error('UIController: PDF export failed:', error);
+            
+            // Reset button
+            elements.exportPdfBtn.disabled = false;
+            elements.exportPdfBtn.textContent = 'Export PDF';
+            
+            // Show error to user
+            showErrorState(`Export failed: ${error.message}`);
+        }
     };
     
     /**

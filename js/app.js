@@ -28,6 +28,12 @@ const WorkoutApp = (() => {
                 'Validators', 
                 'ExerciseGenerator'
             ];
+
+            // Optional modules that enhance functionality
+            const optionalModules = [
+                'PDFExport',
+                'DragDrop'
+            ];
             
             for (const moduleName of requiredModules) {
                 if (typeof window[moduleName] === 'undefined') {
@@ -36,6 +42,15 @@ const WorkoutApp = (() => {
                 
                 if (typeof window[moduleName].isReady === 'function' && !window[moduleName].isReady()) {
                     throw new Error(`Module "${moduleName}" is not ready`);
+                }
+            }
+
+            // Check optional modules and warn if missing
+            for (const moduleName of optionalModules) {
+                if (typeof window[moduleName] === 'undefined') {
+                    console.warn(`Optional module "${moduleName}" not found - some features may be limited`);
+                } else if (typeof window[moduleName].isReady === 'function' && !window[moduleName].isReady()) {
+                    console.warn(`Optional module "${moduleName}" is not ready - some features may be limited`);
                 }
             }
             
