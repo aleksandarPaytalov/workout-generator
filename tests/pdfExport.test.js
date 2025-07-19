@@ -70,14 +70,13 @@ describe('PDFExport', () => {
                 { id: 'test_001', name: 'Test' } // Missing muscleGroup
             ];
 
-            incompleteExercises.forEach(exercise => {
-                const invalidWorkout = [exercise];
-                // Test the validation logic
+            incompleteExercises.forEach((exercise, index) => {
+                // Test the validation logic that would be used in PDF export
                 assert.throws(() => {
                     if (!exercise.id || !exercise.name || !exercise.muscleGroup) {
                         throw new Error('Exercise must have id, name, and muscleGroup');
                     }
-                }, 'Exercise must have required properties');
+                }, 'Exercise must have id, name, and muscleGroup');
             });
         });
 

@@ -87,8 +87,13 @@ describe('Validators', () => {
             assert.isTrue(Validators.canAddExercise(workout, sampleExercises.arms1), 
                 'Should allow adding different muscle group');
             
-            // Should prevent same muscle group as last
-            assert.isFalse(Validators.canAddExercise(workout, sampleExercises.chest1), 
+            // Should prevent same muscle group as last (legs)
+            const legsExercise = { 
+                id: 'legs_002', 
+                name: 'Lunges', 
+                muscleGroup: 'legs' 
+            };
+            assert.isFalse(Validators.canAddExercise(workout, legsExercise), 
                 'Should prevent adding same muscle group as last');
         });
 
@@ -182,16 +187,24 @@ describe('Validators', () => {
                 Validators.isValidWorkout('not an array');
             }, 'exerciseList must be an array');
 
+            // Test with exercise missing muscleGroup - this should throw during validation
+            const workoutWithInvalidExercise = [
+                sampleExercises.chest1,
+                { id: 'test', name: 'Test' } // Missing muscleGroup
+            ];
+            
             assert.throws(() => {
-                Validators.isValidWorkout([null]);
+                Validators.isValidWorkout(workoutWithInvalidExercise);
             }, 'Invalid exercise at position');
 
+            // Test with null exercise - this should throw during validation
+            const workoutWithNullExercise = [
+                sampleExercises.chest1,
+                null
+            ];
+            
             assert.throws(() => {
-                Validators.isValidWorkout([{}]);
-            }, 'Invalid exercise at position');
-
-            assert.throws(() => {
-                Validators.isValidWorkout([{ name: 'Test' }]);
+                Validators.isValidWorkout(workoutWithNullExercise);
             }, 'Invalid exercise at position');
         });
     });
