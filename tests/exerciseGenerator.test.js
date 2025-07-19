@@ -420,20 +420,29 @@ describe('ExerciseGenerator', () => {
         });
 
         it('should prevent constraint violations', () => {
-            const workout = [sampleExercises.chest1, sampleExercises.back1, sampleExercises.legs1];
+            // Create a scenario where replacing would create consecutive same muscle groups
+            // We need back exercises at positions 1 and 2 to test constraint violation
+            const workout = [
+                sampleExercises.chest1,  // Position 0: chest
+                sampleExercises.back1,   // Position 1: back (we'll replace this)
+                sampleExercises.back2    // Position 2: back (already here)
+            ];
             
-            // Try to replace back exercise with chest (would violate constraint with adjacent chest)
+            // Try to replace back1 (position 1) with back3 (another back exercise)
+            // This would create: chest -> back3 -> back2 (consecutive back exercises)
+            const anotherBackExercise = { id: 'back_003', name: 'Lat Pulldowns', muscleGroup: 'back' };
+            
             assert.throws(() => {
-                ExerciseGenerator.replaceExercise(workout, 1, sampleExercises.chest2);
+                ExerciseGenerator.replaceExercise(workout, 1, anotherBackExercise);
             }, 'Replacement would create consecutive exercises');
         });
 
         it('should prevent duplicate exercises', () => {
             const workout = [sampleExercises.chest1, sampleExercises.back1, sampleExercises.legs1];
             
-            // Try to replace with exercise already in workout
+            // Try to replace legs exercise (position 2) with chest1 which is already at position 0
             assert.throws(() => {
-                ExerciseGenerator.replaceExercise(workout, 0, sampleExercises.back1);
+                ExerciseGenerator.replaceExercise(workout, 2, sampleExercises.chest1);
             }, 'is already used in the workout');
         });
 
