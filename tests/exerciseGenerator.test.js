@@ -438,9 +438,9 @@ describe('ExerciseGenerator', () => {
         });
 
         it('should prevent duplicate exercises', () => {
-            const workout = [sampleExercises.chest1, sampleExercises.back1, sampleExercises.legs1];
+            const workout = [sampleExercises.chest1, sampleExercises.back1, sampleExercises.chest2, sampleExercises.legs1];
             
-            // Try to replace legs exercise (position 2) with chest1 which is already at position 0
+            // Try to replace chest2 (position 2) with chest1 which is already at position 0
             assert.throws(() => {
                 ExerciseGenerator.replaceExercise(workout, 2, sampleExercises.chest1);
             }, 'is already used in the workout');
