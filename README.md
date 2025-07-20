@@ -1,177 +1,222 @@
 # Workout Generator
 
-A simple, constraint-based workout generator built with vanilla JavaScript. Generate custom workouts with intelligent muscle group sequencing to ensure optimal training flow.
+A constraint-based workout generator built with vanilla JavaScript that creates balanced exercise routines with intelligent muscle group sequencing. No frameworks, no dependencies, no backend required.
 
 ## 🎯 Features
 
-- **Smart Constraint System**: No two consecutive exercises target the same muscle group
-- **Customizable Workouts**: Choose exercise count (5-20) and target muscle groups
-- **Exercise Replacement**: Swap exercises while maintaining constraints
+- **Smart Constraint System**: Prevents consecutive exercises from targeting the same muscle group
+- **Customizable Workouts**: Generate 4-20 exercises from selected muscle groups
+- **Dual Operation Modes**: 
+  - **Regenerate Mode**: Create entirely new workouts
+  - **Replace Mode**: Swap individual exercises while maintaining constraints
 - **Drag & Drop Reordering**: Rearrange exercises with automatic constraint validation
-- **PDF Export**: Generate printable workout sheets
-- **Mobile Responsive**: Touch-friendly interface for all devices
+- **Touch-Optimized**: Mobile-friendly interface with 44px minimum touch targets
+- **PDF Export**: Generate printable workout sheets with fallback to text format
+- **Comprehensive Testing**: Built-in test framework with 100+ unit tests
 - **Zero Dependencies**: Pure vanilla JavaScript implementation
 
 ## 🚀 Quick Start
 
-1. Clone or download this repository
-2. Open `index.html` in your web browser
-3. Select your desired muscle groups and exercise count
-4. Click "Generate Workout" to create your custom routine
+1. **Clone or download** this repository
+2. **Open `index.html`** in any modern web browser
+3. **Select muscle groups** and exercise count
+4. **Click "Generate Workout"** to create your routine
+5. **Optional**: Run tests by opening `test-runner.html`
 
-No build process or installation required!
+**That's it!** No installation, build process, or server required.
 
 ## 📁 Project Structure
 
 ```
 workout-generator/
-├── index.html              # Main application entry point
+├── index.html                    # Main application
+├── test-runner.html              # Test suite runner
+├── README.md                     # This file
 ├── css/
-│   ├── main.css           # Core styles and layout
-│   ├── components.css     # Component-specific styling
-│   └── mobile.css         # Mobile responsiveness
+│   ├── main.css                 # Core styles, layout, and design tokens
+│   ├── components.css           # UI components and workout display
+│   └── mobile.css               # Mobile responsiveness (currently empty)
 ├── js/
-│   ├── app.js            # Application initialization
+│   ├── app.js                   # Application initialization and dependency management
 │   └── modules/
-│       ├── exerciseDatabase.js    # Exercise data and retrieval
-│       ├── exerciseGenerator.js   # Workout generation logic
-│       ├── validators.js          # Constraint validation
-│       ├── uiController.js        # DOM manipulation and events
-│       ├── dragDrop.js           # Drag and drop functionality
-│       └── pdfExport.js          # PDF generation
-├── assets/               # Static assets (images, icons)
-└── README.md            # This file
+│       ├── exerciseDatabase.js  # Exercise data (20+ exercises per muscle group)
+│       ├── validators.js        # Constraint validation logic
+│       ├── exerciseGenerator.js # Workout generation algorithms
+│       ├── uiController.js      # DOM manipulation and event handling
+│       ├── dragDrop.js          # Drag and drop functionality
+│       └── pdfExport.js         # PDF generation and export
+└── tests/
+    ├── testFramework.js         # Custom testing framework
+    ├── testRunner.js            # Test execution and UI
+    ├── exerciseDatabase.test.js # Database module tests
+    ├── validators.test.js       # Constraint validation tests
+    ├── exerciseGenerator.test.js# Generation algorithm tests
+    ├── pdfExport.test.js        # Export functionality tests
+    └── dragDrop.test.js         # Drag and drop tests
 ```
 
 ## 🏗️ Architecture
 
-### Core Modules
+### Core Constraint
+> **No two consecutive exercises can target the same muscle group**
 
-**exerciseDatabase.js**
-- Contains comprehensive exercise library organized by muscle groups
-- Provides functions to retrieve exercises by muscle group or get all exercises
-- Supports 6 main muscle groups: Chest, Back, Legs, Shoulders, Arms, Core
+This fundamental rule is enforced across all operations:
+- ✅ Workout generation
+- ✅ Exercise replacement  
+- ✅ Drag and drop reordering
+- ✅ Manual exercise swapping
 
-**exerciseGenerator.js**
-- Implements workout generation algorithms
-- Handles exercise replacement logic
-- Ensures constraint compliance during generation
+### Module Design
 
-**validators.js**
-- Enforces the core constraint: no consecutive exercises for same muscle group
-- Validates entire workouts and individual exercise additions
-- Provides filtering for valid exercise options
+**exerciseDatabase.js** - Data Layer
+- 130+ exercises across 6 muscle groups (chest, back, legs, shoulders, arms, core)
+- 20+ exercises per muscle group for variety
+- Exercise retrieval and validation functions
+- Immutable data with defensive copying
 
-**uiController.js**
-- Manages all DOM interactions and event handling
-- Controls application state (loading, error, empty states)
-- Renders workout lists and handles form submissions
+**validators.js** - Business Logic
+- Constraint validation algorithms
+- Workout analysis and statistics
+- Exercise filtering for valid options
+- Error handling and edge case management
 
-**dragDrop.js**
-- Implements drag and drop reordering functionality
-- Maintains constraint validation during reordering
-- Provides touch device fallbacks
+**exerciseGenerator.js** - Generation Engine
+- Constraint-aware workout generation
+- Fisher-Yates shuffle algorithm
+- Exercise replacement logic
+- Input validation and error handling
 
-**pdfExport.js**
-- Generates printable PDF workout sheets
-- Formats exercises with proper spacing and organization
+**uiController.js** - Presentation Layer
+- DOM manipulation and event handling
+- UI state management (loading, error, populated states)
+- Form data collection and validation
+- Responsive rendering for different screen sizes
 
-## 🎮 Usage
+**dragDrop.js** - Interaction Layer
+- Native HTML5 drag and drop implementation
+- Touch device support with reorder buttons
+- Real-time constraint validation during reordering
+- Visual feedback for valid/invalid moves
+
+**pdfExport.js** - Export Functionality
+- Direct PDF generation using minimal PDF specification
+- Text export fallback for compatibility
+- Workout formatting and layout
+- Download handling without external libraries
+
+## 🎮 Usage Guide
 
 ### Basic Workout Generation
 
-1. **Select Muscle Groups**: Check the boxes for muscle groups you want to target
-2. **Set Exercise Count**: Use the slider to choose 5-20 exercises
+1. **Select Muscle Groups**: Check boxes for muscle groups you want to target
+2. **Set Exercise Count**: Use slider to choose 4-20 exercises  
 3. **Generate**: Click "Generate Workout" to create your routine
 
-### Exercise Replacement
+### Exercise Replacement (Replace Mode)
 
 1. Switch to "Replace Mode" using the radio buttons
-2. Use the dropdown menus next to each exercise to select replacements
-3. Only valid replacements (maintaining constraints) will be available
+2. Use dropdown menus next to each exercise to select replacements
+3. Only valid replacements (same muscle group, no constraint violations) are shown
+4. Changes update immediately
 
 ### Reordering Exercises
 
-1. **Desktop**: Drag and drop exercises to reorder
-2. **Mobile**: Use the reorder buttons that appear in touch mode
-3. Invalid reorderings that break constraints will be prevented
+- **Desktop**: Drag and drop exercises to reorder
+- **Mobile**: Use up/down arrows that appear next to each exercise
+- Invalid reorderings that break constraints are prevented automatically
 
 ### PDF Export
 
 1. Generate or customize your workout
-2. Click the "Export PDF" button
-3. Save or print the formatted workout sheet
+2. Click "Export PDF" button  
+3. PDF downloads automatically (falls back to text if PDF fails)
 
-## ⚙️ Core Constraint System
+## ⚙️ Technical Implementation
 
-The application enforces one fundamental rule:
+### Constraint Validation Algorithm
 
-> **No two consecutive exercises can target the same muscle group**
-
-This constraint is maintained across all operations:
-- ✅ Workout generation
-- ✅ Exercise replacement
-- ✅ Drag and drop reordering
-- ✅ Manual exercise additions
-
-### Example Valid Sequence:
-```
-1. Push-ups (Chest)
-2. Pull-ups (Back)
-3. Squats (Legs)
-4. Overhead Press (Shoulders)
-5. Bicep Curls (Arms)
+```javascript
+// Core constraint check - simplified version
+function canAddExercise(currentWorkout, newExercise) {
+    if (currentWorkout.length === 0) return true;
+    
+    const lastExercise = currentWorkout[currentWorkout.length - 1];
+    return lastExercise.muscleGroup !== newExercise.muscleGroup;
+}
 ```
 
-### Example Invalid Sequence:
-```
-1. Push-ups (Chest)
-2. Bench Press (Chest) ❌ - Same muscle group consecutive
-```
+### Workout Generation Strategy
 
-## 🛠️ Development
+1. **Group Available Exercises**: Organize by muscle group
+2. **Constraint-Aware Selection**: Choose exercises that don't violate rules
+3. **Randomization**: Use Fisher-Yates shuffle for variety
+4. **Validation**: Verify final workout meets all constraints
+5. **Fallback Handling**: Retry with different parameters if generation fails
 
-### Implementation Principles
+### Touch and Mobile Optimization
 
-- **Keep It Simple (KIS)**: Vanilla JavaScript only, no external dependencies
-- **Modular Design**: Each module has a single responsibility
-- **Progressive Enhancement**: Core functionality works without advanced features
-- **Mobile First**: Responsive design prioritizes mobile experience
+- **44px minimum touch targets** for all interactive elements
+- **Responsive grid layouts** that adapt to screen size
+- **Touch-specific reorder controls** when drag-and-drop isn't available
+- **Mobile-first CSS** with progressive enhancement
 
-### Testing Strategy
+## 🧪 Testing Framework
 
-1. **Unit Testing**: Test each module independently
-2. **Integration Testing**: Verify module interactions
-3. **Constraint Testing**: Validate constraint enforcement in all scenarios
-4. **Cross-Browser Testing**: Ensure compatibility across major browsers
-5. **Device Testing**: Test on various screen sizes and input methods
+The application includes a comprehensive custom testing framework:
 
-### Browser Support
+- **100+ Unit Tests** covering all modules and edge cases
+- **Constraint Validation Tests** ensuring rules are never violated
+- **Error Handling Tests** for robustness and reliability
+- **Performance Tests** for large workouts and rapid operations
+- **Mock Utilities** for testing UI components without DOM dependencies
 
-- ✅ Chrome 60+
-- ✅ Firefox 55+
-- ✅ Safari 12+
-- ✅ Edge 79+
+### Running Tests
 
-## 📱 Mobile Features
+1. Open `test-runner.html` in your browser
+2. Click "Run All Tests" to execute the full suite
+3. View detailed results with pass/fail status and error details
+4. Use "Stop on first failure" for debugging specific issues
 
-- **Touch-Optimized**: 44px minimum touch targets
-- **Responsive Layout**: Adapts to screen sizes from 320px to desktop
-- **Touch Gestures**: Swipe and tap interactions for exercise management
-- **Offline Capable**: Works without internet connection
+### Test Coverage
 
-## 🔧 Customization
+- **Exercise Database**: Data integrity, retrieval, validation
+- **Validators**: Constraint logic, edge cases, performance
+- **Exercise Generator**: Generation algorithms, randomization, error handling  
+- **PDF Export**: Content generation, format validation, fallback behavior
+- **Drag Drop**: Reordering logic, constraint enforcement, touch compatibility
+
+## 🛠️ Development Principles
+
+### Keep It Simple (KIS)
+- **Vanilla JavaScript only** - no external dependencies
+- **Clear, readable code** over clever solutions  
+- **Single responsibility** for each module
+- **Progressive enhancement** - core functionality works without advanced features
+
+### Code Quality Standards
+- **Defensive copying** to prevent data mutation
+- **Comprehensive error handling** with meaningful messages
+- **Input validation** at module boundaries
+- **Memory efficiency** with proper cleanup and references
+
+### Browser Compatibility
+- ✅ **Chrome 60+**
+- ✅ **Firefox 55+** 
+- ✅ **Safari 12+**
+- ✅ **Edge 79+**
+
+## 🎨 Customization
 
 ### Adding New Exercises
 
 Edit `js/modules/exerciseDatabase.js`:
 
 ```javascript
-const exercises = {
-  chest: [
-    { name: "Your New Exercise", description: "Exercise description" },
-    // ... existing exercises
-  ]
+const EXERCISE_DATABASE = {
+    chest: [
+        { id: 'chest_023', name: 'Your New Exercise' },
+        // ... existing exercises
+    ]
 };
 ```
 
@@ -181,19 +226,20 @@ Edit `js/modules/validators.js` to implement custom validation rules:
 
 ```javascript
 function canAddExercise(currentWorkout, newExercise) {
-  // Implement your custom constraint logic
+    // Implement your custom constraint logic here
+    return isValidByYourRules(currentWorkout, newExercise);
 }
 ```
 
-### Styling Customization
+### Styling Changes
 
 Modify CSS custom properties in `css/main.css`:
 
 ```css
 :root {
-  --primary-color: #your-color;
-  --secondary-color: #your-color;
-  /* ... other variables */
+    --color-primary: #your-color;
+    --color-secondary: #your-color;
+    /* ... other design tokens */
 }
 ```
 
@@ -203,19 +249,30 @@ Modify CSS custom properties in `css/main.css`:
 
 **Workout won't generate**
 - Ensure at least one muscle group is selected
-- Check that exercise count is within valid range (5-20)
+- Check exercise count is between 4-20
+- Single muscle group + multiple exercises violates constraints
 
-**Drag and drop not working**
-- Verify you're using a supported browser
-- On mobile, use the reorder buttons instead
+**Drag and drop not working**  
+- Verify browser supports HTML5 drag and drop
+- On mobile, use the arrow buttons instead
+- Check console for JavaScript errors
 
 **PDF export fails**
-- Check browser's popup blocker settings
-- Ensure JavaScript is enabled
+- Ensure popup blockers are disabled
+- Check JavaScript is enabled
+- Falls back to text export automatically
+
+**Tests failing**
+- Allow time for module initialization (modules load asynchronously)
+- Check browser console for dependency loading errors
+- Ensure all JavaScript files are present and accessible
 
 ### Debug Mode
 
-Open browser developer tools and check the console for detailed error messages. All modules include comprehensive error handling and logging.
+Open browser developer tools and check:
+- Console for initialization logs and errors
+- Network tab to verify all files load correctly
+- Elements tab to inspect DOM structure and event listeners
 
 ## 📄 License
 
@@ -223,16 +280,30 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following the KIS principles
-4. Test thoroughly across browsers and devices
-5. Submit a pull request
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Follow** the KIS principles and existing code style
+4. **Add tests** for new functionality
+5. **Test thoroughly** across browsers and devices
+6. **Submit** a pull request
+
+### Development Guidelines
+
+- Maintain zero external dependencies
+- Follow BEM CSS methodology  
+- Write self-documenting code with clear variable names
+- Add comprehensive error handling
+- Include unit tests for new features
+- Ensure mobile compatibility
 
 ## 📞 Support
 
-For issues, questions, or feature requests, please open an issue on the project repository.
+For issues, questions, or feature requests:
+- Check the troubleshooting section above
+- Review existing test cases for usage examples
+- Open an issue on the project repository
+- Test your changes across multiple browsers before reporting bugs
 
 ---
 
-**Built with ❤️ using vanilla JavaScript**
+**Built with ❤️ using vanilla JavaScript** - No frameworks, no bloat, just clean code that works.
