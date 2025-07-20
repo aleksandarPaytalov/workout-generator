@@ -13,25 +13,59 @@ const ExerciseGenerator = (() => {
     
     // Private module state
     let isInitialized = false;
+    let initAttempts = 0;
+    
+    /**
+     * Check if dependencies are ready
+     * @private
+     */
+    const checkDependencies = () => {
+        // Check ExerciseDatabase
+        if (typeof ExerciseDatabase === 'undefined') {
+            console.log('ExerciseGenerator: ExerciseDatabase not yet available');
+            return false;
+        }
+        
+        if (typeof ExerciseDatabase.isReady !== 'function' || !ExerciseDatabase.isReady()) {
+            console.log('ExerciseGenerator: ExerciseDatabase not ready');
+            return false;
+        }
+        
+        // Check Validators
+        if (typeof Validators === 'undefined') {
+            console.log('ExerciseGenerator: Validators not yet available');
+            return false;
+        }
+        
+        if (typeof Validators.isReady !== 'function' || !Validators.isReady()) {
+            console.log('ExerciseGenerator: Validators not ready');
+            return false;
+        }
+        
+        return true;
+    };
     
     /**
      * Initialize the module
-     * Called automatically when module loads
+     * Called automatically when module loads and can be retried
      * @private
      */
     const init = () => {
         if (isInitialized) {
-            console.warn('ExerciseGenerator: Module already initialized');
             return;
         }
         
-        // Verify ExerciseDatabase dependency is available
-        if (typeof ExerciseDatabase === 'undefined') {
-            throw new Error('ExerciseGenerator: ExerciseDatabase module is required');
-        }
+        initAttempts++;
+        console.log(`ExerciseGenerator: Initialization attempt ${initAttempts}`);
         
-        if (!ExerciseDatabase.isReady()) {
-            throw new Error('ExerciseGenerator: ExerciseDatabase module is not ready');
+        if (!checkDependencies()) {
+            if (initAttempts < 10) {
+                // Retry after a short delay
+                setTimeout(init, 150);
+            } else {
+                console.error('ExerciseGenerator: Failed to initialize after 10 attempts');
+            }
+            return;
         }
         
         console.log('ExerciseGenerator: Module initialized successfully');
@@ -44,6 +78,9 @@ const ExerciseGenerator = (() => {
      * @public
      */
     const isReady = () => {
+        if (!isInitialized && initAttempts < 10) {
+            init();
+        }
         return isInitialized;
     };
     
@@ -91,6 +128,10 @@ const ExerciseGenerator = (() => {
      * @public
      */
     const generateRandomWorkout = (length, enabledGroups) => {
+        if (!isInitialized) {
+            throw new Error('ExerciseGenerator: Module not initialized');
+        }
+        
         // Validate inputs
         if (!Number.isInteger(length) || length < 4 || length > 20) {
             throw new Error('ExerciseGenerator: Workout length must be an integer between 4 and 20');
@@ -203,6 +244,10 @@ const ExerciseGenerator = (() => {
      * @public
      */
     const getReplacementOptions = (workoutPosition, workout) => {
+        if (!isInitialized) {
+            throw new Error('ExerciseGenerator: Module not initialized');
+        }
+        
         // Validate inputs
         if (!Number.isInteger(workoutPosition) || workoutPosition < 0) {
             throw new Error('ExerciseGenerator: Workout position must be a non-negative integer');
@@ -278,6 +323,10 @@ const ExerciseGenerator = (() => {
      * @public
      */
     const replaceExercise = (workout, index, newExercise) => {
+        if (!isInitialized) {
+            throw new Error('ExerciseGenerator: Module not initialized');
+        }
+        
         // Validate inputs
         if (!Array.isArray(workout) || workout.length === 0) {
             throw new Error('ExerciseGenerator: Workout must be a non-empty array');

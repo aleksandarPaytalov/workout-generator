@@ -1,7 +1,7 @@
 /**
- * Test Runner
+ * Fixed Test Runner - Proper Module Initialization Waiting
  * 
- * Orchestrates test execution and provides UI feedback
+ * Addresses the race condition in module initialization
  */
 
 const TestRunner = (() => {
@@ -18,31 +18,112 @@ const TestRunner = (() => {
     };
 
     /**
-     * Initialize the test runner
-     */
-    function init() {
-        // Cache DOM elements
-        elements = {
-            runAllTests: document.getElementById('runAllTests'),
-            runFailedTests: document.getElementById('runFailedTests'),
-            clearResults: document.getElementById('clearResults'),
-            stopOnFirstFailure: document.getElementById('stopOnFirstFailure'),
-            verboseOutput: document.getElementById('verboseOutput'),
-            progressFill: document.getElementById('progressFill'),
-            testSummary: document.getElementById('testSummary'),
-            totalTests: document.getElementById('totalTests'),
-            passedTests: document.getElementById('passedTests'),
-            failedTests: document.getElementById('failedTests'),
-            skippedTests: document.getElementById('skippedTests'),
-            testResults: document.getElementById('testResults')
+ * Quick Fix - Just replace the waitForModulesReady function in your existing testRunner.js
+ */
+
+async function waitForModulesReady() {
+    console.log('TestRunner: Waiting for modules to be ready...');
+    
+    const requiredModules = [
+        'ExerciseDatabase',
+        'Validators', 
+        'ExerciseGenerator'
+    ];
+
+    const maxWaitTime = 5000; // 5 seconds max wait
+    const checkInterval = 100; // Check every 100ms
+    const startTime = performance.now();
+
+    return new Promise((resolve, reject) => {
+        const checkReadiness = async () => {
+            const elapsed = performance.now() - startTime;
+            
+            // Check if all required modules are ready
+            const moduleStatuses = requiredModules.map(moduleName => {
+                const module = window[moduleName];
+                const isReady = module && 
+                               typeof module.isReady === 'function' && 
+                               module.isReady();
+                
+                console.log(`TestRunner: ${moduleName} ready: ${isReady}`);
+                return { name: moduleName, ready: isReady };
+            });
+
+            const allReady = moduleStatuses.every(status => status.ready);
+            
+            if (allReady) {
+                console.log(`TestRunner: All modules ready after ${elapsed.toFixed(2)}ms, waiting for stability...`);
+                
+                // ADD THIS: Wait an additional 300ms for async initialization to complete
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                console.log(`TestRunner: Stability period complete after ${(performance.now() - startTime).toFixed(2)}ms total`);
+                resolve();
+                return;
+            }
+
+            // Check timeout
+            if (elapsed > maxWaitTime) {
+                const notReady = moduleStatuses
+                    .filter(status => !status.ready)
+                    .map(status => status.name);
+                
+                console.error(`TestRunner: Timeout waiting for modules: ${notReady.join(', ')}`);
+                reject(new Error(`Module timeout: ${notReady.join(', ')}`));
+                return;
+            }
+
+            // Continue checking
+            setTimeout(checkReadiness, checkInterval);
         };
 
-        // Set up event listeners
-        setupEventListeners();
+        // Start checking
+        checkReadiness();
+    });
+}
 
-        // Initialize UI
-        updateRunOptions();
-        showInitialState();
+    /**
+     * Initialize the test runner
+     */
+    async function init() {
+        console.log('TestRunner: Starting initialization...');
+        
+        try {
+            // Wait for all modules to be ready first
+            await waitForModulesReady();
+            
+            // Additional small delay to ensure everything is settled
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            // Cache DOM elements
+            elements = {
+                runAllTests: document.getElementById('runAllTests'),
+                runFailedTests: document.getElementById('runFailedTests'),
+                clearResults: document.getElementById('clearResults'),
+                stopOnFirstFailure: document.getElementById('stopOnFirstFailure'),
+                verboseOutput: document.getElementById('verboseOutput'),
+                progressFill: document.getElementById('progressFill'),
+                testSummary: document.getElementById('testSummary'),
+                totalTests: document.getElementById('totalTests'),
+                passedTests: document.getElementById('passedTests'),
+                failedTests: document.getElementById('failedTests'),
+                skippedTests: document.getElementById('skippedTests'),
+                testResults: document.getElementById('testResults')
+            };
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Initialize UI
+            updateRunOptions();
+            showInitialState();
+
+            console.log('TestRunner: Initialization complete');
+            
+        } catch (error) {
+            console.error('TestRunner: Initialization failed:', error);
+            showError('Test runner initialization failed: ' + error.message);
+        }
     }
 
     /**
@@ -101,6 +182,11 @@ const TestRunner = (() => {
             isRunning = true;
             updateButtonStates();
             
+            console.log('TestRunner: Starting test execution...');
+            
+            // Ensure modules are still ready before running tests
+            await waitForModulesReady();
+            
             await runTests();
             
         } catch (error) {
@@ -117,9 +203,6 @@ const TestRunner = (() => {
      */
     async function handleRunFailedTests() {
         if (isRunning) return;
-
-        // TODO: Implement re-running only failed tests
-        // For now, just run all tests
         await handleRunAllTests();
     }
 
@@ -128,7 +211,6 @@ const TestRunner = (() => {
      */
     function handleClearResults() {
         if (isRunning) return;
-
         TestFramework.clearResults();
         showInitialState();
     }
@@ -153,23 +235,27 @@ const TestRunner = (() => {
      */
     async function runTests() {
         let totalSuites = 0;
-        let completedSuites = 0;
         let totalTests = 0;
-        let completedTests = 0;
 
         // Count total suites and tests for progress
-        for (const [suiteName, suite] of TestFramework.testSuites || new Map()) {
-            totalSuites++;
-            totalTests += suite.tests.length;
+        if (TestFramework && TestFramework.testSuites) {
+            for (const [suiteName, suite] of TestFramework.testSuites) {
+                totalSuites++;
+                totalTests += suite.tests.length;
+            }
         }
+
+        console.log(`TestRunner: Found ${totalSuites} suites with ${totalTests} total tests`);
 
         // Show running state
         elements.testResults.innerHTML = `
             <div class="loading">
                 <div class="spinner"></div>
-                Running tests...
+                Running ${totalTests} tests across ${totalSuites} suites...
             </div>
         `;
+
+        let completedTests = 0;
 
         // Run tests with progress callbacks
         const results = await TestFramework.runAllTests({
@@ -183,7 +269,7 @@ const TestRunner = (() => {
 
             onProgress: (testResult, suiteResult) => {
                 completedTests++;
-                const progress = (completedTests / totalTests) * 100;
+                const progress = totalTests > 0 ? (completedTests / totalTests) * 100 : 0;
                 elements.progressFill.style.width = `${progress}%`;
 
                 if (runOptions.verboseOutput) {
@@ -194,13 +280,13 @@ const TestRunner = (() => {
             },
 
             onSuiteComplete: (suiteResult) => {
-                completedSuites++;
-                
                 if (runOptions.verboseOutput) {
                     console.log(`Completed suite: ${suiteResult.name} (${suiteResult.passed}/${suiteResult.tests.length} passed)`);
                 }
             }
         });
+
+        console.log(`TestRunner: Final results: ${results.passed}/${results.total} passed, ${results.failed} failed`);
 
         // Display results
         displayResults(results);
@@ -233,12 +319,10 @@ const TestRunner = (() => {
         }
 
         elements.testResults.innerHTML = resultsHTML;
-
-        // Progress bar to 100%
         elements.progressFill.style.width = '100%';
 
         // Log summary
-        console.log(`\n=== Test Results ===`);
+        console.log('\n=== Test Results ===');
         console.log(`Total: ${results.total}`);
         console.log(`Passed: ${results.passed}`);
         console.log(`Failed: ${results.failed}`);
@@ -339,8 +423,14 @@ const TestRunner = (() => {
 })();
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    TestRunner.init();
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM ready, initializing TestRunner...');
+    try {
+        await TestRunner.init();
+        console.log('TestRunner initialized successfully');
+    } catch (error) {
+        console.error('TestRunner initialization failed:', error);
+    }
 });
 
 // Export for debugging
