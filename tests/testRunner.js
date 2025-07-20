@@ -1,7 +1,7 @@
 /**
- * Test Runner
+ * Fixed Test Runner - Proper Module Initialization Waiting
  * 
- * Orchestrates test execution and provides UI feedback
+ * Addresses the race condition in module initialization
  */
 
 const TestRunner = (() => {
@@ -18,63 +18,69 @@ const TestRunner = (() => {
     };
 
     /**
-     * Wait for all required modules to be ready before running tests
-     */
-    async function waitForModulesReady() {
-        console.log('TestRunner: Waiting for modules to be ready...');
-        
-        const requiredModules = [
-            'ExerciseDatabase',
-            'Validators', 
-            'ExerciseGenerator'
-        ];
+ * Quick Fix - Just replace the waitForModulesReady function in your existing testRunner.js
+ */
 
-        const maxWaitTime = 5000; // 5 seconds max wait
-        const checkInterval = 100; // Check every 100ms
-        const startTime = performance.now();
+async function waitForModulesReady() {
+    console.log('TestRunner: Waiting for modules to be ready...');
+    
+    const requiredModules = [
+        'ExerciseDatabase',
+        'Validators', 
+        'ExerciseGenerator'
+    ];
 
-        return new Promise((resolve, reject) => {
-            const checkReadiness = () => {
-                const elapsed = performance.now() - startTime;
+    const maxWaitTime = 5000; // 5 seconds max wait
+    const checkInterval = 100; // Check every 100ms
+    const startTime = performance.now();
+
+    return new Promise((resolve, reject) => {
+        const checkReadiness = async () => {
+            const elapsed = performance.now() - startTime;
+            
+            // Check if all required modules are ready
+            const moduleStatuses = requiredModules.map(moduleName => {
+                const module = window[moduleName];
+                const isReady = module && 
+                               typeof module.isReady === 'function' && 
+                               module.isReady();
                 
-                // Check if all required modules are ready
-                const moduleStatuses = requiredModules.map(moduleName => {
-                    const module = window[moduleName];
-                    const isReady = module && 
-                                   typeof module.isReady === 'function' && 
-                                   module.isReady();
-                    
-                    console.log(`TestRunner: ${moduleName} ready: ${isReady}`);
-                    return { name: moduleName, ready: isReady };
-                });
+                console.log(`TestRunner: ${moduleName} ready: ${isReady}`);
+                return { name: moduleName, ready: isReady };
+            });
 
-                const allReady = moduleStatuses.every(status => status.ready);
+            const allReady = moduleStatuses.every(status => status.ready);
+            
+            if (allReady) {
+                console.log(`TestRunner: All modules ready after ${elapsed.toFixed(2)}ms, waiting for stability...`);
                 
-                if (allReady) {
-                    console.log(`TestRunner: All modules ready after ${elapsed.toFixed(2)}ms`);
-                    resolve();
-                    return;
-                }
+                // ADD THIS: Wait an additional 300ms for async initialization to complete
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                console.log(`TestRunner: Stability period complete after ${(performance.now() - startTime).toFixed(2)}ms total`);
+                resolve();
+                return;
+            }
 
-                // Check timeout
-                if (elapsed > maxWaitTime) {
-                    const notReady = moduleStatuses
-                        .filter(status => !status.ready)
-                        .map(status => status.name);
-                    
-                    console.error(`TestRunner: Timeout waiting for modules: ${notReady.join(', ')}`);
-                    reject(new Error(`Module timeout: ${notReady.join(', ')}`));
-                    return;
-                }
+            // Check timeout
+            if (elapsed > maxWaitTime) {
+                const notReady = moduleStatuses
+                    .filter(status => !status.ready)
+                    .map(status => status.name);
+                
+                console.error(`TestRunner: Timeout waiting for modules: ${notReady.join(', ')}`);
+                reject(new Error(`Module timeout: ${notReady.join(', ')}`));
+                return;
+            }
 
-                // Continue checking
-                setTimeout(checkReadiness, checkInterval);
-            };
+            // Continue checking
+            setTimeout(checkReadiness, checkInterval);
+        };
 
-            // Start checking
-            checkReadiness();
-        });
-    }
+        // Start checking
+        checkReadiness();
+    });
+}
 
     /**
      * Initialize the test runner
@@ -85,6 +91,9 @@ const TestRunner = (() => {
         try {
             // Wait for all modules to be ready first
             await waitForModulesReady();
+            
+            // Additional small delay to ensure everything is settled
+            await new Promise(resolve => setTimeout(resolve, 50));
             
             // Cache DOM elements
             elements = {
@@ -174,6 +183,10 @@ const TestRunner = (() => {
             updateButtonStates();
             
             console.log('TestRunner: Starting test execution...');
+            
+            // Ensure modules are still ready before running tests
+            await waitForModulesReady();
+            
             await runTests();
             
         } catch (error) {

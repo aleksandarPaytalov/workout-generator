@@ -1,8 +1,7 @@
 /**
- * Simple Test Framework for Workout Generator
+ * Fixed Test Framework with Proper Scope Inheritance
  * 
- * Provides assertion methods, test suite organization, and result reporting
- * without external dependencies.
+ * Replace your testFramework.js with this version
  */
 
 const TestFramework = (() => {
@@ -11,6 +10,7 @@ const TestFramework = (() => {
     // Test state
     let testSuites = new Map();
     let currentSuite = null;
+    let suiteStack = []; // Track nested suites
     let isRunning = false;
     let results = {
         total: 0,
@@ -329,7 +329,29 @@ const TestFramework = (() => {
     };
 
     /**
-     * Test suite definition
+     * Collect hooks from parent suites
+     */
+    function collectInheritedHooks() {
+        const hooks = {
+            setup: [],
+            teardown: [],
+            beforeEach: [],
+            afterEach: []
+        };
+
+        // Collect hooks from all parent suites
+        for (const suite of suiteStack) {
+            if (suite.setup) hooks.setup.push(suite.setup);
+            if (suite.teardown) hooks.teardown.unshift(suite.teardown); // Reverse order for teardown
+            if (suite.beforeEach) hooks.beforeEach.push(suite.beforeEach);
+            if (suite.afterEach) hooks.afterEach.unshift(suite.afterEach); // Reverse order for afterEach
+        }
+
+        return hooks;
+    }
+
+    /**
+     * Test suite definition with proper scope inheritance
      */
     function describe(suiteName, callback) {
         if (isRunning) {
@@ -342,20 +364,83 @@ const TestFramework = (() => {
             beforeEach: null,
             afterEach: null,
             setup: null,
-            teardown: null
+            teardown: null,
+            parentSuite: currentSuite,
+            depth: suiteStack.length
         };
 
         const previousSuite = currentSuite;
         currentSuite = suite;
+        suiteStack.push(suite);
 
         // Execute the suite definition
         try {
             callback();
         } finally {
             currentSuite = previousSuite;
+            suiteStack.pop();
         }
 
-        testSuites.set(suiteName, suite);
+        // Only add root-level suites to the test suites map
+        // Nested suites will be flattened with inherited hooks
+        if (suite.depth === 0 || suite.tests.length > 0) {
+            // Collect inherited hooks from parent suites
+            const inheritedHooks = collectInheritedHooks();
+            
+            // Add inherited setup hooks to the beginning
+            if (inheritedHooks.setup.length > 0) {
+                const originalSetup = suite.setup;
+                suite.setup = async () => {
+                    for (const hook of inheritedHooks.setup) {
+                        await hook();
+                    }
+                    if (originalSetup) {
+                        await originalSetup();
+                    }
+                };
+            }
+
+            // Add inherited teardown hooks to the end
+            if (inheritedHooks.teardown.length > 0) {
+                const originalTeardown = suite.teardown;
+                suite.teardown = async () => {
+                    if (originalTeardown) {
+                        await originalTeardown();
+                    }
+                    for (const hook of inheritedHooks.teardown) {
+                        await hook();
+                    }
+                };
+            }
+
+            // Add inherited beforeEach hooks
+            if (inheritedHooks.beforeEach.length > 0) {
+                const originalBeforeEach = suite.beforeEach;
+                suite.beforeEach = async () => {
+                    for (const hook of inheritedHooks.beforeEach) {
+                        await hook();
+                    }
+                    if (originalBeforeEach) {
+                        await originalBeforeEach();
+                    }
+                };
+            }
+
+            // Add inherited afterEach hooks
+            if (inheritedHooks.afterEach.length > 0) {
+                const originalAfterEach = suite.afterEach;
+                suite.afterEach = async () => {
+                    if (originalAfterEach) {
+                        await originalAfterEach();
+                    }
+                    for (const hook of inheritedHooks.afterEach) {
+                        await hook();
+                    }
+                };
+            }
+
+            testSuites.set(suiteName, suite);
+        }
     }
 
     /**
