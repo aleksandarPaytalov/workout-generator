@@ -13,25 +13,53 @@ const Validators = (() => {
     
     // Private module state
     let isInitialized = false;
+    let initAttempts = 0;
+    
+    /**
+     * Check if dependencies are ready
+     * @private
+     */
+    const checkDependencies = () => {
+        // Check if ExerciseDatabase is available and ready
+        if (typeof ExerciseDatabase === 'undefined') {
+            console.log('Validators: ExerciseDatabase not yet available');
+            return false;
+        }
+        
+        if (typeof ExerciseDatabase.isReady !== 'function') {
+            console.log('Validators: ExerciseDatabase missing isReady method');
+            return false;
+        }
+        
+        if (!ExerciseDatabase.isReady()) {
+            console.log('Validators: ExerciseDatabase not ready');
+            return false;
+        }
+        
+        return true;
+    };
     
     /**
      * Initialize the module
-     * Called automatically when module loads
+     * Called automatically when module loads and can be retried
      * @private
      */
     const init = () => {
         if (isInitialized) {
-            console.warn('Validators: Module already initialized');
             return;
         }
         
-        // Verify ExerciseDatabase dependency is available
-        if (typeof ExerciseDatabase === 'undefined') {
-            throw new Error('Validators: ExerciseDatabase module is required');
-        }
+        initAttempts++;
+        console.log(`Validators: Initialization attempt ${initAttempts}`);
         
-        if (!ExerciseDatabase.isReady()) {
-            throw new Error('Validators: ExerciseDatabase module is not ready');
+        if (!checkDependencies()) {
+            if (initAttempts < 10) {
+                // Retry after a short delay
+                setTimeout(init, 100);
+            } else {
+                console.error('Validators: Failed to initialize after 10 attempts');
+            }
+            return;
         }
         
         console.log('Validators: Module initialized successfully');
@@ -44,6 +72,9 @@ const Validators = (() => {
      * @public
      */
     const isReady = () => {
+        if (!isInitialized && initAttempts < 10) {
+            init();
+        }
         return isInitialized;
     };
     

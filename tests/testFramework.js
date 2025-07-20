@@ -429,7 +429,7 @@ const TestFramework = (() => {
     }
 
     /**
-     * Run a single test
+     * Run a single test with improved error handling
      */
     async function runTest(test, suite) {
         const startTime = performance.now();
@@ -447,27 +447,42 @@ const TestFramework = (() => {
                 return result;
             }
 
-            // Run beforeEach hook
+            // Run beforeEach hook with error handling
             if (suite.beforeEach) {
-                await suite.beforeEach();
+                try {
+                    await suite.beforeEach();
+                } catch (beforeError) {
+                    console.error(`BeforeEach error in "${test.name}":`, beforeError);
+                    throw new Error(`BeforeEach failed: ${beforeError.message}`);
+                }
             }
 
-            // Run the actual test
-            await test.callback();
-
-            result.status = 'passed';
+            // Run the actual test with timeout protection
+            try {
+                await Promise.race([
+                    test.callback(),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Test timeout after 10 seconds')), 10000)
+                    )
+                ]);
+                result.status = 'passed';
+            } catch (testError) {
+                console.error(`Test "${test.name}" failed:`, testError);
+                result.status = 'failed';
+                result.error = testError;
+            }
 
         } catch (error) {
             result.status = 'failed';
             result.error = error;
         } finally {
-            // Run afterEach hook
+            // Run afterEach hook with error handling
             try {
                 if (suite.afterEach) {
                     await suite.afterEach();
                 }
             } catch (cleanupError) {
-                console.warn(`Cleanup error in ${test.name}:`, cleanupError);
+                console.warn(`Cleanup error in "${test.name}":`, cleanupError);
             }
 
             result.duration = performance.now() - startTime;
@@ -477,7 +492,7 @@ const TestFramework = (() => {
     }
 
     /**
-     * Run a test suite
+     * Run a test suite with improved setup handling
      */
     async function runSuite(suite, options = {}) {
         const suiteResult = {
@@ -492,10 +507,20 @@ const TestFramework = (() => {
         const startTime = performance.now();
 
         try {
-            // Run suite setup
+            // Run suite setup with proper error handling
             if (suite.setup) {
-                await suite.setup();
+                console.log(`Running setup for suite: ${suite.name}`);
+                try {
+                    await suite.setup();
+                    console.log(`Setup completed for suite: ${suite.name}`);
+                } catch (setupError) {
+                    console.error(`Setup failed for suite "${suite.name}":`, setupError);
+                    throw new Error(`Suite setup failed: ${setupError.message}`);
+                }
             }
+
+            // Add a small delay to ensure setup is fully complete
+            await new Promise(resolve => setTimeout(resolve, 10));
 
             // Run all tests in the suite
             for (const test of suite.tests) {
@@ -512,6 +537,7 @@ const TestFramework = (() => {
                     
                     // Stop on first failure if requested
                     if (options.stopOnFirstFailure) {
+                        console.log(`Stopping on first failure: ${testResult.name}`);
                         break;
                     }
                 } else if (testResult.status === 'skipped') {
@@ -527,14 +553,30 @@ const TestFramework = (() => {
                 }
             }
 
+        } catch (suiteError) {
+            console.error(`Suite "${suite.name}" failed:`, suiteError);
+            // Mark all remaining tests as failed if setup failed
+            for (let i = suiteResult.tests.length; i < suite.tests.length; i++) {
+                const failedTest = {
+                    name: suite.tests[i].name,
+                    status: 'failed',
+                    error: new Error(`Suite setup failed: ${suiteError.message}`),
+                    duration: 0
+                };
+                suiteResult.tests.push(failedTest);
+                suiteResult.failed++;
+                results.failed++;
+                results.total++;
+            }
         } finally {
             // Run suite teardown
             try {
                 if (suite.teardown) {
+                    console.log(`Running teardown for suite: ${suite.name}`);
                     await suite.teardown();
                 }
             } catch (teardownError) {
-                console.warn(`Suite teardown error in ${suite.name}:`, teardownError);
+                console.warn(`Suite teardown error in "${suite.name}":`, teardownError);
             }
 
             suiteResult.duration = performance.now() - startTime;
@@ -562,6 +604,8 @@ const TestFramework = (() => {
             suites: new Map()
         };
 
+        console.log('TestFramework: Starting test execution...');
+
         try {
             // Run each suite
             for (const [suiteName, suite] of testSuites) {
@@ -569,6 +613,7 @@ const TestFramework = (() => {
                     options.onSuiteStart(suite);
                 }
 
+                console.log(`TestFramework: Running suite "${suiteName}" with ${suite.tests.length} tests`);
                 const suiteResult = await runSuite(suite, options);
                 results.suites.set(suiteName, suiteResult);
 
@@ -578,9 +623,12 @@ const TestFramework = (() => {
 
                 // Stop if requested and there are failures
                 if (options.stopOnFirstFailure && suiteResult.failed > 0) {
+                    console.log('Stopping test execution due to failures');
                     break;
                 }
             }
+
+            console.log(`TestFramework: Test execution complete. ${results.passed}/${results.total} passed`);
 
         } finally {
             isRunning = false;
@@ -633,7 +681,8 @@ const TestFramework = (() => {
         clearResults,
 
         // State
-        get isRunning() { return isRunning; }
+        get isRunning() { return isRunning; },
+        get testSuites() { return testSuites; }
     };
 })();
 

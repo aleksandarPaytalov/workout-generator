@@ -229,37 +229,43 @@ const ExerciseDatabase = (() => {
             return;
         }
         
-        // Validate muscle group constants are properly defined
-        if (MUSCLE_GROUP_LIST.length !== 6) {
-            throw new Error('ExerciseDatabase: Invalid muscle group configuration');
-        }
-        
-        // Validate exercise database structure
-        let totalExercises = 0;
-        for (const muscleGroup of MUSCLE_GROUP_LIST) {
-            const exercises = EXERCISE_DATABASE[muscleGroup];
-            if (!Array.isArray(exercises)) {
-                throw new Error(`ExerciseDatabase: Missing exercises for muscle group "${muscleGroup}"`);
-            }
-            if (exercises.length < 20) {
-                throw new Error(`ExerciseDatabase: Insufficient exercises for muscle group "${muscleGroup}" (${exercises.length} < 20)`);
+        try {
+            // Validate muscle group constants are properly defined
+            if (MUSCLE_GROUP_LIST.length !== 6) {
+                throw new Error('ExerciseDatabase: Invalid muscle group configuration');
             }
             
-            // Validate exercise structure
-            for (const exercise of exercises) {
-                if (!exercise.id || !exercise.name) {
-                    throw new Error(`ExerciseDatabase: Invalid exercise structure in "${muscleGroup}"`);
+            // Validate exercise database structure
+            let totalExercises = 0;
+            for (const muscleGroup of MUSCLE_GROUP_LIST) {
+                const exercises = EXERCISE_DATABASE[muscleGroup];
+                if (!Array.isArray(exercises)) {
+                    throw new Error(`ExerciseDatabase: Missing exercises for muscle group "${muscleGroup}"`);
                 }
-                if (typeof exercise.id !== 'string' || typeof exercise.name !== 'string') {
-                    throw new Error(`ExerciseDatabase: Exercise properties must be strings in "${muscleGroup}"`);
+                if (exercises.length < 20) {
+                    throw new Error(`ExerciseDatabase: Insufficient exercises for muscle group "${muscleGroup}" (${exercises.length} < 20)`);
                 }
+                
+                // Validate exercise structure
+                for (const exercise of exercises) {
+                    if (!exercise.id || !exercise.name) {
+                        throw new Error(`ExerciseDatabase: Invalid exercise structure in "${muscleGroup}"`);
+                    }
+                    if (typeof exercise.id !== 'string' || typeof exercise.name !== 'string') {
+                        throw new Error(`ExerciseDatabase: Exercise properties must be strings in "${muscleGroup}"`);
+                    }
+                }
+                
+                totalExercises += exercises.length;
             }
             
-            totalExercises += exercises.length;
+            console.log(`ExerciseDatabase: Module initialized with ${MUSCLE_GROUP_LIST.length} muscle groups and ${totalExercises} total exercises`);
+            isInitialized = true;
+            
+        } catch (error) {
+            console.error('ExerciseDatabase: Initialization failed:', error);
+            isInitialized = false;
         }
-        
-        console.log(`ExerciseDatabase: Module initialized with ${MUSCLE_GROUP_LIST.length} muscle groups and ${totalExercises} total exercises`);
-        isInitialized = true;
     };
     
     /**
@@ -441,7 +447,6 @@ const ExerciseDatabase = (() => {
         getExerciseById,
         getExerciseCount,
         getDatabaseStats
-        // Additional public methods will be added in subsequent steps
     };
     
     // Auto-initialize when module loads
