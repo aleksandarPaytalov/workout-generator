@@ -28,15 +28,16 @@
     />
 
     <!-- CSS Files - Load in order: base → components → responsive -->
-    <link rel="stylesheet" href="css/main.css?v=7" />
-    <link rel="stylesheet" href="css/components.css?v=7" />
-    <link rel="stylesheet" href="css/mobile.css?v=7" />
+    <link rel="stylesheet" href="css/main.css?v=8" />
+    <link rel="stylesheet" href="css/components.css?v=8" />
+    <link rel="stylesheet" href="css/mobile.css?v=8" />
 
     <!-- JavaScript Modules - Load in dependency order -->
     <script src="js/modules/exerciseDatabase.js"></script>
     <script src="js/modules/validators.js"></script>
     <script src="js/modules/exerciseGenerator.js"></script>
     <script src="js/modules/uiController.js"></script>
+    <script src="js/modules/footerController.js"></script>
     <script src="js/modules/dragDrop.js"></script>
     <script src="js/modules/pdfExport.js"></script>
 
@@ -308,7 +309,94 @@
       </main>
 
       <footer class="app-footer">
-        <p class="footer-text">Built with vanilla JavaScript</p>
+        <div class="footer-content">
+          <div class="footer-section footer-brand">
+            <div class="footer-logo">
+              <span class="footer-icon">🏋️</span>
+              <span class="footer-title">Workout Generator</span>
+            </div>
+            <p class="footer-description">
+              Create balanced workout routines with smart muscle group
+              distribution
+            </p>
+          </div>
+
+          <div class="footer-section footer-links">
+            <h3 class="footer-heading">Quick Actions</h3>
+            <ul class="footer-menu">
+              <li>
+                <a href="#" class="footer-link" id="footerGenerateLink"
+                  >🎯 Generate Workout</a
+                >
+              </li>
+              <li>
+                <a href="#" class="footer-link" id="footerClearLink"
+                  >🗑️ Clear All</a
+                >
+              </li>
+              <li>
+                <a href="#" class="footer-link" id="footerShuffleLink"
+                  >🔀 Shuffle Order</a
+                >
+              </li>
+              <li>
+                <a href="#" class="footer-link" id="footerExportLink"
+                  >📄 Export PDF</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-section footer-info">
+            <h3 class="footer-heading">Features</h3>
+            <ul class="footer-features">
+              <li class="footer-feature">
+                <span class="feature-icon">⚡</span>
+                <span>Smart Constraints</span>
+              </li>
+              <li class="footer-feature">
+                <span class="feature-icon">🎨</span>
+                <span>Drag & Drop</span>
+              </li>
+              <li class="footer-feature">
+                <span class="feature-icon">📱</span>
+                <span>Mobile Friendly</span>
+              </li>
+              <li class="footer-feature">
+                <span class="feature-icon">💾</span>
+                <span>PDF Export</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-section footer-stats">
+            <h3 class="footer-heading">Session Stats</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-number" id="workoutsGenerated">0</span>
+                <span class="stat-label">Workouts</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number" id="exercisesCreated">0</span>
+                <span class="stat-label">Exercises</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p class="footer-copyright">
+              Built with ❤️ using vanilla JavaScript • No frameworks, just pure
+              performance
+            </p>
+            <div class="footer-tech">
+              <span class="tech-badge">HTML5</span>
+              <span class="tech-badge">CSS3</span>
+              <span class="tech-badge">ES6+</span>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   </body>
