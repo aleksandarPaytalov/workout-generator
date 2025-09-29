@@ -16,7 +16,7 @@
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
   transition: all var(--transition-normal);
@@ -42,9 +42,9 @@
   background: linear-gradient(
     135deg,
     var(--color-primary-hover) 0%,
-    #1e40af 100%
+    #6d28d9 100%
   );
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
@@ -54,7 +54,7 @@
 
 .btn-primary.generate-btn:active:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Loading state for generate button */
@@ -112,7 +112,7 @@
 
 .btn-secondary.enhanced:hover:not(:disabled) {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
@@ -158,32 +158,36 @@
    Workout Exercise List Components
    ================================================================ */
 
-/* Workout list container */
+/* Enhanced Workout list container */
 .workout-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* Individual exercise list item */
+/* Enhanced Individual exercise list item */
 .workout-exercise {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4);
-  background-color: var(--color-surface);
+  padding: var(--space-5) var(--space-6);
+  background: linear-gradient(145deg, var(--color-surface) 0%, #fafbfc 100%);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  transition: all var(--transition-fast);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all var(--transition-normal);
   position: relative;
+  overflow: hidden;
 }
 
 .workout-exercise:hover {
   border-color: var(--color-primary-light);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 /* Exercise information container */
@@ -194,32 +198,76 @@
   flex: 1;
 }
 
-/* Exercise number */
+/* Enhanced Exercise number */
 .exercise-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  min-width: 32px;
-  text-align: center;
+  color: var(--color-surface);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-hover) 100%
+  );
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
-/* Exercise name */
+.workout-exercise:hover .exercise-number {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+/* Enhanced Exercise name */
 .exercise-name {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   flex: 1;
+  line-height: var(--line-height-tight);
+  transition: color var(--transition-fast);
 }
 
-/* Exercise muscle group */
+.workout-exercise:hover .exercise-name {
+  color: var(--color-primary);
+}
+
+/* Enhanced Exercise muscle group badge */
 .exercise-muscle-group {
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  background-color: var(--color-secondary-light);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-light) 0%,
+    #f0f4ff 100%
+  );
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--border-radius-lg);
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(139, 92, 246, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.workout-exercise:hover .exercise-muscle-group {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-hover) 100%
+  );
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.25);
 }
 
 /* Replace dropdown container */
