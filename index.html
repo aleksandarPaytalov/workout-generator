@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Generate balanced workout routines with smart muscle group distribution. Create custom exercise lists with constraint validation.">
-    <meta name="keywords" content="workout generator, exercise planner, fitness routine, muscle groups">
-    <meta name="author" content="Workout Generator App">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Generate balanced workout routines with smart muscle group distribution. Create custom exercise lists with constraint validation."
+    />
+    <meta
+      name="keywords"
+      content="workout generator, exercise planner, fitness routine, muscle groups"
+    />
+    <meta name="author" content="Workout Generator App" />
+
     <!-- Prevent zoom on input focus for iOS -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
     <title>Workout Generator - Balanced Exercise Routines</title>
-    
+
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏋️%3C/text%3E%3C/svg%3E">
-    
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏋️%3C/text%3E%3C/svg%3E"
+    />
+
     <!-- CSS Files - Load in order: base → components → responsive -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/mobile.css">
-    
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/mobile.css" />
+
     <!-- JavaScript Modules - Load in dependency order -->
     <script src="js/modules/exerciseDatabase.js"></script>
     <script src="js/modules/validators.js"></script>
@@ -27,233 +39,277 @@
     <script src="js/modules/uiController.js"></script>
     <script src="js/modules/dragDrop.js"></script>
     <script src="js/modules/pdfExport.js"></script>
-    
+
     <!-- Main Application - Load last to initialize everything -->
     <script src="js/app.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="app-container">
-        <header class="app-header">
-            <h1 class="app-title">Workout Generator</h1>
-            <p class="app-subtitle">Balanced exercise routines with smart muscle group distribution</p>
-        </header>
+      <header class="app-header">
+        <h1 class="app-title">Workout Generator</h1>
+        <p class="app-subtitle">
+          Balanced exercise routines with smart muscle group distribution
+        </p>
+      </header>
 
-        <main class="app-main">
-            <section class="workout-controls" aria-label="Workout generation controls">
-                <form class="workout-form" id="workoutForm">
-                    <fieldset class="control-group">
-                        <legend class="control-legend">Exercise Count</legend>
-                        <div class="slider-container">
-                            <label for="exerciseCount" class="slider-label">
-                                Number of exercises: <span id="exerciseCountValue">8</span>
-                            </label>
-                            <input 
-                                type="range" 
-                                id="exerciseCount" 
-                                name="exerciseCount"
-                                min="4" 
-                                max="20" 
-                                value="8" 
-                                class="exercise-slider"
-                                aria-describedby="exerciseCountHelp"
-                            >
-                            <div class="slider-range">
-                                <span>4</span>
-                                <span>20</span>
-                            </div>
-                            <small id="exerciseCountHelp" class="help-text">
-                                Recommended: 6-12 exercises for balanced workouts
-                            </small>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="control-group">
-                        <legend class="control-legend">Operation Mode</legend>
-                        <div class="radio-container">
-                            <label class="radio-label">
-                                <input 
-                                    type="radio" 
-                                    name="operationMode" 
-                                    value="regenerate" 
-                                    id="modeRegenerate"
-                                    checked
-                                    class="radio-input"
-                                >
-                                <span class="radio-text">Regenerate Entire List</span>
-                                <small class="radio-help">Generate completely new workout</small>
-                            </label>
-                            
-                            <label class="radio-label">
-                                <input 
-                                    type="radio" 
-                                    name="operationMode" 
-                                    value="replace" 
-                                    id="modeReplace"
-                                    class="radio-input"
-                                >
-                                <span class="radio-text">Replace Individual Exercises</span>
-                                <small class="radio-help">Swap specific exercises from same muscle group</small>
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="control-group">
-                        <legend class="control-legend">Muscle Groups</legend>
-                        <div class="checkbox-container">
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="chest" 
-                                    id="muscleChest"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Chest</span>
-                            </label>
-                            
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="back" 
-                                    id="muscleBack"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Back</span>
-                            </label>
-                            
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="legs" 
-                                    id="muscleLegs"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Legs</span>
-                            </label>
-                            
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="shoulders" 
-                                    id="muscleShoulders"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Shoulders</span>
-                            </label>
-                            
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="arms" 
-                                    id="muscleArms"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Arms</span>
-                            </label>
-                            
-                            <label class="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    name="muscleGroups" 
-                                    value="core" 
-                                    id="muscleCore"
-                                    checked
-                                    class="checkbox-input"
-                                >
-                                <span class="checkbox-text">Core</span>
-                            </label>
-                        </div>
-                        <small class="help-text">
-                            Select at least 2 muscle groups for constraint validation
-                        </small>
-                    </fieldset>
-
-                    <div class="action-container">
-                        <button type="submit" class="btn btn-primary" id="generateBtn">
-                            Generate Workout
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="clearBtn">
-                            Clear
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="workout-display" aria-label="Generated workout list">
-                <div class="workout-header">
-                    <h2 class="workout-title">Your Workout</h2>
-                    <div class="workout-actions" id="workoutActions">
-                        <button type="button" class="btn btn-secondary btn-small" id="exportPdfBtn" disabled>
-                            Export PDF
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-small" id="shuffleBtn" disabled>
-                            Shuffle Order
-                        </button>
-                    </div>
+      <main class="app-main">
+        <section
+          class="workout-controls"
+          aria-label="Workout generation controls"
+        >
+          <form class="workout-form" id="workoutForm">
+            <fieldset class="control-group">
+              <legend class="control-legend">Exercise Count</legend>
+              <div class="slider-container">
+                <label for="exerciseCount" class="slider-label">
+                  Number of exercises: <span id="exerciseCountValue">8</span>
+                </label>
+                <input
+                  type="range"
+                  id="exerciseCount"
+                  name="exerciseCount"
+                  min="4"
+                  max="20"
+                  value="8"
+                  class="exercise-slider"
+                  aria-describedby="exerciseCountHelp"
+                />
+                <div class="slider-range">
+                  <span>4</span>
+                  <span>20</span>
                 </div>
+                <small id="exerciseCountHelp" class="help-text">
+                  Recommended: 6-12 exercises for balanced workouts
+                </small>
+              </div>
+            </fieldset>
 
-                <div class="workout-content" id="workoutContent">
-                    <!-- Empty State -->
-                    <div class="workout-state workout-state--empty" id="emptyState">
-                        <div class="state-icon">💪</div>
-                        <h3 class="state-title">Ready to Generate</h3>
-                        <p class="state-message">
-                            Configure your preferences above and click "Generate Workout" to create a balanced exercise routine.
-                        </p>
-                    </div>
+            <fieldset class="control-group">
+              <legend class="control-legend">Operation Mode</legend>
+              <div class="radio-container">
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="operationMode"
+                    value="regenerate"
+                    id="modeRegenerate"
+                    checked
+                    class="radio-input"
+                  />
+                  <span class="radio-text">Regenerate Entire List</span>
+                  <small class="radio-help"
+                    >Generate completely new workout</small
+                  >
+                </label>
 
-                    <!-- Loading State -->
-                    <div class="workout-state workout-state--loading" id="loadingState" hidden>
-                        <div class="state-icon">⏳</div>
-                        <h3 class="state-title">Generating Workout</h3>
-                        <p class="state-message">
-                            Creating your balanced exercise routine with smart muscle group distribution...
-                        </p>
-                    </div>
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="operationMode"
+                    value="replace"
+                    id="modeReplace"
+                    class="radio-input"
+                  />
+                  <span class="radio-text">Replace Individual Exercises</span>
+                  <small class="radio-help"
+                    >Swap specific exercises from same muscle group</small
+                  >
+                </label>
+              </div>
+            </fieldset>
 
-                    <!-- Error State -->
-                    <div class="workout-state workout-state--error" id="errorState" hidden>
-                        <div class="state-icon">⚠️</div>
-                        <h3 class="state-title">Generation Failed</h3>
-                        <p class="state-message" id="errorMessage">
-                            Unable to generate workout. Please check your muscle group selection and try again.
-                        </p>
-                    </div>
+            <fieldset class="control-group">
+              <legend class="control-legend">Muscle Groups</legend>
+              <div class="checkbox-container">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="chest"
+                    id="muscleChest"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Chest</span>
+                </label>
 
-                    <!-- Populated State - Exercise List -->
-                    <div class="workout-list-container" id="workoutListContainer" hidden>
-                        <div class="workout-info">
-                            <span class="exercise-count" id="currentExerciseCount">0</span>
-                            <span class="exercise-label">exercises</span>
-                            <span class="mode-indicator" id="modeIndicator">• Regenerate Mode</span>
-                        </div>
-                        
-                        <ol class="workout-list" id="workoutList" role="list">
-                            <!-- Generated exercises will be inserted here -->
-                        </ol>
-                        
-                        <div class="workout-footer">
-                            <small class="constraint-info">
-                                🔄 No consecutive exercises target the same muscle group
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="back"
+                    id="muscleBack"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Back</span>
+                </label>
 
-        <footer class="app-footer">
-            <p class="footer-text">Built with vanilla JavaScript</p>
-        </footer>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="legs"
+                    id="muscleLegs"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Legs</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="shoulders"
+                    id="muscleShoulders"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Shoulders</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="arms"
+                    id="muscleArms"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Arms</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="muscleGroups"
+                    value="core"
+                    id="muscleCore"
+                    checked
+                    class="checkbox-input"
+                  />
+                  <span class="checkbox-text">Core</span>
+                </label>
+              </div>
+              <small class="help-text">
+                Select at least 2 muscle groups for constraint validation
+              </small>
+            </fieldset>
+
+            <div class="action-container">
+              <button
+                type="submit"
+                class="btn btn-primary generate-btn btn-icon btn-generate"
+                id="generateBtn"
+              >
+                Generate Workout
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary enhanced btn-icon btn-clear"
+                id="clearBtn"
+              >
+                Clear
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="workout-display" aria-label="Generated workout list">
+          <div class="workout-header">
+            <h2 class="workout-title">Your Workout</h2>
+            <div class="workout-actions" id="workoutActions">
+              <button
+                type="button"
+                class="btn btn-secondary enhanced btn-small btn-icon btn-pdf"
+                id="exportPdfBtn"
+                disabled
+              >
+                Export PDF
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary enhanced btn-small btn-icon btn-shuffle"
+                id="shuffleBtn"
+                disabled
+              >
+                Shuffle Order
+              </button>
+            </div>
+          </div>
+
+          <div class="workout-content" id="workoutContent">
+            <!-- Empty State -->
+            <div class="workout-state workout-state--empty" id="emptyState">
+              <div class="state-icon">💪</div>
+              <h3 class="state-title">Ready to Generate</h3>
+              <p class="state-message">
+                Configure your preferences above and click "Generate Workout" to
+                create a balanced exercise routine.
+              </p>
+            </div>
+
+            <!-- Loading State -->
+            <div
+              class="workout-state workout-state--loading"
+              id="loadingState"
+              hidden
+            >
+              <div class="state-icon">⏳</div>
+              <h3 class="state-title">Generating Workout</h3>
+              <p class="state-message">
+                Creating your balanced exercise routine with smart muscle group
+                distribution...
+              </p>
+            </div>
+
+            <!-- Error State -->
+            <div
+              class="workout-state workout-state--error"
+              id="errorState"
+              hidden
+            >
+              <div class="state-icon">⚠️</div>
+              <h3 class="state-title">Generation Failed</h3>
+              <p class="state-message" id="errorMessage">
+                Unable to generate workout. Please check your muscle group
+                selection and try again.
+              </p>
+            </div>
+
+            <!-- Populated State - Exercise List -->
+            <div
+              class="workout-list-container"
+              id="workoutListContainer"
+              hidden
+            >
+              <div class="workout-info">
+                <span class="exercise-count" id="currentExerciseCount">0</span>
+                <span class="exercise-label">exercises</span>
+                <span class="mode-indicator" id="modeIndicator"
+                  >• Regenerate Mode</span
+                >
+              </div>
+
+              <ol class="workout-list" id="workoutList" role="list">
+                <!-- Generated exercises will be inserted here -->
+              </ol>
+
+              <div class="workout-footer">
+                <small class="constraint-info">
+                  🔄 No consecutive exercises target the same muscle group
+                </small>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <p class="footer-text">Built with vanilla JavaScript</p>
+      </footer>
     </div>
-</body>
+  </body>
 </html>
