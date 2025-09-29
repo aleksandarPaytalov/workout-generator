@@ -155,6 +155,61 @@
 }
 
 /* ===================================================================
+   Workout Section Header Components
+   ================================================================ */
+
+/* Enhanced Workout Header */
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding: var(--space-5) var(--space-6);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-light) 0%,
+    rgba(139, 92, 246, 0.08) 100%
+  );
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.workout-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary) 0%,
+    var(--color-primary-hover) 100%
+  );
+}
+
+.workout-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+  letter-spacing: 0.025em;
+  text-shadow: 0 1px 2px rgba(139, 92, 246, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.workout-actions {
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+  z-index: 1;
+}
+
+/* ===================================================================
    Workout Exercise List Components
    ================================================================ */
 
