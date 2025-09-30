@@ -1,0 +1,160 @@
+/* ===================================================================
+   Mobile & Responsive Styles
+   ================================================================
+
+   This file contains all responsive media queries for the Workout Generator.
+   Organized from smallest to largest breakpoints for better maintainability.
+
+   Breakpoint Strategy:
+   - Small Mobile:  max-width: 480px  (phones in portrait)
+   - Mobile/Tablet: max-width: 767px  (phones and small tablets)
+   - Tablet:        max-width: 768px  (tablets)
+   - Desktop:       min-width: 768px  (tablets landscape and up)
+   - Large Desktop: min-width: 1024px (desktops and large screens)
+   ================================================================ */
+
+/* ===================================================================
+   Small Mobile Styles (max-width: 480px)
+   ================================================================ */
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: var(--space-6) var(--space-3);
+  }
+
+  .footer-logo {
+    justify-content: center;
+  }
+
+  .footer-brand {
+    text-align: center;
+    align-items: center;
+  }
+
+  .footer-description {
+    text-align: center;
+    max-width: none;
+  }
+}
+
+/* ===================================================================
+   Mobile/Tablet Styles (max-width: 767px - 768px)
+   ================================================================ */
+
+/* Mobile Form Optimizations */
+@media (max-width: 767px) {
+  .checkbox-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .action-container {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile Visibility Utilities */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .show-mobile {
+    display: block !important;
+  }
+
+  .show-mobile-flex {
+    display: flex !important;
+  }
+}
+
+/* Footer Responsive Design */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding: var(--space-8) var(--space-4);
+  }
+
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 var(--space-4);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-tech {
+    justify-content: center;
+  }
+}
+
+/* ===================================================================
+   Desktop Styles (min-width: 768px)
+   ================================================================ */
+
+/* Desktop Layout - Side by Side */
+@media (min-width: 768px) {
+  .app-container {
+    padding: var(--space-6);
+  }
+
+  .app-main {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-10);
+  }
+
+  .workout-controls {
+    flex: 0 0 400px;
+    position: sticky;
+    top: var(--space-6);
+  }
+
+  .workout-display {
+    flex: 1;
+    min-height: 600px;
+  }
+
+  .app-header {
+    padding: var(--space-8) 0;
+  }
+}
+
+/* Desktop Visibility Utilities */
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none !important;
+  }
+
+  .show-desktop {
+    display: block !important;
+  }
+
+  .show-desktop-flex {
+    display: flex !important;
+  }
+}
+
+/* ===================================================================
+   Large Desktop Styles (min-width: 1024px)
+   ================================================================ */
+
+@media (min-width: 1024px) {
+  .app-container {
+    padding: var(--space-8);
+  }
+
+  .workout-controls {
+    flex: 0 0 450px;
+  }
+
+  .app-main {
+    gap: var(--space-12);
+  }
+}
