@@ -38,6 +38,157 @@
 }
 
 /* ===================================================================
+   Dark Mode Specific Overrides
+   Fix gradient backgrounds that conflict with light text
+   ================================================================ */
+
+/* Form Controls - Slider Container */
+[data-theme="dark"] .slider-container {
+  background: linear-gradient(
+    145deg,
+    var(--color-dark-surface) 0%,
+    rgba(139, 92, 246, 0.08) 100%
+  ) !important;
+  border: 1px solid var(--color-dark-border);
+}
+
+/* Form Controls - Radio Labels */
+[data-theme="dark"] .radio-label {
+  background: linear-gradient(
+    145deg,
+    var(--color-dark-surface) 0%,
+    rgba(139, 92, 246, 0.08) 100%
+  ) !important;
+  border-color: var(--color-dark-border) !important;
+}
+
+[data-theme="dark"] .radio-label:hover {
+  border-color: var(--color-primary) !important;
+  background: linear-gradient(
+    145deg,
+    var(--color-dark-surface) 0%,
+    rgba(139, 92, 246, 0.15) 100%
+  ) !important;
+}
+
+/* Help Text - Ensure visibility on dark backgrounds */
+[data-theme="dark"] .help-text,
+[data-theme="dark"] .radio-help {
+  color: var(--color-dark-text-secondary) !important;
+}
+
+/* Radio Input - Dark mode styling */
+[data-theme="dark"] .radio-input {
+  border-color: var(--color-dark-border) !important;
+  background: var(--color-dark-bg) !important;
+}
+
+[data-theme="dark"] .radio-input:checked {
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary) !important;
+}
+
+/* Radio Text */
+[data-theme="dark"] .radio-text {
+  color: var(--color-dark-text) !important;
+}
+
+/* Footer - Override gradient background to dark */
+[data-theme="dark"] .app-footer {
+  background: linear-gradient(
+    135deg,
+    var(--color-dark-surface) 0%,
+    rgba(139, 92, 246, 0.1) 50%,
+    var(--color-dark-surface) 100%
+  ) !important;
+}
+
+/* Footer bottom - Override gradient background to dark */
+[data-theme="dark"] .footer-bottom {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    rgba(139, 92, 246, 0.04) 100%
+  ) !important;
+}
+
+/* Stat items - Add border radius and adjust background */
+[data-theme="dark"] .stat-item {
+  background: rgba(139, 92, 246, 0.15) !important;
+  border-radius: var(--border-radius-lg) !important;
+}
+
+[data-theme="dark"] .stat-item:hover {
+  background: rgba(139, 92, 246, 0.25) !important;
+}
+
+/* ===================================================================
+   Mobile Responsive Dark Mode Overrides
+   Ensure text visibility on all screen sizes
+   ================================================================ */
+
+/* Mobile screens (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Ensure footer background stays dark on mobile */
+  [data-theme="dark"] .app-footer {
+    background: linear-gradient(
+      135deg,
+      var(--color-dark-surface) 0%,
+      rgba(139, 92, 246, 0.12) 50%,
+      var(--color-dark-surface) 100%
+    ) !important;
+  }
+
+  /* Ensure footer bottom stays dark on mobile */
+  [data-theme="dark"] .footer-bottom {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.1) 0%,
+      rgba(139, 92, 246, 0.05) 100%
+    ) !important;
+  }
+
+  /* Enhance stat items visibility on mobile */
+  [data-theme="dark"] .stat-item {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  }
+}
+
+/* Small mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  /* Stronger background for very small screens */
+  [data-theme="dark"] .app-footer {
+    background: var(--color-dark-surface) !important;
+  }
+
+  /* Ensure all footer text is highly visible */
+  [data-theme="dark"] .footer-description,
+  [data-theme="dark"] .footer-link,
+  [data-theme="dark"] .footer-feature,
+  [data-theme="dark"] .footer-copyright {
+    color: var(--color-dark-text) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Make stat items more prominent on small screens */
+  [data-theme="dark"] .stat-item {
+    background: rgba(139, 92, 246, 0.25) !important;
+    border: 2px solid rgba(139, 92, 246, 0.4) !important;
+  }
+
+  [data-theme="dark"] .stat-number {
+    color: #a78bfa !important; /* Lighter purple for better visibility */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  [data-theme="dark"] .stat-label {
+    color: var(--color-dark-text-secondary) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ===================================================================
    Smooth Theme Transitions
    ================================================================ */
 
@@ -63,4 +214,3 @@ body,
   transition: background-color 0.3s ease, color 0.3s ease,
     border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
