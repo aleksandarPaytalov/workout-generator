@@ -61,6 +61,14 @@ const WorkoutApp = (() => {
         }
       }
 
+      // Initialize ThemeController first to apply theme before UI renders
+      if (typeof ThemeController !== "undefined") {
+        ThemeController.init();
+        if (!ThemeController.isReady()) {
+          console.warn("ThemeController failed to initialize");
+        }
+      }
+
       // Initialize UIController now that DOM is ready
       if (typeof UIController === "undefined") {
         throw new Error("UIController module not found");
@@ -80,6 +88,15 @@ const WorkoutApp = (() => {
             "FooterController failed to initialize - footer functionality will be limited"
           );
         }
+      }
+
+      // Set up theme toggle button
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
+      if (themeToggleBtn && ThemeController.isReady()) {
+        themeToggleBtn.addEventListener("click", () => {
+          ThemeController.toggleTheme();
+        });
+        console.log("ThemeController: Toggle button connected");
       }
 
       console.log("WorkoutApp: All modules initialized successfully");

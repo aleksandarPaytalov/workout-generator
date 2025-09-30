@@ -34,6 +34,7 @@
 
     <!-- Theme System - Dark Mode Support -->
     <link rel="stylesheet" href="css/theme.css?v=1" />
+    <link rel="stylesheet" href="css/theme-toggle.css?v=1" />
 
     <!-- JavaScript Modules - Load in dependency order -->
     <!-- Theme Controller - Load first to prevent flash -->
@@ -56,6 +57,16 @@
         <p class="app-subtitle">
           Balanced exercise routines with smart muscle group distribution
         </p>
+        <button
+          type="button"
+          class="theme-toggle-btn"
+          id="themeToggleBtn"
+          aria-label="Toggle dark mode"
+          title="Switch theme"
+        >
+          <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
+          <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
+        </button>
       </header>
 
       <main class="app-main">
