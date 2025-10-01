@@ -16,6 +16,8 @@ const StorageManager = (() => {
   // Constants
   const STORAGE_KEY = "workout-generator-history";
   const MAX_WORKOUTS = 5; // Keep only last 5 workouts
+  const MAX_STORAGE_SIZE = 1024 * 1024; // 1MB limit for safety
+  const WARNING_THRESHOLD = 0.8; // Warn when 80% of limit is reached
 
   /**
    * Check if localStorage is available
@@ -153,21 +155,67 @@ const StorageManager = (() => {
   };
 
   /**
-   * Check storage size limits
+   * Check storage size limits with enhanced monitoring
    * @private
    */
   const checkStorageSize = (data) => {
     const dataString = JSON.stringify(data);
     const sizeInBytes = new Blob([dataString]).size;
-    const maxSize = 1024 * 1024; // 1MB limit for safety
 
-    if (sizeInBytes > maxSize) {
+    if (sizeInBytes > MAX_STORAGE_SIZE) {
       throw new Error(
-        "StorageManager: Workout data exceeds storage size limit (1MB)"
+        `StorageManager: Workout data exceeds storage size limit (${Math.round(
+          MAX_STORAGE_SIZE / 1024
+        )}KB)`
+      );
+    }
+
+    // Check if approaching warning threshold
+    const usagePercentage = sizeInBytes / MAX_STORAGE_SIZE;
+    if (usagePercentage > WARNING_THRESHOLD) {
+      console.warn(
+        `StorageManager: Storage usage warning - ${Math.round(
+          usagePercentage * 100
+        )}% of limit used (${Math.round(sizeInBytes / 1024)}KB / ${Math.round(
+          MAX_STORAGE_SIZE / 1024
+        )}KB)`
       );
     }
 
     return sizeInBytes;
+  };
+
+  /**
+   * Get detailed storage usage information
+   * @private
+   */
+  const getStorageUsage = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY) || "";
+      const sizeInBytes = new Blob([stored]).size;
+      const usagePercentage = sizeInBytes / MAX_STORAGE_SIZE;
+
+      return {
+        currentSize: sizeInBytes,
+        maxSize: MAX_STORAGE_SIZE,
+        usagePercentage: usagePercentage,
+        remainingSize: MAX_STORAGE_SIZE - sizeInBytes,
+        isNearLimit: usagePercentage > WARNING_THRESHOLD,
+        formattedSize: `${Math.round(sizeInBytes / 1024)}KB`,
+        formattedMax: `${Math.round(MAX_STORAGE_SIZE / 1024)}KB`,
+      };
+    } catch (error) {
+      return {
+        currentSize: 0,
+        maxSize: MAX_STORAGE_SIZE,
+        usagePercentage: 0,
+        remainingSize: MAX_STORAGE_SIZE,
+        isNearLimit: false,
+        formattedSize: "0KB",
+        formattedMax: `${Math.round(MAX_STORAGE_SIZE / 1024)}KB`,
+        error: error.message,
+      };
+    }
   };
 
   /**
@@ -318,8 +366,8 @@ const StorageManager = (() => {
   };
 
   /**
-   * Get storage usage information
-   * @returns {Object} Storage info
+   * Get enhanced storage usage information
+   * @returns {Object} Detailed storage info
    * @public
    */
   const getStorageInfo = () => {
@@ -328,13 +376,62 @@ const StorageManager = (() => {
     }
 
     const workouts = getWorkouts();
-    const storageData = localStorage.getItem(STORAGE_KEY) || "";
+    const storageUsage = getStorageUsage();
 
     return {
       workoutCount: workouts.length,
       maxWorkouts: MAX_WORKOUTS,
-      storageSize: storageData.length,
+      storageSize: storageUsage.currentSize,
+      maxStorageSize: storageUsage.maxSize,
+      usagePercentage: Math.round(storageUsage.usagePercentage * 100),
+      remainingSize: storageUsage.remainingSize,
+      isNearLimit: storageUsage.isNearLimit,
+      formattedSize: storageUsage.formattedSize,
+      formattedMax: storageUsage.formattedMax,
       isAvailable: isStorageAvailable(),
+      canAddMore: workouts.length < MAX_WORKOUTS && !storageUsage.isNearLimit,
+    };
+  };
+
+  /**
+   * Check if storage has capacity for more workouts (user-initiated check)
+   * @returns {Object} Capacity information
+   * @public
+   */
+  const checkStorageCapacity = () => {
+    if (!isInitialized) {
+      throw new Error("StorageManager: Module not initialized");
+    }
+
+    const info = getStorageInfo();
+    const warnings = [];
+    const recommendations = [];
+
+    // Check workout count limit
+    if (info.workoutCount >= info.maxWorkouts) {
+      warnings.push(`Maximum workout limit reached (${info.maxWorkouts})`);
+      recommendations.push("Clear old workouts to save new ones");
+    } else if (info.workoutCount >= info.maxWorkouts - 1) {
+      warnings.push(
+        `Approaching workout limit (${info.workoutCount}/${info.maxWorkouts})`
+      );
+    }
+
+    // Check storage size limit
+    if (info.isNearLimit) {
+      warnings.push(`Storage usage high (${info.usagePercentage}%)`);
+      recommendations.push(
+        "Consider clearing workout history to free up space"
+      );
+    }
+
+    return {
+      canAddWorkout: info.canAddMore,
+      workoutSlotsRemaining: Math.max(0, info.maxWorkouts - info.workoutCount),
+      storageRemaining: info.formattedSize + " / " + info.formattedMax,
+      warnings: warnings,
+      recommendations: recommendations,
+      status: warnings.length === 0 ? "OK" : "WARNING",
     };
   };
 
@@ -351,6 +448,7 @@ const StorageManager = (() => {
     getWorkouts,
     clearHistory,
     getStorageInfo,
+    checkStorageCapacity,
     isReady,
   };
 })();
