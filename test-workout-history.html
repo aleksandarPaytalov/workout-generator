@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkoutHistory Class Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-result { margin: 10px 0; padding: 15px; border-radius: 8px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .test-section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { padding: 12px 20px; margin: 8px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #0056b3; }
+        button.danger { background: #dc3545; }
+        .workout-display { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .stats-display { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️ WorkoutHistory Class Test</h1>
+        
+        <div class="test-section">
+            <h2>Basic Operations</h2>
+            <button onclick="testInitialization()">Test Initialization</button>
+            <button onclick="testAddWorkout()">Test Add Workout</button>
+            <button onclick="testGetHistory()">Test Get History</button>
+            <button onclick="testGetStats()">Test Get Statistics</button>
+            <button class="danger" onclick="testClearHistory()">Test Clear History</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Advanced Operations</h2>
+            <button onclick="testMultipleWorkouts()">Add Multiple Workouts</button>
+            <button onclick="testRemoveWorkout()">Test Remove Workout</button>
+            <button onclick="testGetById()">Test Get By ID</button>
+            <button onclick="testWorkoutSession()">Test Workout Session Structure</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="js/modules/storageManager.js"></script>
+    <script src="js/modules/workoutHistory.js"></script>
+    <script>
+        // Initialize modules
+        StorageManager.init();
+        WorkoutHistory.init();
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function testInitialization() {
+            addResult('=== Testing WorkoutHistory Initialization ===');
+            
+            try {
+                const isReady = WorkoutHistory.isReady();
+                addResult(`WorkoutHistory ready: ${isReady}`, isReady ? 'success' : 'error');
+                
+                if (isReady) {
+                    addResult('✅ WorkoutHistory initialized successfully', 'success');
+                } else {
+                    addResult('❌ WorkoutHistory not ready', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Initialization test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testAddWorkout() {
+            addResult('=== Testing Add Workout (Manual User Action) ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 3, reps: 12 },
+                        { name: 'Squats', muscleGroup: 'legs', sets: 3, reps: 15 },
+                        { name: 'Plank', muscleGroup: 'core', sets: 1, reps: 60 }
+                    ]
+                };
+                
+                const settings = {
+                    difficulty: 'intermediate',
+                    timeLimit: 30,
+                    equipment: ['bodyweight']
+                };
+                
+                const workoutSession = WorkoutHistory.addWorkout(testWorkout, settings);
+                
+                addResult(`✅ Workout added successfully: ${workoutSession.id}`, 'success');
+                addResult(`
+                    <div class="workout-display">
+                        <strong>Workout Details:</strong><br>
+                        • ID: ${workoutSession.id}<br>
+                        • Date: ${workoutSession.date}<br>
+                        • Time: ${workoutSession.time}<br>
+                        • Exercises: ${workoutSession.exercises.length}<br>
+                        • Muscle Groups: ${workoutSession.settings.muscleGroups.join(', ')}<br>
+                        • Estimated Duration: ${workoutSession.metadata.estimatedDuration} minutes
+                    </div>
+                `, 'info');
+                
+            } catch (error) {
+                addResult(`❌ Add workout failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testGetHistory() {
+            addResult('=== Testing Get History (Manual User Request) ===');
+            
+            try {
+                const history = WorkoutHistory.getHistory();
+                
+                addResult(`✅ Retrieved ${history.length} workouts from history`, 'success');
+                
+                if (history.length > 0) {
+                    const latest = history[0];
+                    addResult(`
+                        <div class="workout-display">
+                            <strong>Latest Workout:</strong><br>
+                            • ID: ${latest.id}<br>
+                            • Date: ${latest.date}<br>
+                            • Exercises: ${latest.exercises.length}<br>
+                            • Muscle Groups: ${latest.settings.muscleGroups.join(', ')}
+                        </div>
+                    `, 'info');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Get history failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testGetStats() {
+            addResult('=== Testing Get Statistics (Manual User Request) ===');
+            
+            try {
+                const stats = WorkoutHistory.getHistoryStats();
+                
+                addResult(`
+                    <div class="stats-display">
+                        <strong>📊 History Statistics:</strong><br>
+                        • Total Workouts: ${stats.totalWorkouts}<br>
+                        • Total Exercises: ${stats.totalExercises}<br>
+                        • Average Exercises per Workout: ${stats.averageExercisesPerWorkout}<br>
+                        • Completed Workouts: ${stats.completedWorkouts}<br>
+                        • Completion Rate: ${stats.completionRate}%<br>
+                        • Most Used Muscle Groups: ${stats.mostUsedMuscleGroups.slice(0, 3).map(mg => `${mg.group} (${mg.count})`).join(', ')}
+                    </div>
+                `, 'success');
+                
+            } catch (error) {
+                addResult(`❌ Get stats failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testClearHistory() {
+            addResult('=== Testing Clear History (Manual User Action) ===');
+            
+            try {
+                const cleared = WorkoutHistory.clearHistory();
+                
+                if (cleared) {
+                    addResult('✅ History cleared successfully', 'success');
+                    
+                    // Verify it's empty
+                    const history = WorkoutHistory.getHistory();
+                    addResult(`Verification: ${history.length} workouts remaining`, 
+                             history.length === 0 ? 'success' : 'warning');
+                } else {
+                    addResult('❌ Clear history failed', 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Clear history failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testMultipleWorkouts() {
+            addResult('=== Testing Multiple Workouts (Manual User Actions) ===');
+            
+            const workoutTemplates = [
+                {
+                    name: 'Upper Body',
+                    exercises: [
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 3, reps: 12 },
+                        { name: 'Pull-ups', muscleGroup: 'back', sets: 3, reps: 8 },
+                        { name: 'Shoulder Press', muscleGroup: 'shoulders', sets: 3, reps: 10 }
+                    ]
+                },
+                {
+                    name: 'Lower Body',
+                    exercises: [
+                        { name: 'Squats', muscleGroup: 'legs', sets: 4, reps: 15 },
+                        { name: 'Lunges', muscleGroup: 'legs', sets: 3, reps: 12 },
+                        { name: 'Calf Raises', muscleGroup: 'legs', sets: 3, reps: 20 }
+                    ]
+                },
+                {
+                    name: 'Core Focus',
+                    exercises: [
+                        { name: 'Plank', muscleGroup: 'core', sets: 3, reps: 60 },
+                        { name: 'Crunches', muscleGroup: 'core', sets: 3, reps: 20 },
+                        { name: 'Russian Twists', muscleGroup: 'core', sets: 3, reps: 30 }
+                    ]
+                }
+            ];
+            
+            try {
+                workoutTemplates.forEach((template, index) => {
+                    const workoutSession = WorkoutHistory.addWorkout(template, {
+                        difficulty: ['beginner', 'intermediate', 'advanced'][index],
+                        timeLimit: 20 + (index * 10)
+                    });
+                    
+                    addResult(`✅ Added ${template.name} workout: ${workoutSession.id}`, 'success');
+                });
+                
+                // Show updated stats
+                setTimeout(() => {
+                    testGetStats();
+                }, 100);
+                
+            } catch (error) {
+                addResult(`❌ Multiple workouts test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testRemoveWorkout() {
+            addResult('=== Testing Remove Workout (Manual User Action) ===');
+            
+            try {
+                const history = WorkoutHistory.getHistory();
+                
+                if (history.length === 0) {
+                    addResult('⚠️ No workouts to remove', 'warning');
+                    return;
+                }
+                
+                const workoutToRemove = history[0];
+                const removed = WorkoutHistory.removeWorkout(workoutToRemove.id);
+                
+                if (removed) {
+                    addResult(`✅ Workout removed successfully: ${workoutToRemove.id}`, 'success');
+                    
+                    // Verify removal
+                    const updatedHistory = WorkoutHistory.getHistory();
+                    addResult(`Verification: ${updatedHistory.length} workouts remaining`, 'info');
+                } else {
+                    addResult('❌ Remove workout failed', 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Remove workout failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testGetById() {
+            addResult('=== Testing Get Workout By ID (Manual User Request) ===');
+            
+            try {
+                const history = WorkoutHistory.getHistory();
+                
+                if (history.length === 0) {
+                    addResult('⚠️ No workouts to retrieve by ID', 'warning');
+                    return;
+                }
+                
+                const testId = history[0].id;
+                const workout = WorkoutHistory.getWorkoutById(testId);
+                
+                if (workout) {
+                    addResult(`✅ Workout found by ID: ${testId}`, 'success');
+                    addResult(`
+                        <div class="workout-display">
+                            <strong>Retrieved Workout:</strong><br>
+                            • Name: ${workout.exercises[0].name} (and ${workout.exercises.length - 1} more)<br>
+                            • Date: ${workout.date}<br>
+                            • Muscle Groups: ${workout.settings.muscleGroups.join(', ')}
+                        </div>
+                    `, 'info');
+                } else {
+                    addResult('❌ Workout not found by ID', 'error');
+                }
+                
+                // Test with invalid ID
+                const invalidWorkout = WorkoutHistory.getWorkoutById('invalid_id');
+                addResult(`Invalid ID test: ${invalidWorkout === null ? '✅ Correctly returned null' : '❌ Should return null'}`, 
+                         invalidWorkout === null ? 'success' : 'error');
+                
+            } catch (error) {
+                addResult(`❌ Get by ID failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testWorkoutSession() {
+            addResult('=== Testing Workout Session Structure ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { name: 'Test Exercise', muscleGroup: 'chest', sets: 3, reps: 10 }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout, { difficulty: 'test' });
+                
+                // Verify session structure
+                const requiredFields = ['id', 'timestamp', 'date', 'time', 'exercises', 'settings', 'metadata', 'stats'];
+                const missingFields = requiredFields.filter(field => !(field in session));
+                
+                if (missingFields.length === 0) {
+                    addResult('✅ Workout session structure is complete', 'success');
+                    addResult(`
+                        <div class="workout-display">
+                            <strong>Session Structure Verified:</strong><br>
+                            • ID: ✅ Present<br>
+                            • Timestamp: ✅ Present<br>
+                            • Exercises: ✅ ${session.exercises.length} exercises<br>
+                            • Settings: ✅ ${Object.keys(session.settings).length} settings<br>
+                            • Metadata: ✅ ${Object.keys(session.metadata).length} metadata fields<br>
+                            • Stats: ✅ ${Object.keys(session.stats).length} statistics
+                        </div>
+                    `, 'info');
+                } else {
+                    addResult(`❌ Missing fields: ${missingFields.join(', ')}`, 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Session structure test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run initialization test on page load
+        window.onload = function() {
+            addResult('🏋️ WorkoutHistory Class Test Ready', 'info');
+            testInitialization();
+        };
+    </script>
+</body>
+</html>

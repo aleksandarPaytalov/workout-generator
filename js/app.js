@@ -30,7 +30,12 @@ const WorkoutApp = (() => {
       ];
 
       // Optional modules that enhance functionality
-      const optionalModules = ["FooterController", "PDFExport", "DragDrop"];
+      const optionalModules = [
+        "StorageManager",
+        "FooterController",
+        "PDFExport",
+        "DragDrop",
+      ];
 
       for (const moduleName of requiredModules) {
         if (typeof window[moduleName] === "undefined") {
@@ -66,6 +71,16 @@ const WorkoutApp = (() => {
         ThemeController.init();
         if (!ThemeController.isReady()) {
           console.warn("ThemeController failed to initialize");
+        }
+      }
+
+      // Initialize StorageManager for workout history (manual operations only)
+      if (typeof StorageManager !== "undefined") {
+        StorageManager.init();
+        if (!StorageManager.isReady()) {
+          console.warn("StorageManager failed to initialize");
+        } else {
+          console.log("StorageManager: Ready for manual user operations");
         }
       }
 
