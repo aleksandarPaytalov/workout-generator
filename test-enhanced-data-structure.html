@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Workout Session Data Structure Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .test-result { margin: 10px 0; padding: 15px; border-radius: 8px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .test-section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { padding: 12px 20px; margin: 8px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #0056b3; }
+        .data-display { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+        .section-header { color: #495057; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Enhanced Workout Session Data Structure Test</h1>
+        
+        <div class="test-section">
+            <h2>Data Structure Testing</h2>
+            <button onclick="testBasicStructure()">Test Basic Structure</button>
+            <button onclick="testEnhancedFields()">Test Enhanced Fields</button>
+            <button onclick="testUserFriendlyFormatting()">Test User-Friendly Formatting</button>
+            <button onclick="testStatisticsCalculation()">Test Statistics Calculation</button>
+            <button onclick="testHelperFunctions()">Test Helper Functions</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Real-World Scenarios</h2>
+            <button onclick="testUpperBodyWorkout()">Test Upper Body Workout</button>
+            <button onclick="testFullBodyWorkout()">Test Full Body Workout</button>
+            <button onclick="testQuickWorkout()">Test Quick Workout</button>
+            <button onclick="testAdvancedWorkout()">Test Advanced Workout</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="js/modules/storageManager.js"></script>
+    <script src="js/modules/workoutHistory.js"></script>
+    <script>
+        // Initialize modules
+        StorageManager.init();
+        WorkoutHistory.init();
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function formatDataDisplay(data, title) {
+            return `<div class="section-header">${title}:</div><div class="data-display">${JSON.stringify(data, null, 2)}</div>`;
+        }
+        
+        function testBasicStructure() {
+            addResult('=== Testing Basic Enhanced Data Structure ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 3, reps: 12 },
+                        { name: 'Squats', muscleGroup: 'legs', sets: 4, reps: 15 }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout, { difficulty: 'intermediate' });
+                
+                // Check required top-level fields
+                const requiredFields = ['id', 'timestamp', 'date', 'time', 'exercises', 'settings', 'metadata', 'stats', 'version', 'type', 'summary'];
+                const missingFields = requiredFields.filter(field => !(field in session));
+                
+                if (missingFields.length === 0) {
+                    addResult('✅ All required top-level fields present', 'success');
+                } else {
+                    addResult(`❌ Missing fields: ${missingFields.join(', ')}`, 'error');
+                }
+                
+                // Check version and type
+                addResult(`Version: ${session.version}, Type: ${session.type}`, 'info');
+                
+                addResult(formatDataDisplay({
+                    id: session.id,
+                    version: session.version,
+                    type: session.type,
+                    exerciseCount: session.exercises.length,
+                    summary: session.summary
+                }, 'Basic Structure'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Basic structure test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testEnhancedFields() {
+            addResult('=== Testing Enhanced Exercise Fields ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { 
+                            name: 'Bench Press', 
+                            muscleGroup: 'chest', 
+                            sets: 3, 
+                            reps: 10,
+                            equipment: 'barbell',
+                            isCompound: true
+                        },
+                        { 
+                            name: 'Bicep Curls', 
+                            muscleGroup: 'arms', 
+                            sets: 3, 
+                            reps: 12,
+                            equipment: 'dumbbells',
+                            isCompound: false
+                        }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout, { 
+                    difficulty: 'advanced',
+                    workoutType: 'strength',
+                    restTime: 90
+                });
+                
+                // Check enhanced exercise fields
+                const exercise = session.exercises[0];
+                const enhancedFields = ['position', 'estimatedTime', 'totalVolume', 'difficulty', 'instructions', 'targetMuscles', 'isCompound'];
+                const missingEnhanced = enhancedFields.filter(field => !(field in exercise));
+                
+                if (missingEnhanced.length === 0) {
+                    addResult('✅ All enhanced exercise fields present', 'success');
+                } else {
+                    addResult(`❌ Missing enhanced fields: ${missingEnhanced.join(', ')}`, 'error');
+                }
+                
+                addResult(formatDataDisplay({
+                    exercise1: session.exercises[0],
+                    exercise2: session.exercises[1],
+                    enhancedSettings: session.settings
+                }, 'Enhanced Exercise Data'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Enhanced fields test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testUserFriendlyFormatting() {
+            addResult('=== Testing User-Friendly Formatting ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { name: 'Plank', muscleGroup: 'core', sets: 3, reps: 60 }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout);
+                
+                // Check user-friendly metadata fields
+                const metadata = session.metadata;
+                const friendlyFields = ['displayDate', 'displayTime', 'relativeTime', 'isRecent'];
+                const missingFriendly = friendlyFields.filter(field => !(field in metadata));
+                
+                if (missingFriendly.length === 0) {
+                    addResult('✅ All user-friendly formatting fields present', 'success');
+                } else {
+                    addResult(`❌ Missing friendly fields: ${missingFriendly.join(', ')}`, 'error');
+                }
+                
+                addResult(formatDataDisplay({
+                    displayDate: metadata.displayDate,
+                    displayTime: metadata.displayTime,
+                    relativeTime: metadata.relativeTime,
+                    isRecent: metadata.isRecent,
+                    summary: session.summary
+                }, 'User-Friendly Formatting'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ User-friendly formatting test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testStatisticsCalculation() {
+            addResult('=== Testing Enhanced Statistics Calculation ===');
+            
+            try {
+                const testWorkout = {
+                    exercises: [
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 3, reps: 12, isCompound: true },
+                        { name: 'Chest Flyes', muscleGroup: 'chest', sets: 3, reps: 10, isCompound: false },
+                        { name: 'Squats', muscleGroup: 'legs', sets: 4, reps: 15, isCompound: true },
+                        { name: 'Leg Curls', muscleGroup: 'legs', sets: 3, reps: 12, isCompound: false }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout, { difficulty: 'intermediate' });
+                
+                // Check enhanced statistics
+                const stats = session.stats;
+                const statFields = ['totalVolume', 'averageVolume', 'exercisesByMuscleGroup', 'equipmentUsed', 'compoundExercises', 'isolationExercises', 'workoutBalance', 'difficultyDistribution'];
+                const missingStats = statFields.filter(field => !(field in stats));
+                
+                if (missingStats.length === 0) {
+                    addResult('✅ All enhanced statistics fields present', 'success');
+                } else {
+                    addResult(`❌ Missing statistics fields: ${missingStats.join(', ')}`, 'error');
+                }
+                
+                // Verify calculations
+                const expectedVolume = (3*12) + (3*10) + (4*15) + (3*12); // 36 + 30 + 60 + 36 = 162
+                if (stats.totalVolume === expectedVolume) {
+                    addResult('✅ Total volume calculation correct', 'success');
+                } else {
+                    addResult(`❌ Total volume incorrect: expected ${expectedVolume}, got ${stats.totalVolume}`, 'error');
+                }
+                
+                addResult(formatDataDisplay({
+                    totalVolume: stats.totalVolume,
+                    averageVolume: stats.averageVolume,
+                    compoundExercises: stats.compoundExercises,
+                    isolationExercises: stats.isolationExercises,
+                    workoutBalance: stats.workoutBalance,
+                    difficultyDistribution: stats.difficultyDistribution,
+                    exercisesByMuscleGroup: stats.exercisesByMuscleGroup
+                }, 'Enhanced Statistics'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Statistics calculation test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testHelperFunctions() {
+            addResult('=== Testing Helper Functions ===');
+            
+            try {
+                // Test relative time (should be "Just now" for new workout)
+                const testWorkout = {
+                    exercises: [{ name: 'Test', muscleGroup: 'core', sets: 1, reps: 1 }]
+                };
+                
+                const session = WorkoutHistory.addWorkout(testWorkout);
+                
+                addResult(`✅ Relative time: "${session.metadata.relativeTime}"`, 'success');
+                addResult(`✅ Workout title: "${session.summary.title}"`, 'success');
+                addResult(`✅ Workout description: "${session.summary.description}"`, 'success');
+                addResult(`✅ Quick stats: "${session.summary.quickStats}"`, 'success');
+                
+                // Test balance calculation
+                if (session.stats.workoutBalance && typeof session.stats.workoutBalance.score === 'number') {
+                    addResult('✅ Workout balance calculation working', 'success');
+                } else {
+                    addResult('❌ Workout balance calculation failed', 'error');
+                }
+                
+                addResult(formatDataDisplay({
+                    relativeTime: session.metadata.relativeTime,
+                    title: session.summary.title,
+                    description: session.summary.description,
+                    quickStats: session.summary.quickStats,
+                    workoutBalance: session.stats.workoutBalance
+                }, 'Helper Function Results'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Helper functions test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testUpperBodyWorkout() {
+            addResult('=== Testing Upper Body Workout Scenario ===');
+            
+            try {
+                const upperBodyWorkout = {
+                    exercises: [
+                        { name: 'Bench Press', muscleGroup: 'chest', sets: 4, reps: 8, equipment: 'barbell', isCompound: true },
+                        { name: 'Pull-ups', muscleGroup: 'back', sets: 3, reps: 10, equipment: 'bodyweight', isCompound: true },
+                        { name: 'Shoulder Press', muscleGroup: 'shoulders', sets: 3, reps: 12, equipment: 'dumbbells', isCompound: true },
+                        { name: 'Bicep Curls', muscleGroup: 'arms', sets: 3, reps: 12, equipment: 'dumbbells', isCompound: false },
+                        { name: 'Tricep Dips', muscleGroup: 'arms', sets: 3, reps: 15, equipment: 'bodyweight', isCompound: false }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(upperBodyWorkout, {
+                    difficulty: 'intermediate',
+                    workoutType: 'strength',
+                    restTime: 90,
+                    tags: ['upper-body', 'strength']
+                });
+                
+                addResult(`✅ Upper body workout created: "${session.summary.title}"`, 'success');
+                addResult(`Focus: ${session.settings.focus}`, 'info');
+                addResult(`Equipment used: ${session.stats.equipmentUsed.join(', ')}`, 'info');
+                addResult(`Compound vs Isolation: ${session.stats.compoundExercises}/${session.stats.isolationExercises}`, 'info');
+                
+                addResult(formatDataDisplay({
+                    title: session.summary.title,
+                    description: session.summary.description,
+                    focus: session.settings.focus,
+                    muscleGroups: session.settings.muscleGroups,
+                    equipmentUsed: session.stats.equipmentUsed,
+                    workoutBalance: session.stats.workoutBalance
+                }, 'Upper Body Workout Analysis'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Upper body workout test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testFullBodyWorkout() {
+            addResult('=== Testing Full Body Workout Scenario ===');
+            
+            try {
+                const fullBodyWorkout = {
+                    exercises: [
+                        { name: 'Squats', muscleGroup: 'legs', sets: 4, reps: 12 },
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 3, reps: 15 },
+                        { name: 'Bent-over Rows', muscleGroup: 'back', sets: 3, reps: 12 },
+                        { name: 'Overhead Press', muscleGroup: 'shoulders', sets: 3, reps: 10 },
+                        { name: 'Plank', muscleGroup: 'core', sets: 3, reps: 60 },
+                        { name: 'Lunges', muscleGroup: 'legs', sets: 3, reps: 12 },
+                        { name: 'Burpees', muscleGroup: 'core', sets: 3, reps: 10 }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(fullBodyWorkout, {
+                    difficulty: 'intermediate',
+                    workoutType: 'general',
+                    timeLimit: 45
+                });
+                
+                addResult(`✅ Full body workout created: "${session.summary.title}"`, 'success');
+                addResult(`Muscle groups: ${session.settings.muscleGroups.length} (${session.settings.muscleGroups.join(', ')})`, 'info');
+                addResult(`Balance score: ${session.stats.workoutBalance.score} (${session.stats.workoutBalance.recommendation})`, 'info');
+                
+                addResult(formatDataDisplay({
+                    title: session.summary.title,
+                    muscleGroups: session.settings.muscleGroups,
+                    exercisesByMuscleGroup: session.stats.exercisesByMuscleGroup,
+                    workoutBalance: session.stats.workoutBalance,
+                    estimatedDuration: session.metadata.estimatedDuration
+                }, 'Full Body Workout Analysis'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Full body workout test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testQuickWorkout() {
+            addResult('=== Testing Quick Workout Scenario ===');
+            
+            try {
+                const quickWorkout = {
+                    exercises: [
+                        { name: 'Jumping Jacks', muscleGroup: 'core', sets: 3, reps: 30 },
+                        { name: 'Push-ups', muscleGroup: 'chest', sets: 2, reps: 15 },
+                        { name: 'Squats', muscleGroup: 'legs', sets: 2, reps: 20 }
+                    ]
+                };
+                
+                const session = WorkoutHistory.addWorkout(quickWorkout, {
+                    difficulty: 'beginner',
+                    workoutType: 'cardio',
+                    timeLimit: 15
+                });
+                
+                addResult(`✅ Quick workout created: "${session.summary.title}"`, 'success');
+                addResult(`Duration: ${session.metadata.estimatedDuration} minutes`, 'info');
+                addResult(`Should be "Quick" workout: ${session.summary.title.includes('Quick')}`, session.summary.title.includes('Quick') ? 'success' : 'warning');
+                
+                addResult(formatDataDisplay({
+                    title: session.summary.title,
+                    quickStats: session.summary.quickStats,
+                    estimatedDuration: session.metadata.estimatedDuration,
+                    exerciseCount: session.settings.exerciseCount
+                }, 'Quick Workout Analysis'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Quick workout test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testAdvancedWorkout() {
+            addResult('=== Testing Advanced Workout Scenario ===');
+            
+            try {
+                const advancedWorkout = {
+                    exercises: Array.from({length: 12}, (_, i) => ({
+                        name: `Advanced Exercise ${i + 1}`,
+                        muscleGroup: ['chest', 'back', 'legs', 'shoulders', 'arms', 'core'][i % 6],
+                        sets: 4,
+                        reps: 8,
+                        equipment: ['barbell', 'dumbbells', 'cables'][i % 3],
+                        isCompound: i % 2 === 0,
+                        difficulty: 'advanced'
+                    }))
+                };
+                
+                const session = WorkoutHistory.addWorkout(advancedWorkout, {
+                    difficulty: 'advanced',
+                    workoutType: 'strength',
+                    restTime: 120,
+                    intensity: 'high'
+                });
+                
+                addResult(`✅ Advanced workout created: "${session.summary.title}"`, 'success');
+                addResult(`Should be "Comprehensive" workout: ${session.summary.title.includes('Comprehensive')}`, session.summary.title.includes('Comprehensive') ? 'success' : 'warning');
+                addResult(`Total volume: ${session.stats.totalVolume} reps`, 'info');
+                addResult(`Difficulty distribution: ${JSON.stringify(session.stats.difficultyDistribution.percentages)}`, 'info');
+                
+                addResult(formatDataDisplay({
+                    title: session.summary.title,
+                    totalExercises: session.stats.totalExercises,
+                    totalVolume: session.stats.totalVolume,
+                    difficultyDistribution: session.stats.difficultyDistribution,
+                    workoutBalance: session.stats.workoutBalance
+                }, 'Advanced Workout Analysis'), 'info');
+                
+            } catch (error) {
+                addResult(`❌ Advanced workout test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run basic test on page load
+        window.onload = function() {
+            addResult('🏗️ Enhanced Workout Session Data Structure Test Ready', 'info');
+            testBasicStructure();
+        };
+    </script>
+</body>
+</html>
