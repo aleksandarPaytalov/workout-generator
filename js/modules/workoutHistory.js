@@ -595,6 +595,300 @@ const WorkoutHistory = (() => {
     }
   };
 
+  /**
+   * Check workout limit status (manual user request only)
+   * @returns {Object} Limit status information
+   * @public
+   */
+  const checkWorkoutLimit = () => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    try {
+      const storageInfo = storageManager.getStorageInfo();
+      const workouts = getHistory();
+      const maxWorkouts = storageInfo.maxWorkouts;
+      const currentCount = workouts.length;
+      const slotsRemaining = Math.max(0, maxWorkouts - currentCount);
+
+      const status = {
+        currentCount: currentCount,
+        maxWorkouts: maxWorkouts,
+        slotsRemaining: slotsRemaining,
+        isAtLimit: currentCount >= maxWorkouts,
+        isNearLimit: currentCount >= maxWorkouts - 1,
+        canAddMore: currentCount < maxWorkouts,
+        percentageFull: Math.round((currentCount / maxWorkouts) * 100),
+        oldestWorkout:
+          workouts.length > 0 ? workouts[workouts.length - 1] : null,
+        newestWorkout: workouts.length > 0 ? workouts[0] : null,
+      };
+
+      // Add recommendations based on status
+      if (status.isAtLimit) {
+        status.recommendation =
+          "Storage limit reached. Remove old workouts to add new ones.";
+        status.action = "cleanup-required";
+      } else if (status.isNearLimit) {
+        status.recommendation =
+          "Approaching storage limit. Consider removing old workouts.";
+        status.action = "cleanup-suggested";
+      } else {
+        status.recommendation = `You can add ${slotsRemaining} more workout${
+          slotsRemaining !== 1 ? "s" : ""
+        }.`;
+        status.action = "none";
+      }
+
+      return status;
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to check workout limit:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Get workouts that can be removed (manual user request only)
+   * @param {number} count - Number of workouts to suggest for removal
+   * @returns {Array} Array of workouts suggested for removal
+   * @public
+   */
+  const getSuggestedForRemoval = (count = 1) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    if (count < 1) {
+      throw new Error("WorkoutHistory: Count must be at least 1");
+    }
+
+    try {
+      const workouts = getHistory();
+
+      if (workouts.length === 0) {
+        return [];
+      }
+
+      // Sort by timestamp (oldest first) and take the requested count
+      const sortedByAge = [...workouts].sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      );
+      const suggested = sortedByAge.slice(0, Math.min(count, workouts.length));
+
+      return suggested.map((workout) => ({
+        id: workout.id,
+        date: workout.metadata.displayDate,
+        relativeTime: workout.metadata.relativeTime,
+        title: workout.summary.title,
+        exerciseCount: workout.exercises.length,
+        muscleGroups: workout.settings.muscleGroups,
+        isCompleted: workout.metadata.completed,
+        reason: "oldest",
+      }));
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to get suggested removals:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Remove oldest workouts to make space (manual user action only)
+   * @param {number} count - Number of oldest workouts to remove
+   * @returns {Object} Removal result
+   * @public
+   */
+  const removeOldestWorkouts = (count = 1) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    if (count < 1) {
+      throw new Error("WorkoutHistory: Count must be at least 1");
+    }
+
+    try {
+      const workouts = getHistory();
+
+      if (workouts.length === 0) {
+        return {
+          removed: [],
+          count: 0,
+          message: "No workouts to remove",
+        };
+      }
+
+      // Get oldest workouts
+      const toRemove = getSuggestedForRemoval(count);
+      const removedIds = [];
+      let successCount = 0;
+
+      // Remove each workout
+      toRemove.forEach((workout) => {
+        try {
+          if (removeWorkout(workout.id)) {
+            removedIds.push(workout.id);
+            successCount++;
+          }
+        } catch (error) {
+          console.warn(
+            `WorkoutHistory: Failed to remove workout ${workout.id}:`,
+            error.message
+          );
+        }
+      });
+
+      const result = {
+        removed: removedIds,
+        count: successCount,
+        message: `Removed ${successCount} oldest workout${
+          successCount !== 1 ? "s" : ""
+        }`,
+      };
+
+      console.log(`WorkoutHistory: ${result.message}`);
+      return result;
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to remove oldest workouts:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Make space for new workout by removing oldest if needed (manual user action only)
+   * @returns {Object} Space management result
+   * @public
+   */
+  const makeSpaceForNewWorkout = () => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    try {
+      const limitStatus = checkWorkoutLimit();
+
+      if (!limitStatus.isAtLimit) {
+        return {
+          spaceAvailable: true,
+          action: "none",
+          message: `Space available: ${limitStatus.slotsRemaining} slot${
+            limitStatus.slotsRemaining !== 1 ? "s" : ""
+          } remaining`,
+          removed: [],
+        };
+      }
+
+      // At limit - need to remove oldest workout
+      const removalResult = removeOldestWorkouts(1);
+
+      return {
+        spaceAvailable: true,
+        action: "removed-oldest",
+        message: `Made space by removing oldest workout`,
+        removed: removalResult.removed,
+      };
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to make space for new workout:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Get storage management recommendations (manual user request only)
+   * @returns {Object} Storage management recommendations
+   * @public
+   */
+  const getStorageRecommendations = () => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    try {
+      const limitStatus = checkWorkoutLimit();
+      const workouts = getHistory();
+      const recommendations = [];
+
+      // Check workout limit status
+      if (limitStatus.isAtLimit) {
+        recommendations.push({
+          type: "warning",
+          priority: "high",
+          title: "Storage Limit Reached",
+          message: "You have reached the maximum of 5 stored workouts.",
+          action: "Remove old workouts to add new ones",
+          actionType: "cleanup",
+        });
+      } else if (limitStatus.isNearLimit) {
+        recommendations.push({
+          type: "info",
+          priority: "medium",
+          title: "Approaching Storage Limit",
+          message: `You have ${limitStatus.slotsRemaining} slot${
+            limitStatus.slotsRemaining !== 1 ? "s" : ""
+          } remaining.`,
+          action: "Consider removing old workouts",
+          actionType: "cleanup-optional",
+        });
+      }
+
+      // Check for incomplete workouts
+      const incompleteWorkouts = workouts.filter((w) => !w.metadata.completed);
+      if (incompleteWorkouts.length > 0) {
+        recommendations.push({
+          type: "info",
+          priority: "low",
+          title: "Incomplete Workouts",
+          message: `You have ${incompleteWorkouts.length} incomplete workout${
+            incompleteWorkouts.length !== 1 ? "s" : ""
+          }.`,
+          action: "Mark workouts as completed when finished",
+          actionType: "update",
+        });
+      }
+
+      // Check for old workouts
+      const oldWorkouts = workouts.filter((w) => !w.metadata.isRecent);
+      if (oldWorkouts.length >= 3) {
+        recommendations.push({
+          type: "info",
+          priority: "low",
+          title: "Old Workouts",
+          message: `You have ${oldWorkouts.length} workouts older than 24 hours.`,
+          action: "Consider removing old workouts to keep history fresh",
+          actionType: "cleanup-optional",
+        });
+      }
+
+      return {
+        limitStatus: limitStatus,
+        recommendations: recommendations,
+        hasHighPriority: recommendations.some((r) => r.priority === "high"),
+        hasMediumPriority: recommendations.some((r) => r.priority === "medium"),
+        suggestedActions: recommendations
+          .map((r) => r.actionType)
+          .filter((v, i, a) => a.indexOf(v) === i),
+      };
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to get storage recommendations:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
   // Public API
   return {
     init,
@@ -605,6 +899,11 @@ const WorkoutHistory = (() => {
     removeWorkout,
     clearHistory,
     getHistoryStats,
+    checkWorkoutLimit,
+    getSuggestedForRemoval,
+    removeOldestWorkouts,
+    makeSpaceForNewWorkout,
+    getStorageRecommendations,
     EVENTS: HISTORY_EVENTS,
   };
 })();
