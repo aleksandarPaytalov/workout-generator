@@ -889,6 +889,375 @@ const WorkoutHistory = (() => {
     }
   };
 
+  /**
+   * Compare two workouts and find similarities (manual user request only)
+   * @param {string} workoutId1 - First workout ID
+   * @param {string} workoutId2 - Second workout ID
+   * @returns {Object} Comparison result
+   * @public
+   */
+  const compareWorkouts = (workoutId1, workoutId2) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    if (!workoutId1 || !workoutId2) {
+      throw new Error("WorkoutHistory: Both workout IDs are required");
+    }
+
+    try {
+      const workout1 = getWorkoutById(workoutId1);
+      const workout2 = getWorkoutById(workoutId2);
+
+      if (!workout1) {
+        throw new Error(`WorkoutHistory: Workout ${workoutId1} not found`);
+      }
+      if (!workout2) {
+        throw new Error(`WorkoutHistory: Workout ${workoutId2} not found`);
+      }
+
+      // Compare exercises
+      const exercises1 = workout1.exercises.map((e) => e.name.toLowerCase());
+      const exercises2 = workout2.exercises.map((e) => e.name.toLowerCase());
+      const commonExercises = exercises1.filter((e) => exercises2.includes(e));
+      const uniqueToFirst = exercises1.filter((e) => !exercises2.includes(e));
+      const uniqueToSecond = exercises2.filter((e) => !exercises1.includes(e));
+
+      // Compare muscle groups
+      const muscles1 =
+        (workout1.settings && workout1.settings.muscleGroups) || [];
+      const muscles2 =
+        (workout2.settings && workout2.settings.muscleGroups) || [];
+      const commonMuscles = muscles1.filter((m) => muscles2.includes(m));
+      const uniqueMuscles1 = muscles1.filter((m) => !muscles2.includes(m));
+      const uniqueMuscles2 = muscles2.filter((m) => !muscles1.includes(m));
+
+      // Calculate similarity scores
+      const exerciseSimilarity =
+        exercises1.length > 0 && exercises2.length > 0
+          ? (commonExercises.length /
+              Math.max(exercises1.length, exercises2.length)) *
+            100
+          : 0;
+
+      const muscleSimilarity =
+        muscles1.length > 0 && muscles2.length > 0
+          ? (commonMuscles.length /
+              Math.max(muscles1.length, muscles2.length)) *
+            100
+          : 0;
+
+      // Compare volume
+      const volume1 = (workout1.stats && workout1.stats.totalVolume) || 0;
+      const volume2 = (workout2.stats && workout2.stats.totalVolume) || 0;
+      const volumeDifference = Math.abs(volume1 - volume2);
+      const volumePercentDiff =
+        Math.max(volume1, volume2) > 0
+          ? (volumeDifference / Math.max(volume1, volume2)) * 100
+          : 0;
+
+      // Compare difficulty
+      const difficulty1 =
+        (workout1.settings && workout1.settings.difficulty) || "unknown";
+      const difficulty2 =
+        (workout2.settings && workout2.settings.difficulty) || "unknown";
+      const sameDifficulty = difficulty1 === difficulty2;
+
+      // Overall similarity score
+      const overallSimilarity = Math.round(
+        (exerciseSimilarity + muscleSimilarity) / 2
+      );
+
+      return {
+        workout1: {
+          id: workout1.id,
+          title:
+            (workout1.summary && workout1.summary.title) || "Untitled Workout",
+          date:
+            (workout1.metadata && workout1.metadata.displayDate) ||
+            "Unknown Date",
+          exercises: exercises1.length,
+          muscleGroups: muscles1,
+          volume: volume1,
+          difficulty: difficulty1,
+        },
+        workout2: {
+          id: workout2.id,
+          title:
+            (workout2.summary && workout2.summary.title) || "Untitled Workout",
+          date:
+            (workout2.metadata && workout2.metadata.displayDate) ||
+            "Unknown Date",
+          exercises: exercises2.length,
+          muscleGroups: muscles2,
+          volume: volume2,
+          difficulty: difficulty2,
+        },
+        similarities: {
+          commonExercises: commonExercises,
+          commonMuscleGroups: commonMuscles,
+          exerciseSimilarity: Math.round(exerciseSimilarity),
+          muscleSimilarity: Math.round(muscleSimilarity),
+          overallSimilarity: overallSimilarity,
+          sameDifficulty: sameDifficulty,
+          volumeDifference: volumeDifference,
+          volumePercentDiff: Math.round(volumePercentDiff),
+        },
+        differences: {
+          uniqueToFirst: uniqueToFirst,
+          uniqueToSecond: uniqueToSecond,
+          uniqueMuscles1: uniqueMuscles1,
+          uniqueMuscles2: uniqueMuscles2,
+          volumeHigher:
+            volume1 > volume2
+              ? "first"
+              : volume2 > volume1
+              ? "second"
+              : "equal",
+        },
+        recommendation:
+          overallSimilarity >= 70
+            ? "Very similar workouts"
+            : overallSimilarity >= 50
+            ? "Moderately similar workouts"
+            : overallSimilarity >= 30
+            ? "Somewhat similar workouts"
+            : "Different workout styles",
+      };
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to compare workouts:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Find similar workouts to a given workout (manual user request only)
+   * @param {string} workoutId - Reference workout ID
+   * @param {number} maxResults - Maximum number of similar workouts to return
+   * @returns {Array} Array of similar workouts with similarity scores
+   * @public
+   */
+  const findSimilarWorkouts = (workoutId, maxResults = 3) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    if (!workoutId) {
+      throw new Error("WorkoutHistory: Workout ID is required");
+    }
+
+    if (maxResults < 1) {
+      throw new Error("WorkoutHistory: maxResults must be at least 1");
+    }
+
+    try {
+      const referenceWorkout = getWorkoutById(workoutId);
+      if (!referenceWorkout) {
+        throw new Error(`WorkoutHistory: Workout ${workoutId} not found`);
+      }
+
+      const allWorkouts = getHistory();
+      const otherWorkouts = allWorkouts.filter((w) => w.id !== workoutId);
+
+      if (otherWorkouts.length === 0) {
+        return [];
+      }
+
+      // Calculate similarity for each workout
+      const similarities = otherWorkouts.map((workout) => {
+        const comparison = compareWorkouts(workoutId, workout.id);
+        return {
+          workout: {
+            id: workout.id,
+            title:
+              (workout.summary && workout.summary.title) || "Untitled Workout",
+            date:
+              (workout.metadata && workout.metadata.displayDate) ||
+              "Unknown Date",
+            relativeTime:
+              (workout.metadata && workout.metadata.relativeTime) ||
+              "Unknown Time",
+            exercises: workout.exercises.length,
+            muscleGroups:
+              (workout.settings && workout.settings.muscleGroups) || [],
+            difficulty:
+              (workout.settings && workout.settings.difficulty) || "unknown",
+            volume: (workout.stats && workout.stats.totalVolume) || 0,
+          },
+          similarity: comparison.similarities.overallSimilarity,
+          commonExercises: comparison.similarities.commonExercises.length,
+          commonMuscleGroups: comparison.similarities.commonMuscleGroups.length,
+          recommendation: comparison.recommendation,
+        };
+      });
+
+      // Sort by similarity score (highest first) and limit results
+      return similarities
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, maxResults);
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to find similar workouts:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  /**
+   * Get workout progression analysis (manual user request only)
+   * @param {Array} workoutIds - Array of workout IDs in chronological order
+   * @returns {Object} Progression analysis
+   * @public
+   */
+  const analyzeWorkoutProgression = (workoutIds = []) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    try {
+      // If no IDs provided, use all workouts in chronological order
+      if (workoutIds.length === 0) {
+        const allWorkouts = getHistory();
+        workoutIds = allWorkouts
+          .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+          .map((w) => w.id);
+      }
+
+      if (workoutIds.length < 2) {
+        return {
+          workoutCount: workoutIds.length,
+          progression: "insufficient-data",
+          message: "Need at least 2 workouts for progression analysis",
+        };
+      }
+
+      const workouts = workoutIds
+        .map((id) => getWorkoutById(id))
+        .filter((w) => w !== null);
+
+      if (workouts.length < 2) {
+        return {
+          workoutCount: workouts.length,
+          progression: "insufficient-data",
+          message: "Some workouts not found",
+        };
+      }
+
+      // Analyze volume progression
+      const volumes = workouts.map(
+        (w) => (w.stats && w.stats.totalVolume) || 0
+      );
+      const volumeProgression = volumes.map((vol, index) => {
+        if (index === 0) return { change: 0, percentage: 0 };
+        const prev = volumes[index - 1];
+        const change = vol - prev;
+        const percentage = prev > 0 ? (change / prev) * 100 : 0;
+        return { change, percentage: Math.round(percentage) };
+      });
+
+      // Analyze exercise count progression
+      const exerciseCounts = workouts.map((w) => w.exercises.length);
+      const exerciseProgression = exerciseCounts.map((count, index) => {
+        if (index === 0) return { change: 0 };
+        return { change: count - exerciseCounts[index - 1] };
+      });
+
+      // Analyze muscle group diversity
+      const muscleGroupCounts = workouts.map(
+        (w) =>
+          (w.settings &&
+            w.settings.muscleGroups &&
+            w.settings.muscleGroups.length) ||
+          0
+      );
+      const diversityProgression = muscleGroupCounts.map((count, index) => {
+        if (index === 0) return { change: 0 };
+        return { change: count - muscleGroupCounts[index - 1] };
+      });
+
+      // Calculate trends
+      const volumeTrend =
+        volumes.length > 1
+          ? (volumes[volumes.length - 1] - volumes[0]) / volumes.length
+          : 0;
+
+      const exerciseTrend =
+        exerciseCounts.length > 1
+          ? (exerciseCounts[exerciseCounts.length - 1] - exerciseCounts[0]) /
+            exerciseCounts.length
+          : 0;
+
+      // Determine overall progression
+      let progressionType = "stable";
+      if (volumeTrend > 5) progressionType = "increasing";
+      else if (volumeTrend < -5) progressionType = "decreasing";
+
+      return {
+        workoutCount: workouts.length,
+        timespan: {
+          start:
+            (workouts[0].metadata && workouts[0].metadata.displayDate) ||
+            "Unknown Date",
+          end:
+            (workouts[workouts.length - 1].metadata &&
+              workouts[workouts.length - 1].metadata.displayDate) ||
+            "Unknown Date",
+          days: Math.ceil(
+            (new Date(workouts[workouts.length - 1].timestamp) -
+              new Date(workouts[0].timestamp)) /
+              (1000 * 60 * 60 * 24)
+          ),
+        },
+        volume: {
+          progression: volumeProgression,
+          trend: volumeTrend,
+          total: volumes.reduce((sum, vol) => sum + vol, 0),
+          average: Math.round(
+            volumes.reduce((sum, vol) => sum + vol, 0) / volumes.length
+          ),
+          highest: Math.max(...volumes),
+          lowest: Math.min(...volumes),
+        },
+        exercises: {
+          progression: exerciseProgression,
+          trend: exerciseTrend,
+          average: Math.round(
+            exerciseCounts.reduce((sum, count) => sum + count, 0) /
+              exerciseCounts.length
+          ),
+          highest: Math.max(...exerciseCounts),
+          lowest: Math.min(...exerciseCounts),
+        },
+        diversity: {
+          progression: diversityProgression,
+          average: Math.round(
+            muscleGroupCounts.reduce((sum, count) => sum + count, 0) /
+              muscleGroupCounts.length
+          ),
+          highest: Math.max(...muscleGroupCounts),
+          lowest: Math.min(...muscleGroupCounts),
+        },
+        progression: progressionType,
+        recommendation:
+          progressionType === "increasing"
+            ? "Great progress! Keep challenging yourself."
+            : progressionType === "decreasing"
+            ? "Consider increasing workout intensity."
+            : "Consistent workouts. Try varying intensity or exercises.",
+      };
+    } catch (error) {
+      console.error(
+        "WorkoutHistory: Failed to analyze progression:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
   // Public API
   return {
     init,
@@ -904,6 +1273,9 @@ const WorkoutHistory = (() => {
     removeOldestWorkouts,
     makeSpaceForNewWorkout,
     getStorageRecommendations,
+    compareWorkouts,
+    findSimilarWorkouts,
+    analyzeWorkoutProgression,
     EVENTS: HISTORY_EVENTS,
   };
 })();

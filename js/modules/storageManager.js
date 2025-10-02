@@ -226,9 +226,15 @@ const StorageManager = (() => {
     return {
       id: String(workout.id).trim(),
       timestamp: String(workout.timestamp).trim(),
+      date: workout.date || "",
+      time: workout.time || "",
       exercises: Array.isArray(workout.exercises) ? workout.exercises : [],
       settings: workout.settings || {},
       metadata: workout.metadata || {},
+      stats: workout.stats || {},
+      version: workout.version || "1.0",
+      type: workout.type || "workout-session",
+      summary: workout.summary || {},
     };
   };
 
