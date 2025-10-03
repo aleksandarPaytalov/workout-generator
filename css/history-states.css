@@ -1,0 +1,358 @@
+/* ===================================================================
+   History States - Empty, Loading, and Error States
+   ================================================================
+   
+   Contemporary styling for different application states:
+   - Empty state with feature highlights
+   - Loading state with spinner
+   - Error state with retry functionality
+   
+   Colors used:
+   - Purple: #8B5CF6 (primary elements)
+   - Red: #EF4444, #DC2626 (error states)
+   - Slate: #1e293b, #64748b (text)
+   - Gray: #f8fafc, #e2e8f0 (backgrounds)
+   ================================================================ */
+
+/* ===================================================================
+   Empty State Styling - Contemporary Design
+   ================================================================ */
+
+.history-empty-state {
+  text-align: center;
+  padding: 80px 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.history-empty-state::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+  animation: emptyStateGlow 4s ease-in-out infinite alternate;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  margin-bottom: 25px;
+  animation: emptyIconBounce 2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+.empty-title {
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 15px;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+}
+
+.empty-description {
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.empty-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 25px 15px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15);
+  border-color: #8B5CF6;
+}
+
+.feature-icon {
+  font-size: 2rem;
+  animation: featureIconPulse 3s ease-in-out infinite;
+}
+
+.feature-item:nth-child(1) .feature-icon {
+  animation-delay: 0s;
+}
+
+.feature-item:nth-child(2) .feature-icon {
+  animation-delay: 1s;
+}
+
+.feature-item:nth-child(3) .feature-icon {
+  animation-delay: 2s;
+}
+
+.feature-item span:last-child {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===================================================================
+   Loading State Styling
+   ================================================================ */
+
+.history-loading-state {
+  text-align: center;
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #8B5CF6;
+  border-radius: 50%;
+  animation: loadingSpinner 1s linear infinite;
+  margin: 0 auto 25px;
+}
+
+.loading-title {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.loading-description {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ===================================================================
+   Error State Styling
+   ================================================================ */
+
+.error-state {
+  text-align: center;
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-radius: 16px;
+  margin: 20px;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: #EF4444;
+  animation: errorShake 0.5s ease-in-out;
+}
+
+.error-title {
+  font-size: 1.8rem;
+  color: #991b1b;
+  margin-bottom: 15px;
+  font-weight: 800;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.btn-retry {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-retry:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+/* ===================================================================
+   Success State Styling
+   ================================================================ */
+
+.success-state {
+  text-align: center;
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-radius: 16px;
+  margin: 20px;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: #10B981;
+  animation: successPulse 1s ease-in-out;
+}
+
+.success-title {
+  font-size: 1.8rem;
+  color: #065f46;
+  margin-bottom: 15px;
+  font-weight: 800;
+}
+
+.success-message {
+  color: #047857;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ===================================================================
+   Warning State Styling
+   ================================================================ */
+
+.warning-state {
+  text-align: center;
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-radius: 16px;
+  margin: 20px;
+}
+
+.warning-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: #F59E0B;
+  animation: warningPulse 1.5s ease-in-out infinite;
+}
+
+.warning-title {
+  font-size: 1.8rem;
+  color: #92400e;
+  margin-bottom: 15px;
+  font-weight: 800;
+}
+
+.warning-message {
+  color: #d97706;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ===================================================================
+   Responsive States
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .history-empty-state,
+  .history-loading-state,
+  .error-state,
+  .success-state,
+  .warning-state {
+    padding: 40px 20px;
+  }
+  
+  .empty-icon,
+  .error-icon,
+  .success-icon,
+  .warning-icon {
+    font-size: 3rem;
+  }
+  
+  .empty-title,
+  .error-title,
+  .success-title,
+  .warning-title {
+    font-size: 1.5rem;
+  }
+  
+  .empty-description,
+  .error-message,
+  .success-message,
+  .warning-message {
+    font-size: 1rem;
+  }
+  
+  .empty-features {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 300px;
+  }
+  
+  .feature-item {
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-empty-state,
+  .history-loading-state,
+  .error-state,
+  .success-state,
+  .warning-state {
+    padding: 30px 15px;
+    margin: 10px;
+  }
+  
+  .empty-icon,
+  .error-icon,
+  .success-icon,
+  .warning-icon {
+    font-size: 2.5rem;
+  }
+  
+  .empty-title,
+  .error-title,
+  .success-title,
+  .warning-title {
+    font-size: 1.3rem;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .btn-retry {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+}

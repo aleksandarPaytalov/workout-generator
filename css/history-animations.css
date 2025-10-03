@@ -1,0 +1,386 @@
+/* ===================================================================
+   History Animations - Keyframes and Transitions
+   ================================================================
+   
+   All animation keyframes and transition effects for history components.
+   Includes smooth transitions, hover effects, and state animations.
+   
+   Animation Categories:
+   - Header animations (titleGlow, countPulse)
+   - Card animations (slideUp, fadeIn)
+   - State animations (loading, error, success)
+   - Interactive animations (hover, pulse effects)
+   ================================================================ */
+
+/* ===================================================================
+   Header Animations
+   ================================================================ */
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(139, 92, 246, 0.3);
+  }
+}
+
+@keyframes countPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ===================================================================
+   Card Entry Animations
+   ================================================================ */
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===================================================================
+   Statistics Animations
+   ================================================================ */
+
+@keyframes statPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.stat-counter {
+  animation: statCounter 2s ease-out;
+}
+
+@keyframes statCounter {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ===================================================================
+   Empty State Animations
+   ================================================================ */
+
+@keyframes emptyStateGlow {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+@keyframes emptyIconBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+@keyframes featureIconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* ===================================================================
+   Loading Animations
+   ================================================================ */
+
+@keyframes loadingSpinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-dots {
+  animation: loadingDots 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% {
+    color: #8B5CF6;
+    transform: scale(1);
+  }
+  50% {
+    color: #6366F1;
+    transform: scale(1.2);
+  }
+  80%, 100% {
+    color: #8B5CF6;
+    transform: scale(1);
+  }
+}
+
+.loading-bar {
+  animation: loadingBar 2s ease-in-out infinite;
+}
+
+@keyframes loadingBar {
+  0% {
+    width: 0%;
+    background: #8B5CF6;
+  }
+  50% {
+    width: 100%;
+    background: #6366F1;
+  }
+  100% {
+    width: 0%;
+    background: #8B5CF6;
+  }
+}
+
+/* ===================================================================
+   Error State Animations
+   ================================================================ */
+
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.error-bounce {
+  animation: errorBounce 0.6s ease-out;
+}
+
+@keyframes errorBounce {
+  0% {
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===================================================================
+   Success State Animations
+   ================================================================ */
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-checkmark {
+  animation: successCheckmark 0.8s ease-out;
+}
+
+@keyframes successCheckmark {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+  100% {
+    stroke-dasharray: 100 0;
+  }
+}
+
+/* ===================================================================
+   Warning State Animations
+   ================================================================ */
+
+@keyframes warningPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* ===================================================================
+   Interactive Hover Animations
+   ================================================================ */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* ===================================================================
+   Button Press Animations
+   ================================================================ */
+
+.btn-press {
+  transition: transform 0.1s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.95);
+}
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* ===================================================================
+   Staggered Animations for Lists
+   ================================================================ */
+
+.stagger-animation > * {
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ===================================================================
+   Reduced Motion Support
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .loading-spinner {
+    animation: none;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #8B5CF6;
+  }
+}

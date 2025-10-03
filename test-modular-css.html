@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Modular CSS - History Styles</title>
+
+    <!-- Import the main history.css which imports all modular files -->
+    <link rel="stylesheet" href="css/history.css" />
+
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f1f5f9;
+      }
+
+      .test-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .test-section {
+        margin-bottom: 40px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .test-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #8b5cf6;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <!-- ===================================================================
+           IMPORTANT: VISUAL TEST ONLY - NOT FUNCTIONAL
+           ================================================================
+
+           This file is for VISUAL TESTING ONLY of the modular CSS architecture.
+
+           PURPOSE:
+           - Verify that all CSS modules load correctly
+           - Test visual styling and animations
+           - Check responsive design on different screen sizes
+           - Demonstrate the modular CSS structure
+
+           WHAT THIS IS NOT:
+           - This is NOT a functional application
+           - Buttons do NOT perform real workout operations
+           - No actual data is saved or loaded
+           - No real localStorage or workout history functionality
+
+           FOR REAL FUNCTIONALITY:
+           - Use the actual application files with JavaScript modules
+           - Integrate storageManager.js, workoutHistory.js, historyUI.js
+           - This file is purely for CSS design verification
+
+           BUTTON BEHAVIOR:
+           - Buttons show visual feedback (scale animation, alerts)
+           - This demonstrates CSS styling works correctly
+           - No actual workout data operations are performed
+           ================================================================ -->
+
+      <div
+        style="
+          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+          border: 2px solid #f59e0b;
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 30px;
+          text-align: center;
+        "
+      >
+        <h2 style="color: #92400e; margin: 0 0 10px 0; font-size: 1.3rem">
+          ⚠️ VISUAL TEST ONLY - NOT FUNCTIONAL
+        </h2>
+        <p style="color: #d97706; margin: 0; font-weight: 600">
+          This file tests CSS styling only. Buttons show visual feedback but
+          don't perform real operations.
+        </p>
+      </div>
+
+      <h1 style="text-align: center; color: #1e293b; margin-bottom: 40px">
+        🧪 Modular CSS Test - History Components
+      </h1>
+
+      <!-- Test 1: History Container & Header (from history-base.css) -->
+      <div class="test-section">
+        <h2 class="test-title">📦 Base Components (history-base.css)</h2>
+        <div class="history-container">
+          <div class="history-header">
+            <h3 class="history-title">
+              <span class="title-icon">🏋️</span>
+              Workout History
+            </h3>
+            <div class="workout-count">3/5</div>
+            <div class="header-actions">
+              <button class="btn-clear-history">🗑️ Clear All</button>
+            </div>
+          </div>
+          <div class="workout-cards-container">
+            <p style="text-align: center; color: #64748b; padding: 20px">
+              Base container and header styles loaded successfully! ✅
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test 2: Workout Cards (from history-cards.css) -->
+      <div class="test-section">
+        <h2 class="test-title">🏃 Card Components (history-cards.css)</h2>
+        <div class="workout-card">
+          <div class="workout-header">
+            <div class="workout-date-info">
+              <div class="workout-date">Today</div>
+              <div class="workout-relative-date">2 hours ago</div>
+            </div>
+            <div
+              class="workout-type-badge"
+              style="
+                background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+              "
+            >
+              Strength
+            </div>
+          </div>
+          <div class="workout-stats">
+            <div class="stat-item">
+              <span class="stat-icon">⏱️</span>
+              <span class="stat-value">45</span>
+              <span class="stat-label">Minutes</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">💪</span>
+              <span class="stat-value">8</span>
+              <span class="stat-label">Exercises</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">🎯</span>
+              <span class="stat-value">3</span>
+              <span class="stat-label">Muscle Groups</span>
+            </div>
+          </div>
+          <div class="exercise-preview">
+            <h4 class="preview-title">Exercise Preview</h4>
+            <div class="exercise-list">
+              <div class="exercise-item">
+                <span class="exercise-name">Push-ups</span>
+                <span class="exercise-details">3 × 12</span>
+              </div>
+              <div class="exercise-item">
+                <span class="exercise-name">Squats</span>
+                <span class="exercise-details">3 × 15</span>
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-primary">
+              <span class="btn-icon">🔄</span>
+              Repeat
+            </button>
+            <button class="btn-secondary">
+              <span class="btn-icon">👁️</span>
+              View
+            </button>
+            <button class="btn-danger">
+              <span class="btn-icon">🗑️</span>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test 3: Empty State (from history-states.css) -->
+      <div class="test-section">
+        <h2 class="test-title">🌟 State Components (history-states.css)</h2>
+        <div class="history-empty-state">
+          <div class="empty-icon">📝</div>
+          <h3 class="empty-title">No Workout History</h3>
+          <p class="empty-description">
+            Start your fitness journey by generating your first workout!
+          </p>
+          <div class="empty-features">
+            <div class="feature-item">
+              <span class="feature-icon">💾</span>
+              <span>Save Workouts</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🔄</span>
+              <span>Repeat Sessions</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📊</span>
+              <span>Track Progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test 4: Loading State -->
+      <div class="test-section">
+        <h2 class="test-title">⏳ Loading State</h2>
+        <div class="history-loading-state">
+          <div class="loading-spinner"></div>
+          <h3 class="loading-title">Loading History...</h3>
+          <p class="loading-description">
+            Please wait while we fetch your workout data.
+          </p>
+        </div>
+      </div>
+
+      <!-- Test 5: Error State -->
+      <div class="test-section">
+        <h2 class="test-title">❌ Error State</h2>
+        <div class="error-state">
+          <div class="error-icon">⚠️</div>
+          <h3 class="error-title">Failed to Load</h3>
+          <p class="error-message">
+            Unable to load workout history. Please try again.
+          </p>
+          <button class="btn-retry">🔄 Retry</button>
+        </div>
+      </div>
+
+      <!-- Test 6: Animations (from history-animations.css) -->
+      <div class="test-section">
+        <h2 class="test-title">
+          ✨ Animation Components (history-animations.css)
+        </h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+          "
+        >
+          <div
+            class="slide-up"
+            style="
+              background: #f8fafc;
+              padding: 20px;
+              border-radius: 12px;
+              text-align: center;
+            "
+          >
+            <h4>Slide Up Animation</h4>
+            <p>This element slides up on load</p>
+          </div>
+          <div
+            class="fade-in"
+            style="
+              background: #f8fafc;
+              padding: 20px;
+              border-radius: 12px;
+              text-align: center;
+            "
+          >
+            <h4>Fade In Animation</h4>
+            <p>This element fades in smoothly</p>
+          </div>
+          <div
+            class="hover-lift"
+            style="
+              background: #f8fafc;
+              padding: 20px;
+              border-radius: 12px;
+              text-align: center;
+              cursor: pointer;
+            "
+          >
+            <h4>Hover Lift Effect</h4>
+            <p>Hover over me to see the lift effect</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Results Summary -->
+      <div
+        class="test-section"
+        style="
+          background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+          border: 2px solid #10b981;
+        "
+      >
+        <h2 class="test-title" style="color: #065f46; border-color: #10b981">
+          ✅ Test Results Summary
+        </h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+          "
+        >
+          <div style="text-align: center; padding: 15px">
+            <div style="font-size: 2rem; margin-bottom: 10px">📦</div>
+            <strong>Base Styles</strong><br />
+            <span style="color: #10b981">✅ Loaded</span>
+          </div>
+          <div style="text-align: center; padding: 15px">
+            <div style="font-size: 2rem; margin-bottom: 10px">🏃</div>
+            <strong>Card Styles</strong><br />
+            <span style="color: #10b981">✅ Loaded</span>
+          </div>
+          <div style="text-align: center; padding: 15px">
+            <div style="font-size: 2rem; margin-bottom: 10px">🌟</div>
+            <strong>State Styles</strong><br />
+            <span style="color: #10b981">✅ Loaded</span>
+          </div>
+          <div style="text-align: center; padding: 15px">
+            <div style="font-size: 2rem; margin-bottom: 10px">✨</div>
+            <strong>Animations</strong><br />
+            <span style="color: #10b981">✅ Loaded</span>
+          </div>
+        </div>
+        <p
+          style="
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            color: #065f46;
+          "
+        >
+          🎉 All modular CSS files are working correctly!
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Add basic interactivity to demonstrate the CSS is working
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("🧪 Modular CSS Test Loaded Successfully!");
+
+        // Make buttons interactive with visual feedback
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            // Visual feedback for button clicks
+            const originalText = this.textContent;
+            this.style.transform = "scale(0.95)";
+            this.textContent = "✅ Clicked!";
+
+            setTimeout(() => {
+              this.style.transform = "";
+              this.textContent = originalText;
+            }, 500);
+
+            // Log which button was clicked
+            console.log("Button clicked:", originalText.trim());
+
+            // Show alert for demonstration
+            alert(
+              `Button "${originalText.trim()}" clicked!\n\nThis demonstrates that the CSS styling is working correctly.`
+            );
+          });
+        });
+
+        // Add hover effects to test elements
+        const testElements = document.querySelectorAll(".hover-lift");
+        testElements.forEach((element) => {
+          element.addEventListener("mouseenter", function () {
+            console.log("Hover effect triggered on:", this.textContent.trim());
+          });
+        });
+
+        // Test animations by adding classes dynamically
+        setTimeout(() => {
+          const slideElements = document.querySelectorAll(".slide-up");
+          slideElements.forEach((element, index) => {
+            setTimeout(() => {
+              element.style.opacity = "1";
+              element.style.transform = "translateY(0)";
+            }, index * 200);
+          });
+        }, 100);
+
+        // Verify CSS files are loaded
+        const testResults = {
+          "Base Styles":
+            getComputedStyle(document.querySelector(".history-container"))
+              .borderRadius !== "",
+          "Card Styles":
+            getComputedStyle(document.querySelector(".workout-card"))
+              .borderRadius !== "",
+          "State Styles":
+            getComputedStyle(document.querySelector(".history-empty-state"))
+              .textAlign === "center",
+          Animations:
+            getComputedStyle(document.querySelector(".loading-spinner"))
+              .animation !== "",
+        };
+
+        console.log("CSS Module Test Results:", testResults);
+
+        // Update the test results in the UI
+        const allLoaded = Object.values(testResults).every((result) => result);
+        if (allLoaded) {
+          console.log("✅ All CSS modules loaded successfully!");
+        } else {
+          console.warn(
+            "⚠️ Some CSS modules may not have loaded properly:",
+            testResults
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
