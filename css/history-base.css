@@ -12,6 +12,61 @@
    ================================================================ */
 
 /* ===================================================================
+   Header Controls Layout
+   ================================================================ */
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.history-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.history-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+}
+
+.history-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.history-toggle-btn.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.history-toggle-btn.active:hover {
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.history-toggle-icon {
+  font-size: 1.1rem;
+}
+
+.history-toggle-text {
+  font-weight: 600;
+}
+
+/* ===================================================================
    History Container & Header
    ================================================================ */
 

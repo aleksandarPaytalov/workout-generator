@@ -27,50 +27,11 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏋️%3C/text%3E%3C/svg%3E"
     />
 
-    <!-- CSS Files - Load in order: variables → reset → typography → layout → components → utilities → animations → responsive → theme -->
+    <!-- Consolidated CSS Imports -->
+    <link rel="stylesheet" href="css/all-styles.css" />
 
-    <!-- 1. Design System Variables (must load first) -->
-    <link rel="stylesheet" href="css/variables.css?v=9" />
-
-    <!-- 2. CSS Reset & Base Styles -->
-    <link rel="stylesheet" href="css/reset.css?v=9" />
-
-    <!-- 3. Typography System -->
-    <link rel="stylesheet" href="css/typography.css?v=9" />
-
-    <!-- 4. Main Layout & Forms -->
-    <link rel="stylesheet" href="css/main.css?v=9" />
-
-    <!-- 5. Component Styles -->
-    <link rel="stylesheet" href="css/components.css?v=9" />
-
-    <!-- 6. Utility Classes -->
-    <link rel="stylesheet" href="css/utilities.css?v=9" />
-
-    <!-- 7. Animation Keyframes -->
-    <link rel="stylesheet" href="css/animations.css?v=9" />
-
-    <!-- 8. Responsive Styles -->
-    <link rel="stylesheet" href="css/mobile.css?v=9" />
-
-    <!-- 9. Theme System - Dark Mode Support -->
-    <link rel="stylesheet" href="css/theme.css?v=9" />
-    <link rel="stylesheet" href="css/theme-toggle.css?v=9" />
-
-    <!-- JavaScript Modules - Load in dependency order -->
-    <!-- Theme Controller - Load first to prevent flash -->
-    <script src="js/modules/themeController.js"></script>
-    <script src="js/modules/storageManager.js"></script>
-    <script src="js/modules/exerciseDatabase.js"></script>
-    <script src="js/modules/validators.js"></script>
-    <script src="js/modules/exerciseGenerator.js"></script>
-    <script src="js/modules/uiController.js"></script>
-    <script src="js/modules/footerController.js"></script>
-    <script src="js/modules/dragDrop.js"></script>
-    <script src="js/modules/pdfExport.js"></script>
-
-    <!-- Main Application - Load last to initialize everything -->
-    <script src="js/app.js"></script>
+    <!-- Consolidated JavaScript Imports -->
+    <script src="js/all-scripts.js"></script>
   </head>
   <body>
     <div class="app-container">
@@ -79,16 +40,31 @@
         <p class="app-subtitle">
           Balanced exercise routines with smart muscle group distribution
         </p>
-        <button
-          type="button"
-          class="theme-toggle-btn"
-          id="themeToggleBtn"
-          aria-label="Toggle dark mode"
-          title="Switch theme"
-        >
-          <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
-          <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
-        </button>
+        <div class="header-controls">
+          <button
+            type="button"
+            class="history-toggle-btn"
+            id="historyToggleBtn"
+            aria-label="Toggle workout history"
+            title="View workout history"
+          >
+            <span class="history-toggle-icon" aria-hidden="true">📋</span>
+            <span class="history-toggle-text">History</span>
+          </button>
+
+          <button
+            type="button"
+            class="theme-toggle-btn"
+            id="themeToggleBtn"
+            aria-label="Toggle dark mode"
+            title="Switch theme"
+          >
+            <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
+            <span class="theme-icon theme-icon-moon" aria-hidden="true"
+              >🌙</span
+            >
+          </button>
+        </div>
       </header>
 
       <main class="app-main">
@@ -340,6 +316,79 @@
                 <small class="constraint-info">
                   🔄 No consecutive exercises target the same muscle group
                 </small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Workout History Section -->
+        <section
+          class="workout-history"
+          aria-label="Workout history"
+          id="workoutHistorySection"
+          hidden
+        >
+          <div class="history-container">
+            <div class="history-header">
+              <div class="history-title">
+                <span class="history-icon">📋</span>
+                Workout History
+                <span class="workout-count" id="workoutCount">0 workouts</span>
+              </div>
+              <button
+                class="btn-clear-history"
+                id="clearHistoryBtn"
+                aria-label="Clear all workout history"
+                title="Clear all saved workouts"
+              >
+                Clear All
+              </button>
+            </div>
+
+            <!-- History Content Container -->
+            <div class="history-content" id="historyContent">
+              <!-- Empty State (shown when no workouts) -->
+              <div class="history-empty-state" id="historyEmptyState">
+                <div class="empty-icon">🏃‍♂️</div>
+                <h3 class="empty-title">No Workout History Yet</h3>
+                <p class="empty-description">
+                  Generate your first workout to start building your fitness
+                  journey!
+                </p>
+                <div class="empty-features">
+                  <div class="feature-item">
+                    <span class="feature-icon">💾</span>
+                    <span class="feature-text">Auto Save</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">🔄</span>
+                    <span class="feature-text">Quick Repeat</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span class="feature-text">Track Progress</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Loading State (shown while loading) -->
+              <div
+                class="history-loading-state"
+                id="historyLoadingState"
+                hidden
+              >
+                <div class="loading-spinner"></div>
+                <h3 class="loading-title">Loading History...</h3>
+                <p class="loading-message">Retrieving your saved workouts</p>
+              </div>
+
+              <!-- Workout Cards Container (populated by JavaScript) -->
+              <div
+                class="workout-cards-container"
+                id="workoutCardsContainer"
+                hidden
+              >
+                <!-- Workout cards will be dynamically inserted here -->
               </div>
             </div>
           </div>

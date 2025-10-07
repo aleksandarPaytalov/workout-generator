@@ -1,0 +1,36 @@
+/*
+ * Consolidated CSS Imports
+ * This file imports all CSS files in the correct dependency order
+ * Load order: variables → reset → typography → layout → components → utilities → animations → responsive → theme
+ */
+
+/* 1. Design System Variables (must load first) */
+@import url('./variables.css?v=9');
+
+/* 2. CSS Reset & Base Styles */
+@import url('./reset.css?v=9');
+
+/* 3. Typography System */
+@import url('./typography.css?v=9');
+
+/* 4. Main Layout & Forms */
+@import url('./main.css?v=9');
+
+/* 5. Component Styles */
+@import url('./components.css?v=9');
+
+/* 5.1. History Component Styles */
+@import url('./history.css?v=1');
+
+/* 6. Utility Classes */
+@import url('./utilities.css?v=9');
+
+/* 7. Animation Keyframes */
+@import url('./animations.css?v=9');
+
+/* 8. Responsive Styles */
+@import url('./mobile.css?v=9');
+
+/* 9. Theme System - Dark Mode Support */
+@import url('./theme.css?v=9');
+@import url('./theme-toggle.css?v=9');
