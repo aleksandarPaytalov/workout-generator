@@ -129,6 +129,24 @@
   color: var(--color-dark-text) !important;
 }
 
+/* History toggle button - Enhanced dark mode support */
+[data-theme="dark"] .history-toggle-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] .history-toggle-btn:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .history-toggle-btn.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
 /* Stat items - Add border radius and adjust background */
 [data-theme="dark"] .stat-item {
   background: rgba(139, 92, 246, 0.15) !important;

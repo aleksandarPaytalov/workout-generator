@@ -51,6 +51,22 @@
   overflow: hidden;
 }
 
+/* Header controls container */
+.header-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  pointer-events: none; /* Allow clicks to pass through container */
+  z-index: 10;
+}
+
+/* Re-enable pointer events for buttons */
+.header-controls > * {
+  pointer-events: auto;
+}
+
 /* Header decorative background */
 .app-header::before {
   content: "";
