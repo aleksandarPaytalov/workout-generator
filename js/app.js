@@ -32,6 +32,7 @@ const WorkoutApp = (() => {
       // Optional modules that enhance functionality
       const optionalModules = [
         "StorageManager",
+        "WorkoutHistory",
         "FooterController",
         "PDFExport",
         "DragDrop",
@@ -81,6 +82,16 @@ const WorkoutApp = (() => {
           console.warn("StorageManager failed to initialize");
         } else {
           console.log("StorageManager: Ready for manual user operations");
+        }
+      }
+
+      // Initialize WorkoutHistory for workout history management (manual operations only)
+      if (typeof WorkoutHistory !== "undefined") {
+        WorkoutHistory.init();
+        if (!WorkoutHistory.isReady()) {
+          console.warn("WorkoutHistory failed to initialize");
+        } else {
+          console.log("WorkoutHistory: Ready for manual user operations");
         }
       }
 

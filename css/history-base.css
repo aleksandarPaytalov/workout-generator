@@ -94,7 +94,7 @@
 /* Mobile screens (max-width: 768px) */
 @media (max-width: 768px) {
   .history-toggle-btn {
-    top: var(--space-3);
+    top: -8px; /* Move much higher to completely avoid header text overlap */
     left: var(--space-3);
     padding: 12px 20px;
     font-size: 0.9rem;
@@ -109,6 +109,7 @@
 /* Small mobile screens (max-width: 480px) */
 @media (max-width: 480px) {
   .history-toggle-btn {
+    top: -12px; /* Move much higher for small screens */
     padding: 10px 16px;
     font-size: 0.85rem;
     gap: 8px;
@@ -120,6 +121,20 @@
 
   .history-toggle-text {
     display: none; /* Hide text on very small screens, show only icon */
+  }
+}
+
+/* iPhone 14 Pro Max specific (430px width) */
+@media (max-width: 430px) {
+  .history-toggle-btn {
+    top: -16px; /* Extra high positioning for iPhone 14 Pro Max */
+    left: var(--space-2); /* Slightly closer to edge */
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .history-toggle-icon {
+    font-size: 1rem;
   }
 }
 

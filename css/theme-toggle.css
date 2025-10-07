@@ -67,7 +67,7 @@
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .theme-toggle-btn {
-    top: var(--space-3);
+    top: -8px; /* Move much higher to completely avoid header text overlap */
     right: var(--space-3);
     width: 44px;
     height: 44px;
@@ -78,3 +78,30 @@
   }
 }
 
+/* Small mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .theme-toggle-btn {
+    top: -12px; /* Move much higher for small screens */
+    right: var(--space-3);
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme-icon {
+    font-size: 18px;
+  }
+}
+
+/* iPhone 14 Pro Max specific (430px width) */
+@media (max-width: 430px) {
+  .theme-toggle-btn {
+    top: -16px; /* Extra high positioning for iPhone 14 Pro Max */
+    right: var(--space-2); /* Slightly closer to edge */
+    width: 38px;
+    height: 38px;
+  }
+
+  .theme-icon {
+    font-size: 16px;
+  }
+}

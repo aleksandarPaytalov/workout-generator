@@ -260,6 +260,64 @@ const UIController = (() => {
   };
 
   /**
+   * Show brief feedback when workout is saved to history
+   * @private
+   */
+  const showWorkoutSavedFeedback = () => {
+    // Create a temporary feedback element if it doesn't exist
+    let feedbackElement = document.getElementById("workout-saved-feedback");
+
+    if (!feedbackElement) {
+      feedbackElement = document.createElement("div");
+      feedbackElement.id = "workout-saved-feedback";
+      feedbackElement.className = "workout-saved-feedback";
+      feedbackElement.innerHTML = `
+        <span class="feedback-icon">✓</span>
+        <span class="feedback-text">Workout saved to history</span>
+      `;
+
+      // Add modern styling
+      feedbackElement.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        z-index: 1000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+      `;
+
+      document.body.appendChild(feedbackElement);
+    }
+
+    // Show the feedback with animation
+    setTimeout(() => {
+      feedbackElement.style.transform = "translateX(0)";
+    }, 100);
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+      feedbackElement.style.transform = "translateX(100%)";
+
+      // Remove from DOM after animation
+      setTimeout(() => {
+        if (feedbackElement.parentNode) {
+          feedbackElement.parentNode.removeChild(feedbackElement);
+        }
+      }, 300);
+    }, 3000);
+  };
+
+  /**
    * Hide all state containers
    * @private
    */
@@ -366,6 +424,55 @@ const UIController = (() => {
           "UIController: Could not enable drag and drop:",
           error.message
         );
+      }
+    }
+
+    // Save workout to history if this is a new user-generated workout
+    if (isNewWorkout && exercises.length > 0) {
+      try {
+        // Check if WorkoutHistory module is available and ready
+        if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+          // Create workout data structure for history
+          const workoutData = {
+            exercises: exercises.map((exercise) => ({
+              name: exercise.name || exercise.exercise,
+              muscleGroup: exercise.muscleGroup,
+              sets: exercise.sets || 3,
+              reps: exercise.reps || 12,
+              equipment: exercise.equipment || "bodyweight",
+              id: exercise.id,
+            })),
+          };
+
+          // Get current form settings for context
+          const settings = {
+            exerciseCount: exercises.length,
+            muscleGroups: [...new Set(exercises.map((ex) => ex.muscleGroup))],
+            difficulty: "intermediate", // Default difficulty
+            type: "strength", // Default type
+            operationMode: currentOperationMode || "generate",
+          };
+
+          // Save to workout history (user-initiated action)
+          const savedWorkout = WorkoutHistory.addWorkout(workoutData, settings);
+          console.log(
+            "UIController: Workout saved to history:",
+            savedWorkout.id
+          );
+
+          // Show user feedback for successful save
+          showWorkoutSavedFeedback();
+        } else {
+          console.warn(
+            "UIController: WorkoutHistory not available - workout not saved to history"
+          );
+        }
+      } catch (error) {
+        console.error(
+          "UIController: Failed to save workout to history:",
+          error.message
+        );
+        // Don't show error to user as this is a background operation
       }
     }
 
