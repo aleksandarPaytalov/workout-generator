@@ -314,6 +314,12 @@
   outline-offset: 2px;
 }
 
+/* Quick Actions emoji icons */
+.footer-link::first-letter {
+  font-size: var(--font-size-xl);
+  margin-right: var(--space-1);
+}
+
 /* Footer Features */
 .footer-features {
   list-style: none;
@@ -333,9 +339,11 @@
 }
 
 .feature-icon {
-  font-size: var(--font-size-base);
-  width: 20px;
+  font-size: var(--font-size-base) !important;
+  width: 18px;
   text-align: center;
+  line-height: 1;
+  display: inline-block;
 }
 
 /* Footer Stats */
