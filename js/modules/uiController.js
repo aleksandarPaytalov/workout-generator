@@ -190,6 +190,12 @@ const UIController = (() => {
     if (elements.shuffleBtn) {
       elements.shuffleBtn.addEventListener("click", handleShuffleWorkout);
     }
+
+    // Listen for history events from HistoryController
+    document.addEventListener(
+      "historyWorkoutRepeat",
+      handleHistoryWorkoutRepeat
+    );
   };
 
   /**
@@ -931,6 +937,32 @@ const UIController = (() => {
    */
   const getCurrentOperationMode = () => {
     return currentOperationMode;
+  };
+
+  /**
+   * Handle history workout repeat event from HistoryController
+   * @param {CustomEvent} event - Custom event with workout data
+   * @private
+   */
+  const handleHistoryWorkoutRepeat = (event) => {
+    try {
+      const { exercises, workoutId } = event.detail;
+
+      if (exercises && exercises.length > 0) {
+        // Render the workout (false = not a new workout, don't save to history again)
+        renderWorkoutList(exercises, false);
+        console.log(`UIController: Repeated workout ${workoutId} from history`);
+      } else {
+        console.error("UIController: No exercises provided for repeat workout");
+        showErrorState("Failed to repeat workout");
+      }
+    } catch (error) {
+      console.error(
+        "UIController: Failed to handle repeat workout:",
+        error.message
+      );
+      showErrorState("Failed to repeat workout");
+    }
   };
 
   // Public API - expose these functions to other modules

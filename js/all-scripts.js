@@ -24,6 +24,7 @@ async function loadAllScripts() {
     // Core modules
     await loadScript("./js/modules/storageManager.js");
     await loadScript("./js/modules/workoutHistory.js");
+    await loadScript("./js/modules/historyController.js");
     await loadScript("./js/modules/exerciseDatabase.js");
     await loadScript("./js/modules/validators.js");
 
