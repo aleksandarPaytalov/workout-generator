@@ -363,14 +363,19 @@ const HistoryController = (() => {
             .map((group) => `<span class="muscle-group-tag">${group}</span>`)
             .join("")}
         </div>
-        <div class="exercise-preview">
+        <div class="exercise-list-full">
           ${(workout.exercises || [])
-            .slice(0, 3)
             .map(
-              (exercise) =>
-                `<span class="exercise-name">${exercise.name}</span>`
+              (exercise, idx) =>
+                `<div class="exercise-item-full">
+                  <span class="exercise-number">${idx + 1}</span>
+                  <span class="exercise-name-full">${exercise.name}</span>
+                  <span class="exercise-muscle-tag">${
+                    exercise.muscleGroup || ""
+                  }</span>
+                </div>`
             )
-            .join(" • ")}${workout.exercises?.length > 3 ? " • ..." : ""}
+            .join("")}
         </div>
       </div>
       
