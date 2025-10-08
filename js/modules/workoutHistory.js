@@ -543,6 +543,7 @@ const WorkoutHistory = (() => {
           totalWorkouts: 0,
           totalExercises: 0,
           averageExercisesPerWorkout: 0,
+          uniqueExercises: 0,
           mostUsedMuscleGroups: [],
           oldestWorkout: null,
           newestWorkout: null,
@@ -557,6 +558,7 @@ const WorkoutHistory = (() => {
         0
       );
       const muscleGroupCounts = {};
+      const uniqueExerciseNames = new Set();
       let completedCount = 0;
 
       workouts.forEach((workout) => {
@@ -567,6 +569,9 @@ const WorkoutHistory = (() => {
         workout.exercises.forEach((exercise) => {
           muscleGroupCounts[exercise.muscleGroup] =
             (muscleGroupCounts[exercise.muscleGroup] || 0) + 1;
+
+          // Track unique exercise names for variety score
+          uniqueExerciseNames.add(exercise.name);
         });
       });
 
@@ -580,6 +585,7 @@ const WorkoutHistory = (() => {
         totalExercises: totalExercises,
         averageExercisesPerWorkout:
           Math.round((totalExercises / workouts.length) * 10) / 10,
+        uniqueExercises: uniqueExerciseNames.size,
         mostUsedMuscleGroups: mostUsedMuscleGroups,
         oldestWorkout: workouts[workouts.length - 1],
         newestWorkout: workouts[0],

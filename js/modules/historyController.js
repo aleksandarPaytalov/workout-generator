@@ -69,6 +69,10 @@ const HistoryController = (() => {
         workoutCardsContainer: document.getElementById("workoutCardsContainer"),
         workoutCount: document.getElementById("workoutCount"),
         clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+        // Stats elements
+        viewStatsBtn: document.getElementById("viewStatsBtn"),
+        statsSection: document.getElementById("statsSection"),
+        statsContent: document.getElementById("statsContent"),
         // Pagination elements
         historyPagination: document.getElementById("historyPagination"),
         paginationPrevBtn: document.getElementById("paginationPrevBtn"),
@@ -121,6 +125,11 @@ const HistoryController = (() => {
       // Clear history button
       if (elements.clearHistoryBtn) {
         elements.clearHistoryBtn.addEventListener("click", handleClearHistory);
+      }
+
+      // View stats button
+      if (elements.viewStatsBtn) {
+        elements.viewStatsBtn.addEventListener("click", handleViewStats);
       }
 
       // Pagination buttons
@@ -274,6 +283,192 @@ const HistoryController = (() => {
         error.message
       );
     }
+  };
+
+  /**
+   * Handle view stats button click
+   * Toggles between history view and stats view
+   * @private
+   */
+  const handleViewStats = () => {
+    try {
+      const isStatsVisible = !elements.statsSection.hidden;
+
+      if (isStatsVisible) {
+        // Hide stats, show history
+        elements.statsSection.hidden = true;
+        elements.historyContent.hidden = false;
+        elements.viewStatsBtn.classList.remove("active");
+        console.log("HistoryController: Stats hidden, history shown");
+      } else {
+        // Show stats, hide history
+        elements.historyContent.hidden = true;
+        elements.statsSection.hidden = false;
+        elements.viewStatsBtn.classList.add("active");
+
+        // Render stats
+        renderStats();
+        console.log("HistoryController: Stats shown, history hidden");
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to toggle stats:",
+        error.message
+      );
+    }
+  };
+
+  /**
+   * Render workout statistics
+   * @private
+   */
+  const renderStats = () => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        const stats = WorkoutHistory.getHistoryStats();
+
+        if (stats.totalWorkouts === 0) {
+          // Show empty state
+          elements.statsContent.innerHTML = `
+            <div class="stats-empty">
+              <div class="stats-empty-icon">📊</div>
+              <h3 class="stats-empty-title">No Statistics Yet</h3>
+              <p class="stats-empty-message">Generate some workouts to see your statistics!</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Get last workout info
+        const lastWorkout = stats.newestWorkout;
+        const lastWorkoutDate = lastWorkout
+          ? new Date(lastWorkout.timestamp)
+          : null;
+        const lastWorkoutRelative = lastWorkout
+          ? getRelativeTime(lastWorkoutDate)
+          : "No workouts yet";
+
+        // Build stats HTML with redesigned compact cards
+        let html = `
+          <!-- Workout Stats Grid -->
+          <div class="workout-stats-grid">
+            <!-- Workout Variety Score -->
+            <div class="stat-card stat-card-variety">
+              <div class="stat-card-icon">✨</div>
+              <div class="stat-card-content">
+                <div class="stat-card-value">${stats.uniqueExercises}</div>
+                <div class="stat-card-title">Workout Variety</div>
+                <div class="stat-card-label">Unique exercises</div>
+              </div>
+            </div>
+
+            <!-- Average Exercises Per Workout -->
+            <div class="stat-card stat-card-average">
+              <div class="stat-card-icon">📊</div>
+              <div class="stat-card-content">
+                <div class="stat-card-value">${
+                  stats.averageExercisesPerWorkout
+                }</div>
+                <div class="stat-card-title">Average Size</div>
+                <div class="stat-card-label">Exercises per workout</div>
+              </div>
+            </div>
+
+            <!-- Total Exercises -->
+            <div class="stat-card stat-card-total">
+              <div class="stat-card-icon">🏃</div>
+              <div class="stat-card-content">
+                <div class="stat-card-value">${stats.totalExercises}</div>
+                <div class="stat-card-title">Total Exercises</div>
+                <div class="stat-card-label">Across all workouts</div>
+              </div>
+            </div>
+
+            <!-- Last Workout -->
+            <div class="stat-card stat-card-recent">
+              <div class="stat-card-icon">⏰</div>
+              <div class="stat-card-content">
+                <div class="stat-card-value stat-card-value-time">${lastWorkoutRelative}</div>
+                <div class="stat-card-title">Last Workout</div>
+                <div class="stat-card-label">${
+                  lastWorkoutDate ? lastWorkoutDate.toLocaleDateString() : ""
+                }</div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Add most trained muscle groups
+        if (
+          stats.mostUsedMuscleGroups &&
+          stats.mostUsedMuscleGroups.length > 0
+        ) {
+          const topGroups = stats.mostUsedMuscleGroups.slice(0, 3);
+          html += `
+            <div class="stats-list-container">
+              <h3>🎯 Most Trained Muscle Groups</h3>
+              <ul class="stats-list">
+          `;
+
+          topGroups.forEach((item, index) => {
+            html += `
+              <li class="stats-list-item">
+                <span class="stats-list-rank">#${index + 1}</span>
+                <span class="stats-list-name">${item.group}</span>
+                <span class="stats-list-count">${item.count} exercise${
+              item.count !== 1 ? "s" : ""
+            }</span>
+              </li>
+            `;
+          });
+
+          html += `
+              </ul>
+            </div>
+          `;
+        }
+
+        elements.statsContent.innerHTML = html;
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to render stats:",
+        error.message
+      );
+      elements.statsContent.innerHTML = `
+        <div class="stats-empty">
+          <div class="stats-empty-icon">⚠️</div>
+          <h3 class="stats-empty-title">Error Loading Statistics</h3>
+          <p class="stats-empty-message">Failed to load workout statistics. Please try again.</p>
+        </div>
+      `;
+    }
+  };
+
+  /**
+   * Get relative time display
+   * @param {Date} date - Date to compare
+   * @returns {string} Relative time string
+   * @private
+   */
+  const getRelativeTime = (date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60)
+      return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+    if (diffDays < 30)
+      return `${Math.floor(diffDays / 7)} week${
+        Math.floor(diffDays / 7) !== 1 ? "s" : ""
+      } ago`;
+    return date.toLocaleDateString();
   };
 
   /**

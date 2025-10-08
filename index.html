@@ -335,14 +335,24 @@
                 Workout History
                 <span class="workout-count" id="workoutCount">0 workouts</span>
               </div>
-              <button
-                class="btn-clear-history"
-                id="clearHistoryBtn"
-                aria-label="Clear all workout history"
-                title="Clear all saved workouts"
-              >
-                Clear All
-              </button>
+              <div class="history-header-actions">
+                <button
+                  class="btn-view-stats"
+                  id="viewStatsBtn"
+                  aria-label="View workout statistics"
+                  title="View detailed workout statistics"
+                >
+                  📊 View Stats
+                </button>
+                <button
+                  class="btn-clear-history"
+                  id="clearHistoryBtn"
+                  aria-label="Clear all workout history"
+                  title="Clear all saved workouts"
+                >
+                  Clear All
+                </button>
+              </div>
             </div>
 
             <!-- History Content Container -->
@@ -414,6 +424,13 @@
                   <span class="btn-text">Next</span>
                   <span class="btn-icon">→</span>
                 </button>
+              </div>
+            </div>
+
+            <!-- Stats Section (hidden by default) -->
+            <div class="stats-section" id="statsSection" hidden>
+              <div class="stats-content" id="statsContent">
+                <!-- Stats will be dynamically inserted here -->
               </div>
             </div>
           </div>

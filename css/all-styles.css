@@ -23,6 +23,9 @@
 @import url("./history.css?v=1");
 @import url("./history-pagination.css?v=1");
 
+/* 5.2. Stats Component Styles */
+@import url("./stats.css?v=1");
+
 /* 6. Utility Classes */
 @import url("./utilities.css?v=9");
 
