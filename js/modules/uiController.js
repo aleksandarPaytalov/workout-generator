@@ -196,6 +196,10 @@ const UIController = (() => {
       "historyWorkoutRepeat",
       handleHistoryWorkoutRepeat
     );
+    document.addEventListener(
+      "historyGenerateSimilar",
+      handleHistoryGenerateSimilar
+    );
   };
 
   /**
@@ -962,6 +966,100 @@ const UIController = (() => {
         error.message
       );
       showErrorState("Failed to repeat workout");
+    }
+  };
+
+  /**
+   * Handle history generate similar workout event from HistoryController
+   * Generates a new workout based on settings from a previous workout
+   * @param {CustomEvent} event - Custom event with workout settings
+   * @private
+   */
+  const handleHistoryGenerateSimilar = (event) => {
+    try {
+      console.log(
+        "UIController: handleHistoryGenerateSimilar called",
+        event.detail
+      );
+      const { settings, workoutId } = event.detail;
+
+      if (settings && settings.muscleGroups && settings.exerciseCount) {
+        // Update form controls to match the previous workout settings
+        updateFormFromSettings(settings);
+
+        // Show loading state
+        showLoadingState();
+
+        // Generate new workout with similar settings
+        setTimeout(() => {
+          try {
+            const workout = ExerciseGenerator.generateRandomWorkout(
+              settings.exerciseCount,
+              settings.muscleGroups
+            );
+
+            // Render the generated workout (true = new workout, save to history)
+            renderWorkoutList(workout, true);
+            console.log(
+              `UIController: Generated similar workout based on ${workoutId}`
+            );
+          } catch (error) {
+            console.error(
+              "UIController: Similar workout generation failed:",
+              error
+            );
+            showErrorState(error.message);
+          }
+        }, 500);
+      } else {
+        console.error(
+          "UIController: Invalid settings provided for similar workout"
+        );
+        showErrorState("Failed to generate similar workout");
+      }
+    } catch (error) {
+      console.error(
+        "UIController: Failed to handle generate similar:",
+        error.message
+      );
+      showErrorState("Failed to generate similar workout");
+    }
+  };
+
+  /**
+   * Update form controls based on workout settings
+   * @param {Object} settings - Workout settings
+   * @private
+   */
+  const updateFormFromSettings = (settings) => {
+    try {
+      // Update exercise count slider
+      if (settings.exerciseCount && elements.exerciseCount) {
+        elements.exerciseCount.value = settings.exerciseCount;
+        updateExerciseCountDisplay();
+      }
+
+      // Update muscle group checkboxes
+      if (settings.muscleGroups && elements.muscleGroupCheckboxes) {
+        // First, uncheck all checkboxes
+        elements.muscleGroupCheckboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+
+        // Then, check the ones from the settings
+        elements.muscleGroupCheckboxes.forEach((checkbox) => {
+          if (settings.muscleGroups.includes(checkbox.value)) {
+            checkbox.checked = true;
+          }
+        });
+      }
+
+      console.log("UIController: Form updated with settings:", settings);
+    } catch (error) {
+      console.error(
+        "UIController: Failed to update form from settings:",
+        error.message
+      );
     }
   };
 

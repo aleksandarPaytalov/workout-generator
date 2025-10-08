@@ -584,6 +584,7 @@
 }
 
 .btn-repeat-workout,
+.btn-generate-similar,
 .btn-delete-workout {
   flex: 1;
   padding: 10px 14px;
@@ -611,6 +612,18 @@
   background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-generate-similar {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-generate-similar:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .btn-delete-workout {

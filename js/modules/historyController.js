@@ -522,6 +522,10 @@ const HistoryController = (() => {
           <span class="btn-icon">🔄</span>
           <span class="btn-text">Repeat Workout</span>
         </button>
+        <button class="btn-generate-similar" data-workout-id="${workout.id}">
+          <span class="btn-icon">✨</span>
+          <span class="btn-text">Generate Similar</span>
+        </button>
         <button class="btn-delete-workout" data-workout-id="${workout.id}">
           <span class="btn-icon">🗑️</span>
           <span class="btn-text">Delete</span>
@@ -531,11 +535,18 @@ const HistoryController = (() => {
 
     // Add event listeners to action buttons
     const repeatBtn = card.querySelector(".btn-repeat-workout");
+    const generateSimilarBtn = card.querySelector(".btn-generate-similar");
     const deleteBtn = card.querySelector(".btn-delete-workout");
 
     if (repeatBtn) {
       repeatBtn.addEventListener("click", () =>
         handleRepeatWorkout(workout.id)
+      );
+    }
+
+    if (generateSimilarBtn) {
+      generateSimilarBtn.addEventListener("click", () =>
+        handleGenerateSimilar(workout.id)
       );
     }
 
@@ -600,6 +611,60 @@ const HistoryController = (() => {
         error.message
       );
       showErrorFeedback("Failed to repeat workout");
+    }
+  };
+
+  /**
+   * Handle generate similar workout button click
+   * Generates a new workout based on the settings of a previous workout
+   * @param {string} workoutId - ID of workout to use as template
+   * @private
+   */
+  const handleGenerateSimilar = (workoutId) => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        const workout = WorkoutHistory.getWorkoutById(workoutId);
+
+        if (workout && workout.settings) {
+          // Hide history section and show main sections
+          elements.historySection.hidden = true;
+          elements.historyToggleBtn.classList.remove("active");
+
+          // Show main workout sections
+          if (elements.workoutControls) {
+            elements.workoutControls.hidden = false;
+          }
+          if (elements.workoutDisplay) {
+            elements.workoutDisplay.hidden = false;
+          }
+
+          // Extract settings from the previous workout
+          const settings = {
+            exerciseCount: workout.exercises?.length || 8,
+            muscleGroups: workout.settings.muscleGroups || [],
+          };
+
+          // Dispatch custom event to UIController to generate similar workout
+          const event = new CustomEvent("historyGenerateSimilar", {
+            detail: { settings, workoutId },
+          });
+          document.dispatchEvent(event);
+
+          console.log(
+            `HistoryController: Generating similar workout based on ${workoutId}`
+          );
+          showGenerateSimilarFeedback();
+        } else {
+          console.error("HistoryController: Workout not found:", workoutId);
+          showErrorFeedback("Workout not found");
+        }
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to generate similar workout:",
+        error.message
+      );
+      showErrorFeedback("Failed to generate similar workout");
     }
   };
 
@@ -676,6 +741,14 @@ const HistoryController = (() => {
    */
   const showDeleteWorkoutFeedback = () => {
     showFeedback("🗑️", "Workout deleted", "#f59e0b", "#d97706");
+  };
+
+  /**
+   * Show feedback when generating similar workout
+   * @private
+   */
+  const showGenerateSimilarFeedback = () => {
+    showFeedback("✨", "Generating similar workout", "#8b5cf6", "#7c3aed");
   };
 
   /**
@@ -773,6 +846,7 @@ const HistoryController = (() => {
     loadWorkoutHistory,
     handleHistoryToggle,
     handleRepeatWorkout,
+    handleGenerateSimilar,
     handleDeleteWorkout,
   };
 
