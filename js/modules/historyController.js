@@ -254,9 +254,15 @@ const HistoryController = (() => {
         ) {
           WorkoutHistory.clearHistory();
 
+          // Reset pagination state
+          allWorkouts = [];
+          currentPage = 0;
+          totalPages = 0;
+
           // Update display
           updateWorkoutCount(0);
           showHistoryEmptyState();
+          hidePagination();
           showClearHistoryFeedback();
 
           console.log("HistoryController: History cleared successfully");
@@ -278,6 +284,7 @@ const HistoryController = (() => {
     elements.historyLoadingState.hidden = false;
     elements.historyEmptyState.hidden = true;
     elements.workoutCardsContainer.hidden = true;
+    hidePagination();
   };
 
   /**
@@ -288,6 +295,7 @@ const HistoryController = (() => {
     elements.historyLoadingState.hidden = true;
     elements.historyEmptyState.hidden = false;
     elements.workoutCardsContainer.hidden = true;
+    hidePagination();
   };
 
   /**
@@ -606,8 +614,32 @@ const HistoryController = (() => {
         if (confirm("Are you sure you want to delete this workout?")) {
           WorkoutHistory.removeWorkout(workoutId);
 
-          // Reload history to update the display
-          loadWorkoutHistory();
+          // Get updated workouts
+          const workouts = WorkoutHistory.getHistory();
+
+          // Update pagination state
+          allWorkouts = workouts;
+          totalPages = workouts.length;
+
+          // Adjust current page if needed
+          // If we deleted the last workout on the current page, go to previous page
+          if (currentPage >= totalPages && totalPages > 0) {
+            currentPage = totalPages - 1;
+          }
+
+          // Update workout count
+          updateWorkoutCount(workouts.length);
+
+          // Update display
+          if (workouts.length === 0) {
+            // No workouts left
+            showHistoryEmptyState();
+            hidePagination();
+            currentPage = 0;
+          } else {
+            // Show the current page (or adjusted page)
+            displayCurrentPage();
+          }
 
           console.log(`HistoryController: Deleted workout ${workoutId}`);
           showDeleteWorkoutFeedback();

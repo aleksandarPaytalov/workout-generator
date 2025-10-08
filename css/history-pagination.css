@@ -24,6 +24,11 @@
   gap: 15px;
 }
 
+/* Ensure hidden attribute works correctly */
+.history-pagination[hidden] {
+  display: none !important;
+}
+
 /* ===================================================================
    Pagination Buttons
    ================================================================ */
@@ -218,4 +223,3 @@
     font-size: 0.8rem;
   }
 }
-
