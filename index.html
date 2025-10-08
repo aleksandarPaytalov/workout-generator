@@ -390,6 +390,31 @@
               >
                 <!-- Workout cards will be dynamically inserted here -->
               </div>
+
+              <!-- Pagination Controls -->
+              <div class="history-pagination" id="historyPagination" hidden>
+                <button
+                  class="pagination-btn btn-prev"
+                  id="paginationPrevBtn"
+                  aria-label="Previous workout"
+                >
+                  <span class="btn-icon">←</span>
+                  <span class="btn-text">Previous</span>
+                </button>
+                <div class="pagination-info">
+                  <span class="current-page" id="currentPageDisplay">1</span>
+                  <span class="page-separator">/</span>
+                  <span class="total-pages" id="totalPagesDisplay">1</span>
+                </div>
+                <button
+                  class="pagination-btn btn-next"
+                  id="paginationNextBtn"
+                  aria-label="Next workout"
+                >
+                  <span class="btn-text">Next</span>
+                  <span class="btn-icon">→</span>
+                </button>
+              </div>
             </div>
           </div>
         </section>

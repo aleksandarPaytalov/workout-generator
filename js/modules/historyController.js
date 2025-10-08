@@ -10,6 +10,9 @@ const HistoryController = (() => {
   // Module state
   let isInitialized = false;
   let elements = {};
+  let currentPage = 0; // Current page index (0-based)
+  let totalPages = 0; // Total number of pages
+  let allWorkouts = []; // Store all workouts for pagination
 
   /**
    * Initialize the History Controller module
@@ -66,6 +69,12 @@ const HistoryController = (() => {
         workoutCardsContainer: document.getElementById("workoutCardsContainer"),
         workoutCount: document.getElementById("workoutCount"),
         clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+        // Pagination elements
+        historyPagination: document.getElementById("historyPagination"),
+        paginationPrevBtn: document.getElementById("paginationPrevBtn"),
+        paginationNextBtn: document.getElementById("paginationNextBtn"),
+        currentPageDisplay: document.getElementById("currentPageDisplay"),
+        totalPagesDisplay: document.getElementById("totalPagesDisplay"),
         // Main sections to hide/show
         workoutControls: document.querySelector(".workout-controls"),
         workoutDisplay: document.querySelector(".workout-display"),
@@ -112,6 +121,18 @@ const HistoryController = (() => {
       // Clear history button
       if (elements.clearHistoryBtn) {
         elements.clearHistoryBtn.addEventListener("click", handleClearHistory);
+      }
+
+      // Pagination buttons
+      if (elements.paginationPrevBtn) {
+        elements.paginationPrevBtn.addEventListener(
+          "click",
+          handlePreviousPage
+        );
+      }
+
+      if (elements.paginationNextBtn) {
+        elements.paginationNextBtn.addEventListener("click", handleNextPage);
       }
 
       console.log("HistoryController: Event listeners setup successfully");
@@ -174,7 +195,7 @@ const HistoryController = (() => {
   };
 
   /**
-   * Load and display workout history
+   * Load and display workout history with pagination
    * @private
    */
   const loadWorkoutHistory = () => {
@@ -186,19 +207,27 @@ const HistoryController = (() => {
       if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
         const workouts = WorkoutHistory.getHistory();
 
+        // Store all workouts for pagination
+        allWorkouts = workouts;
+        totalPages = workouts.length;
+
         // Update workout count
         updateWorkoutCount(workouts.length);
 
         if (workouts.length === 0) {
           showHistoryEmptyState();
+          hidePagination();
         } else {
-          displayWorkoutCards(workouts);
+          // Reset to first page
+          currentPage = 0;
+          displayCurrentPage();
         }
 
         console.log(`HistoryController: Loaded ${workouts.length} workouts`);
       } else {
         console.warn("HistoryController: WorkoutHistory module not available");
         showHistoryEmptyState();
+        hidePagination();
       }
     } catch (error) {
       console.error(
@@ -206,6 +235,7 @@ const HistoryController = (() => {
         error.message
       );
       showHistoryEmptyState();
+      hidePagination();
     }
   };
 
@@ -269,6 +299,106 @@ const HistoryController = (() => {
     if (elements.workoutCount) {
       const text = count === 1 ? "1 workout" : `${count} workouts`;
       elements.workoutCount.textContent = text;
+    }
+  };
+
+  /**
+   * Display the current page of workouts (1 workout per page)
+   * @private
+   */
+  const displayCurrentPage = () => {
+    try {
+      if (allWorkouts.length === 0) {
+        showHistoryEmptyState();
+        hidePagination();
+        return;
+      }
+
+      // Get the workout for the current page
+      const workout = allWorkouts[currentPage];
+
+      if (!workout) {
+        console.error("HistoryController: Invalid page index");
+        return;
+      }
+
+      // Display single workout card
+      displayWorkoutCards([workout]);
+
+      // Update pagination controls
+      updatePaginationControls();
+
+      // Show pagination
+      showPagination();
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to display current page:",
+        error.message
+      );
+    }
+  };
+
+  /**
+   * Handle previous page button click
+   * @private
+   */
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      currentPage--;
+      displayCurrentPage();
+    }
+  };
+
+  /**
+   * Handle next page button click
+   * @private
+   */
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      displayCurrentPage();
+    }
+  };
+
+  /**
+   * Update pagination controls (buttons and page display)
+   * @private
+   */
+  const updatePaginationControls = () => {
+    // Update page display
+    if (elements.currentPageDisplay) {
+      elements.currentPageDisplay.textContent = currentPage + 1;
+    }
+    if (elements.totalPagesDisplay) {
+      elements.totalPagesDisplay.textContent = totalPages;
+    }
+
+    // Update button states
+    if (elements.paginationPrevBtn) {
+      elements.paginationPrevBtn.disabled = currentPage === 0;
+    }
+    if (elements.paginationNextBtn) {
+      elements.paginationNextBtn.disabled = currentPage === totalPages - 1;
+    }
+  };
+
+  /**
+   * Show pagination controls
+   * @private
+   */
+  const showPagination = () => {
+    if (elements.historyPagination && totalPages > 1) {
+      elements.historyPagination.hidden = false;
+    }
+  };
+
+  /**
+   * Hide pagination controls
+   * @private
+   */
+  const hidePagination = () => {
+    if (elements.historyPagination) {
+      elements.historyPagination.hidden = true;
     }
   };
 

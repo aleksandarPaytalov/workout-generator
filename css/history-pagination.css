@@ -1,0 +1,221 @@
+/* ===================================================================
+   History Pagination - Modern Compact Design
+   ================================================================
+   
+   Pagination controls for workout history with 1 card per page.
+   Modern, eye-catching design with contemporary colors.
+   
+   Colors used:
+   - Purple: #8B5CF6, #7C3AED (primary actions)
+   - Slate: #1e293b, #64748b (text)
+   ================================================================ */
+
+/* ===================================================================
+   Pagination Container
+   ================================================================ */
+
+.history-pagination {
+  padding: 20px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* ===================================================================
+   Pagination Buttons
+   ================================================================ */
+
+.pagination-btn {
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pagination-btn:disabled {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.pagination-btn .btn-icon {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.pagination-btn .btn-text {
+  font-size: 0.85rem;
+}
+
+/* ===================================================================
+   Pagination Info (Page Counter)
+   ================================================================ */
+
+.pagination-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.1rem;
+}
+
+.current-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  padding: 0 10px;
+}
+
+.page-separator {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.total-pages {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ===================================================================
+   Responsive Design
+   ================================================================ */
+
+/* Tablets and smaller */
+@media (max-width: 768px) {
+  .history-pagination {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .pagination-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .pagination-btn .btn-icon {
+    font-size: 1rem;
+  }
+
+  .pagination-info {
+    font-size: 1rem;
+  }
+
+  .current-page {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .total-pages {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+  .history-pagination {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .pagination-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+
+  .pagination-btn .btn-text {
+    display: none; /* Hide text on small screens, show only icons */
+  }
+
+  .pagination-btn .btn-icon {
+    font-size: 1.2rem;
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+  }
+
+  .current-page {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .page-separator {
+    font-size: 1rem;
+  }
+
+  .total-pages {
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .history-pagination {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+  }
+
+  .pagination-btn .btn-icon {
+    font-size: 1.1rem;
+  }
+
+  .pagination-info {
+    font-size: 0.85rem;
+  }
+
+  .current-page {
+    min-width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+  }
+
+  .total-pages {
+    font-size: 0.8rem;
+  }
+}
+
