@@ -307,7 +307,7 @@
 }
 
 .workout-card-stats .stat-label {
-  color: #64748b;
+  color: #6b7280; /* Light mode - darker gray for better visibility */
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -402,7 +402,7 @@
 }
 
 .stat-label {
-  color: #64748b;
+  color: #6b7280; /* Light mode - darker gray for better visibility */
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -579,14 +579,17 @@
 .workout-card-actions {
   padding: 12px 18px;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .btn-repeat-workout,
 .btn-generate-similar,
+.btn-share-workout,
 .btn-delete-workout {
-  flex: 1;
+  flex: 1 1 calc(50% - 4px); /* 2 buttons per row on mobile */
+  min-width: 140px;
   padding: 10px 14px;
   border: none;
   border-radius: 10px;
@@ -624,6 +627,18 @@
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-share-workout {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-share-workout:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .btn-delete-workout {
@@ -1135,5 +1150,16 @@
     padding: 10px;
     font-size: 0.8rem;
     min-height: 42px;
+  }
+}
+
+/* Large screens - show all 4 buttons in one row */
+@media (min-width: 900px) {
+  .btn-repeat-workout,
+  .btn-generate-similar,
+  .btn-share-workout,
+  .btn-delete-workout {
+    flex: 1 1 auto;
+    min-width: auto;
   }
 }
