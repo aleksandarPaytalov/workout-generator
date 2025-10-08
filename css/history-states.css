@@ -29,6 +29,11 @@
   box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1);
 }
 
+/* Ensure hidden attribute works correctly */
+.history-empty-state[hidden] {
+  display: none !important;
+}
+
 .history-empty-state::before {
   content: "";
   position: absolute;
@@ -173,6 +178,11 @@
   text-align: center;
   padding: 60px 30px;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* Ensure hidden attribute works correctly */
+.history-loading-state[hidden] {
+  display: none !important;
 }
 
 .loading-spinner {

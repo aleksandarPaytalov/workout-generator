@@ -253,6 +253,11 @@
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
+/* Ensure hidden attribute works correctly */
+.workout-cards-container[hidden] {
+  display: none !important;
+}
+
 /* ===================================================================
    Navigation & Utility Classes
    ================================================================ */
