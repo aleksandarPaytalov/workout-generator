@@ -4,7 +4,12 @@
 
    Main history stylesheet that imports modular CSS components:
    - history-base.css: Core layout and container styles
-   - history-cards.css: Workout card components
+   - history-card-base.css: Base card styling and hover effects
+   - history-card-header.css: Card header and workout type badges
+   - history-card-stats.css: Workout statistics display
+   - history-card-exercises.css: Exercise lists and previews
+   - history-card-actions.css: Action buttons (Repeat, Generate Similar, Delete, Share)
+   - history-card-responsive.css: Responsive design for all screen sizes
    - history-states.css: Empty, loading, and error states
    - history-animations.css: All animations and keyframes
 
@@ -14,7 +19,12 @@
 
 /* Import modular history stylesheets */
 @import url("history-base.css");
-@import url("history-cards.css");
+@import url("history-card-base.css");
+@import url("history-card-header.css");
+@import url("history-card-stats.css");
+@import url("history-card-exercises.css");
+@import url("history-card-actions.css");
+@import url("history-card-responsive.css");
 @import url("history-states.css");
 @import url("history-animations.css");
 

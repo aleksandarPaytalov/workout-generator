@@ -1,0 +1,196 @@
+/* ===================================================================
+   History Card Header - Card Header and Badges
+   ================================================================
+   
+   Styling for workout card headers including:
+   - Card header layout and date information
+   - Workout type badges with animations
+   - Compact and full header designs
+   
+   Colors used:
+   - Purple: #8B5CF6, #7C3AED (strength)
+   - Red: #EF4444, #DC2626 (cardio)
+   - Green: #10B981, #059669 (flexibility)
+   - Orange: #F59E0B, #D97706 (hiit)
+   - Pink: #EC4899, #DB2777 (yoga)
+   ================================================================ */
+
+/* ===================================================================
+   Card Header - Compact Design
+   ================================================================ */
+
+.workout-card-header {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 12px;
+}
+
+.workout-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.workout-icon {
+  font-size: 1.2rem;
+}
+
+.workout-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.workout-badge {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.workout-card-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.date-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.time-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* ===================================================================
+   Full Header Design
+   ================================================================ */
+
+.workout-header {
+  padding: 25px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.workout-date-info {
+  flex: 1;
+}
+
+.workout-date {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.workout-relative-date {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===================================================================
+   Workout Type Badges with Animations
+   ================================================================ */
+
+.workout-type-badge {
+  color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.workout-type-badge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.workout-type-badge:hover::before {
+  left: 100%;
+}
+
+.workout-type-badge:hover {
+  transform: translateY(-3px) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Workout Type Specific Badge Colors */
+.workout-type-badge.strength {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.workout-type-badge.strength:hover {
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5);
+}
+
+.workout-type-badge.cardio {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.workout-type-badge.cardio:hover {
+  box-shadow: 0 12px 30px rgba(239, 68, 68, 0.5);
+}
+
+.workout-type-badge.flexibility {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.workout-type-badge.flexibility:hover {
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+}
+
+.workout-type-badge.hiit {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.workout-type-badge.hiit:hover {
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+}
+
+.workout-type-badge.yoga {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.workout-type-badge.yoga:hover {
+  box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
+}
+

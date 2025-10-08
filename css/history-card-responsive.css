@@ -1,0 +1,442 @@
+/* ===================================================================
+   History Card Responsive - Mobile-First Responsive Design
+   ================================================================
+   
+   Responsive styling for workout cards across all device sizes:
+   - Large tablets and small desktops (max-width: 1024px)
+   - Tablets (max-width: 768px)
+   - Large mobile devices (max-width: 640px)
+   - Small mobile devices (max-width: 480px)
+   - Extra small devices (max-width: 360px)
+   - Large screens (min-width: 900px)
+   
+   Mobile-first approach with progressive enhancement
+   ================================================================ */
+
+/* ===================================================================
+   Large Tablets and Small Desktops (max-width: 1024px)
+   ================================================================ */
+
+@media (max-width: 1024px) {
+  .workout-card {
+    border-radius: 18px;
+  }
+
+  .workout-header {
+    padding: 22px;
+  }
+
+  .workout-stats {
+    padding: 22px;
+    gap: 18px;
+  }
+
+  .exercise-preview {
+    padding: 22px;
+  }
+
+  .exercise-list-full {
+    padding: 22px;
+    gap: 8px;
+  }
+
+  .exercise-item-full {
+    padding: 12px 15px;
+    gap: 12px;
+  }
+
+  .exercise-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .exercise-name-full {
+    font-size: 0.95rem;
+  }
+
+  .exercise-muscle-tag {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+  }
+
+  .action-buttons {
+    padding: 22px;
+    gap: 10px;
+  }
+}
+
+/* ===================================================================
+   Tablets (max-width: 768px)
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .workout-header {
+    padding: 20px;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .workout-date {
+    font-size: 1.15rem;
+  }
+
+  .workout-relative-date {
+    font-size: 0.85rem;
+  }
+
+  .workout-type-badge {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .workout-stats {
+    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .stat-item {
+    padding: 18px 15px;
+  }
+
+  .stat-icon {
+    font-size: 1.6rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .exercise-preview {
+    padding: 20px;
+  }
+
+  .exercise-list-full {
+    padding: 20px;
+    gap: 8px;
+  }
+
+  .exercise-item-full {
+    grid-template-columns: 35px 1fr auto;
+    padding: 12px 15px;
+    gap: 10px;
+  }
+
+  .exercise-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .exercise-name-full {
+    font-size: 0.9rem;
+  }
+
+  .exercise-muscle-tag {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .preview-title {
+    font-size: 1.1rem;
+  }
+
+  .exercise-item {
+    padding: 12px;
+  }
+
+  .exercise-name {
+    font-size: 0.95rem;
+  }
+
+  .exercise-details {
+    font-size: 0.85rem;
+  }
+
+  .action-buttons {
+    padding: 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-buttons button {
+    padding: 14px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ===================================================================
+   Large Mobile Devices (max-width: 640px)
+   ================================================================ */
+
+@media (max-width: 640px) {
+  .workout-card {
+    border-radius: 16px;
+  }
+
+  .workout-header {
+    padding: 18px;
+  }
+
+  .workout-date {
+    font-size: 1.1rem;
+  }
+
+  .workout-stats {
+    padding: 18px;
+  }
+
+  .exercise-preview {
+    padding: 18px;
+  }
+
+  .exercise-list-full {
+    padding: 18px;
+    gap: 8px;
+  }
+
+  .exercise-item-full {
+    grid-template-columns: 32px 1fr;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .exercise-number {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+  }
+
+  .exercise-name-full {
+    font-size: 0.85rem;
+    grid-column: 2 / 3;
+  }
+
+  .exercise-muscle-tag {
+    grid-column: 2 / 3;
+    justify-self: start;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    margin-top: 4px;
+  }
+
+  .action-buttons {
+    padding: 18px;
+  }
+}
+
+/* ===================================================================
+   Small Mobile Devices (max-width: 480px)
+   ================================================================ */
+
+@media (max-width: 480px) {
+  .workout-card {
+    border-radius: 15px;
+  }
+
+  .workout-header {
+    padding: 15px;
+  }
+
+  .workout-date {
+    font-size: 1.05rem;
+  }
+
+  .workout-relative-date {
+    font-size: 0.8rem;
+  }
+
+  .workout-type-badge {
+    padding: 6px 14px;
+    font-size: 0.75rem;
+  }
+
+  .workout-stats {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .stat-item {
+    padding: 15px 12px;
+  }
+
+  .stat-icon {
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .exercise-preview {
+    padding: 15px;
+  }
+
+  .exercise-list-full {
+    padding: 15px;
+    gap: 6px;
+  }
+
+  .exercise-item-full {
+    grid-template-columns: 28px 1fr;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .exercise-number {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .exercise-name-full {
+    font-size: 0.8rem;
+  }
+
+  .exercise-muscle-tag {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
+
+  .preview-title {
+    font-size: 1rem;
+  }
+
+  .exercise-item {
+    padding: 10px;
+  }
+
+  .exercise-name {
+    font-size: 0.9rem;
+  }
+
+  .exercise-details {
+    font-size: 0.8rem;
+    padding: 3px 10px;
+  }
+
+  .action-buttons {
+    padding: 15px;
+    gap: 8px;
+  }
+
+  .action-buttons button {
+    padding: 12px;
+    font-size: 0.85rem;
+    min-height: 44px; /* Better touch targets */
+  }
+
+  .btn-icon {
+    font-size: 1rem;
+  }
+}
+
+/* ===================================================================
+   Extra Small Devices (max-width: 360px)
+   ================================================================ */
+
+@media (max-width: 360px) {
+  .workout-card {
+    border-radius: 12px;
+  }
+
+  .workout-header {
+    padding: 12px;
+  }
+
+  .workout-date {
+    font-size: 1rem;
+  }
+
+  .workout-type-badge {
+    padding: 5px 12px;
+    font-size: 0.7rem;
+  }
+
+  .workout-stats {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .stat-item {
+    padding: 12px 10px;
+  }
+
+  .stat-icon {
+    font-size: 1.3rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .exercise-preview {
+    padding: 12px;
+  }
+
+  .exercise-list-full {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .exercise-item-full {
+    grid-template-columns: 26px 1fr;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .exercise-number {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+  }
+
+  .exercise-name-full {
+    font-size: 0.75rem;
+  }
+
+  .exercise-muscle-tag {
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+
+  .exercise-item {
+    padding: 8px;
+  }
+
+  .action-buttons {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .action-buttons button {
+    padding: 10px;
+    font-size: 0.8rem;
+    min-height: 42px;
+  }
+}
+
+/* ===================================================================
+   Large Screens (min-width: 900px) - Desktop Optimization
+   ================================================================ */
+
+@media (min-width: 900px) {
+  /* Show all 4 action buttons in one row on large screens */
+  .btn-repeat-workout,
+  .btn-generate-similar,
+  .btn-share-workout,
+  .btn-delete-workout {
+    flex: 1 1 auto;
+    min-width: auto;
+  }
+}

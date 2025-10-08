@@ -1,0 +1,158 @@
+/* ===================================================================
+   History Card Stats - Workout Statistics Display
+   ================================================================
+   
+   Styling for workout statistics sections including:
+   - Compact stats grid (3 columns)
+   - Full stats display with animations
+   - Stat items with hover effects
+   
+   Colors used:
+   - Purple: #8B5CF6 (primary)
+   - Slate: #1E293B, #64748B (text)
+   - Light backgrounds: #F8FAFC, #FFFFFF
+   ================================================================ */
+
+/* ===================================================================
+   Workout Statistics - Compact Design
+   ================================================================ */
+
+.workout-card-stats {
+  padding: 12px 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.workout-card-stats .stat-item {
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.workout-card-stats .stat-icon {
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.workout-card-stats .stat-value {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.workout-card-stats .stat-label {
+  color: #6b7280; /* Light mode - darker gray for better visibility */
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===================================================================
+   Full Statistics Display with Animations
+   ================================================================ */
+
+.workout-stats {
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px 15px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.08),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.stat-item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    #8b5cf6,
+    #ec4899,
+    #ef4444,
+    #f59e0b,
+    #10b981
+  );
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+  transform-origin: left;
+}
+
+.stat-item:hover::before {
+  left: 100%;
+}
+
+.stat-item:hover::after {
+  transform: scaleX(1);
+}
+
+.stat-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+}
+
+.stat-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 8px;
+  animation: statPulse 2s ease-in-out infinite;
+}
+
+.stat-value {
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  color: #6b7280; /* Light mode - darker gray for better visibility */
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
