@@ -22,6 +22,7 @@
 /* 5.1. History Component Styles */
 @import url("./history.css?v=1");
 @import url("./history-pagination.css?v=1");
+@import url("./history-search.css?v=1");
 
 /* 5.2. Stats Component Styles */
 @import url("./stats.css?v=1");

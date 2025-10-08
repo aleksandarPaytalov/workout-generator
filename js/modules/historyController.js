@@ -12,7 +12,10 @@ const HistoryController = (() => {
   let elements = {};
   let currentPage = 0; // Current page index (0-based)
   let totalPages = 0; // Total number of pages
-  let allWorkouts = []; // Store all workouts for pagination
+  let allWorkouts = []; // Store all workouts (original, unfiltered)
+  let displayedWorkouts = []; // Store workouts to display (filtered or all)
+  let searchTerm = ""; // Current search term
+  let selectedMuscleGroup = ""; // Current muscle group filter
 
   /**
    * Initialize the History Controller module
@@ -79,6 +82,11 @@ const HistoryController = (() => {
         paginationNextBtn: document.getElementById("paginationNextBtn"),
         currentPageDisplay: document.getElementById("currentPageDisplay"),
         totalPagesDisplay: document.getElementById("totalPagesDisplay"),
+        // Search and Filter elements
+        searchFilterSection: document.getElementById("historySearchFilter"),
+        searchInput: document.getElementById("workoutSearchInput"),
+        muscleGroupFilter: document.getElementById("muscleGroupFilter"),
+        clearFiltersBtn: document.getElementById("clearFiltersBtn"),
         // Main sections to hide/show
         workoutControls: document.querySelector(".workout-controls"),
         workoutDisplay: document.querySelector(".workout-display"),
@@ -142,6 +150,19 @@ const HistoryController = (() => {
 
       if (elements.paginationNextBtn) {
         elements.paginationNextBtn.addEventListener("click", handleNextPage);
+      }
+
+      // Search and Filter event listeners
+      if (elements.searchInput) {
+        elements.searchInput.addEventListener("input", handleSearch);
+      }
+
+      if (elements.muscleGroupFilter) {
+        elements.muscleGroupFilter.addEventListener("change", handleFilter);
+      }
+
+      if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.addEventListener("click", handleClearFilters);
       }
 
       console.log("HistoryController: Event listeners setup successfully");
@@ -218,6 +239,7 @@ const HistoryController = (() => {
 
         // Store all workouts for pagination
         allWorkouts = workouts;
+        displayedWorkouts = [...workouts]; // Initialize displayed workouts
         totalPages = workouts.length;
 
         // Update workout count
@@ -226,10 +248,12 @@ const HistoryController = (() => {
         if (workouts.length === 0) {
           showHistoryEmptyState();
           hidePagination();
+          hideSearchFilter();
         } else {
           // Reset to first page
           currentPage = 0;
           displayCurrentPage();
+          showSearchFilter();
         }
 
         console.log(`HistoryController: Loaded ${workouts.length} workouts`);
@@ -506,19 +530,43 @@ const HistoryController = (() => {
   };
 
   /**
+   * Show search and filter section
+   * @private
+   */
+  const showSearchFilter = () => {
+    if (elements.searchFilterSection) {
+      elements.searchFilterSection.hidden = false;
+    }
+  };
+
+  /**
+   * Hide search and filter section
+   * @private
+   */
+  const hideSearchFilter = () => {
+    if (elements.searchFilterSection) {
+      elements.searchFilterSection.hidden = true;
+    }
+  };
+
+  /**
    * Display the current page of workouts (1 workout per page)
    * @private
    */
   const displayCurrentPage = () => {
     try {
-      if (allWorkouts.length === 0) {
+      // Use displayedWorkouts if filters are active, otherwise use allWorkouts
+      const workoutsToShow =
+        displayedWorkouts.length > 0 ? displayedWorkouts : allWorkouts;
+
+      if (workoutsToShow.length === 0) {
         showHistoryEmptyState();
         hidePagination();
         return;
       }
 
       // Get the workout for the current page
-      const workout = allWorkouts[currentPage];
+      const workout = workoutsToShow[currentPage];
 
       if (!workout) {
         console.error("HistoryController: Invalid page index");
@@ -560,6 +608,98 @@ const HistoryController = (() => {
     if (currentPage < totalPages - 1) {
       currentPage++;
       displayCurrentPage();
+    }
+  };
+
+  /**
+   * Handle search input
+   * @private
+   */
+  const handleSearch = (event) => {
+    searchTerm = event.target.value.toLowerCase().trim();
+    applyFilters();
+  };
+
+  /**
+   * Handle muscle group filter change
+   * @private
+   */
+  const handleFilter = (event) => {
+    selectedMuscleGroup = event.target.value.toLowerCase();
+    applyFilters();
+  };
+
+  /**
+   * Handle clear filters button click
+   * @private
+   */
+  const handleClearFilters = () => {
+    // Reset filter values
+    searchTerm = "";
+    selectedMuscleGroup = "";
+
+    // Reset UI elements
+    if (elements.searchInput) {
+      elements.searchInput.value = "";
+    }
+    if (elements.muscleGroupFilter) {
+      elements.muscleGroupFilter.value = "";
+    }
+
+    // Apply filters (will show all workouts)
+    applyFilters();
+  };
+
+  /**
+   * Apply search and filter to workouts
+   * @private
+   */
+  const applyFilters = () => {
+    try {
+      // Start with all workouts
+      let filtered = [...allWorkouts];
+
+      // Apply search filter
+      if (searchTerm) {
+        filtered = filtered.filter((workout) => {
+          return workout.exercises.some((exercise) =>
+            exercise.name.toLowerCase().includes(searchTerm)
+          );
+        });
+      }
+
+      // Apply muscle group filter
+      if (selectedMuscleGroup) {
+        filtered = filtered.filter((workout) => {
+          return workout.exercises.some(
+            (exercise) =>
+              exercise.muscleGroup.toLowerCase() === selectedMuscleGroup
+          );
+        });
+      }
+
+      // Update displayed workouts
+      displayedWorkouts = filtered;
+      currentPage = 0; // Reset to first page
+      totalPages = Math.max(1, displayedWorkouts.length);
+
+      // Show/hide clear filters button
+      const hasActiveFilters = searchTerm || selectedMuscleGroup;
+      if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.hidden = !hasActiveFilters;
+      }
+
+      // Display filtered results
+      displayCurrentPage();
+
+      console.log(
+        `HistoryController: Filters applied - ${displayedWorkouts.length} workouts found`
+      );
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to apply filters:",
+        error.message
+      );
     }
   };
 

@@ -1,0 +1,234 @@
+/* ===================================================================
+   History Search and Filter Styles
+   Modern, eye-catching search and filter UI for workout history
+   ================================================================ */
+
+/* Search and Filter Container */
+.history-search-filter {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 2px solid #e2e8f0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Search Box */
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.search-box:focus-within {
+  border-color: #8b5cf6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+.search-icon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  color: #8b5cf6;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  background: transparent;
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Filter Box */
+.filter-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+}
+
+.filter-box:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+.filter-icon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  color: #10b981;
+}
+
+.filter-select {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-select option {
+  padding: 0.5rem;
+  background: white;
+  color: #1e293b;
+}
+
+/* Clear Filters Button */
+.btn-clear-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-clear-filters:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.btn-clear-filters:active {
+  transform: translateY(0);
+}
+
+/* Filter Results Info */
+.filter-results-info {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-left: 4px solid #3b82f6;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.filter-results-info::before {
+  content: "ℹ️";
+  font-size: 1.125rem;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .history-search-filter {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] .search-box,
+[data-theme="dark"] .filter-box {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .search-box:focus-within {
+  border-color: #a78bfa;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+}
+
+[data-theme="dark"] .filter-box:focus-within {
+  border-color: #34d399;
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+}
+
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .filter-select {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .search-input::placeholder {
+  color: #64748b;
+}
+
+[data-theme="dark"] .filter-select option {
+  background: #374151;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .filter-results-info {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-left-color: #60a5fa;
+  color: #dbeafe;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .history-search-filter {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .search-box,
+  .filter-box {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .btn-clear-filters {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box,
+  .filter-box {
+    padding: 0.625rem 0.875rem;
+  }
+
+  .search-icon,
+  .filter-icon {
+    font-size: 1.125rem;
+    margin-right: 0.5rem;
+  }
+
+  .search-input,
+  .filter-select {
+    font-size: 0.875rem;
+  }
+
+  .btn-clear-filters {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+}
+

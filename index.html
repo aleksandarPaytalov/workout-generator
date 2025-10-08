@@ -355,6 +355,45 @@
               </div>
             </div>
 
+            <!-- Search and Filter Section -->
+            <div class="history-search-filter" id="historySearchFilter" hidden>
+              <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  id="workoutSearchInput"
+                  class="search-input"
+                  placeholder="Search by exercise name..."
+                  aria-label="Search workouts by exercise name"
+                />
+              </div>
+              <div class="filter-box">
+                <span class="filter-icon">🎯</span>
+                <select
+                  id="muscleGroupFilter"
+                  class="filter-select"
+                  aria-label="Filter by muscle group"
+                >
+                  <option value="">All Muscle Groups</option>
+                  <option value="chest">Chest</option>
+                  <option value="back">Back</option>
+                  <option value="legs">Legs</option>
+                  <option value="shoulders">Shoulders</option>
+                  <option value="arms">Arms</option>
+                  <option value="core">Core</option>
+                </select>
+              </div>
+              <button
+                id="clearFiltersBtn"
+                class="btn-clear-filters"
+                aria-label="Clear all filters"
+                title="Clear search and filters"
+                hidden
+              >
+                ✕ Clear Filters
+              </button>
+            </div>
+
             <!-- History Content Container -->
             <div class="history-content" id="historyContent">
               <!-- Empty State (shown when no workouts) -->
