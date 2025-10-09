@@ -47,6 +47,7 @@ const TimerUI = (() => {
     }
 
     try {
+      createTimerModal();
       isInitialized = true;
       console.log("TimerUI: Initialized successfully");
       return true;
@@ -65,10 +66,72 @@ const TimerUI = (() => {
     return isInitialized;
   };
 
+  /**
+   * Show timer modal
+   * @public
+   */
+  const showTimer = () => {
+    if (!isInitialized) {
+      console.error("TimerUI: Module not initialized");
+      return;
+    }
+
+    elements.overlay.style.display = "flex";
+    console.log("TimerUI: Timer modal shown");
+  };
+
+  /**
+   * Hide timer modal
+   * @public
+   */
+  const hideTimer = () => {
+    if (!isInitialized) {
+      console.error("TimerUI: Module not initialized");
+      return;
+    }
+
+    elements.overlay.style.display = "none";
+    console.log("TimerUI: Timer modal hidden");
+  };
+
+  /**
+   * Create the main timer modal structure
+   * @private
+   */
+  const createTimerModal = () => {
+    console.log("TimerUI: Creating timer modal structure");
+
+    // Create overlay with backdrop
+    const overlay = document.createElement("div");
+    overlay.className = "timer-overlay";
+    overlay.style.display = "none";
+    elements.overlay = overlay;
+
+    console.log("TimerUI: Modal overlay created with backdrop");
+
+    // Create modal container with modern styling
+    const modal = document.createElement("div");
+    modal.className = "timer-modal";
+    elements.modal = modal;
+
+    console.log("TimerUI: Modal container created with modern styling");
+
+    // Add close button functionality - click overlay to close
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        hideTimer();
+      }
+    });
+
+    console.log("TimerUI: Close button functionality added");
+  };
+
   // Public API
   return {
     init,
     isReady,
+    showTimer,
+    hideTimer,
     getElements: () => elements,
   };
 })();
