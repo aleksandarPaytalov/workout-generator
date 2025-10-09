@@ -95,6 +95,24 @@ const TimerUI = (() => {
   };
 
   /**
+   * Create phase indicator component
+   * @private
+   * @returns {HTMLElement} Phase indicator element
+   */
+  const createPhaseIndicator = () => {
+    console.log("TimerUI: Creating phase indicator component");
+
+    const indicator = document.createElement("div");
+    indicator.className = "timer-phase-indicator";
+    indicator.textContent = "PREPARE";
+    indicator.setAttribute("data-phase", "prepare");
+    elements.phaseIndicator = indicator;
+
+    console.log("TimerUI: Phase indicator created with PREPARE state");
+    return indicator;
+  };
+
+  /**
    * Create main timer display
    * @private
    * @returns {HTMLElement} Timer display element
