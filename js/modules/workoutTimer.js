@@ -338,6 +338,177 @@ const WorkoutTimer = (() => {
   };
 
   /**
+   * Start the timer countdown
+   * @private
+   */
+  const startCountdown = () => {
+    // Clear any existing interval
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+
+    // Start interval with 100ms precision for accuracy
+    timerInterval = setInterval(() => {
+      if (timerState.isPaused) {
+        return; // Don't update if paused
+      }
+
+      // Calculate elapsed time accounting for paused time
+      const now = Date.now();
+      const elapsed = Math.floor(
+        (now - timerState.startTime - timerState.pausedTime) / 1000
+      );
+      const remaining = Math.max(0, timerState.totalTime - elapsed);
+
+      // Update remaining time
+      updateTimerState({ remainingTime: remaining });
+
+      // Emit tick event every second
+      emitEvent(TIMER_EVENTS.TICK, {
+        phase: timerState.phase,
+        remainingTime: remaining,
+        totalTime: timerState.totalTime,
+        exercise: timerState.exercise,
+        set: timerState.currentSet,
+        cycle: timerState.currentCycle,
+      });
+
+      // Check if phase is complete
+      if (remaining <= 0) {
+        handlePhaseComplete();
+      }
+    }, 100); // 100ms interval for smooth updates
+  };
+
+  /**
+   * Handle phase completion and transition to next phase
+   * @private
+   */
+  const handlePhaseComplete = () => {
+    const currentPhase = timerState.phase;
+
+    console.log(`WorkoutTimer: Phase "${currentPhase}" completed`);
+
+    // Determine next phase based on current phase
+    if (currentPhase === "preparing") {
+      // Prepare -> Work
+      setPhase("working", timerConfig.work);
+      startCountdown();
+    } else if (currentPhase === "working") {
+      // Work -> Rest or next cycle/set
+      const hasMoreCycles = advanceToNextCycle();
+
+      if (hasMoreCycles) {
+        // More cycles in this set -> Rest
+        setPhase("resting", timerConfig.rest);
+        startCountdown();
+      } else {
+        // Cycle completed, emit event
+        emitEvent(TIMER_EVENTS.CYCLE_COMPLETED, {
+          exercise: timerState.exercise,
+          set: timerState.currentSet,
+          cycle: timerConfig.cyclesPerSet,
+        });
+
+        const hasMoreSets = advanceToNextSet();
+
+        if (hasMoreSets) {
+          // More sets -> Rest between sets
+          setPhase("resting", timerConfig.restBetweenSets);
+          emitEvent(TIMER_EVENTS.SET_COMPLETED, {
+            exercise: timerState.exercise,
+            set: timerState.currentSet - 1,
+          });
+          startCountdown();
+        } else {
+          // Exercise completed
+          stopTimer();
+          setPhase("completed", 0);
+          emitEvent(TIMER_EVENTS.EXERCISE_COMPLETED, {
+            exercise: timerState.exercise,
+          });
+        }
+      }
+    } else if (currentPhase === "resting") {
+      // Rest -> Work (next cycle)
+      setPhase("working", timerConfig.work);
+      startCountdown();
+    }
+  };
+
+  /**
+   * Start timer for an exercise
+   * @public
+   * @param {Object} exercise - Exercise object to time
+   * @param {number} index - Exercise index in workout (optional)
+   * @returns {boolean} True if timer started successfully
+   */
+  const startTimer = (exercise, index = 0) => {
+    try {
+      if (!isInitialized) {
+        throw new Error("WorkoutTimer not initialized");
+      }
+
+      if (!exercise) {
+        throw new Error("Invalid exercise object");
+      }
+
+      // Set current exercise
+      if (!setCurrentExercise(exercise, index)) {
+        throw new Error("Failed to set exercise");
+      }
+
+      // Start with prepare phase
+      setPhase("preparing", timerConfig.prepare);
+
+      // Emit started event
+      emitEvent(TIMER_EVENTS.STARTED, {
+        exercise: exercise,
+        config: timerConfig,
+      });
+
+      // Start countdown
+      startCountdown();
+
+      console.log(`WorkoutTimer: Timer started for "${exercise.name}"`);
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to start timer:", error.message);
+      return false;
+    }
+  };
+
+  /**
+   * Stop timer and reset to idle
+   * @public
+   * @returns {boolean} True if timer stopped successfully
+   */
+  const stopTimer = () => {
+    try {
+      // Clear interval
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      // Emit stopped event
+      emitEvent(TIMER_EVENTS.STOPPED, {
+        exercise: timerState.exercise,
+        phase: timerState.phase,
+      });
+
+      // Reset state
+      resetTimerState();
+
+      console.log("WorkoutTimer: Timer stopped");
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to stop timer:", error.message);
+      return false;
+    }
+  };
+
+  /**
    * Emit custom event
    * @private
    * @param {string} eventName - Name of the event
@@ -369,6 +540,8 @@ const WorkoutTimer = (() => {
     isRunning,
     isPaused,
     getTimerState,
+    startTimer,
+    stopTimer,
     TIMER_EVENTS,
   };
 })();
