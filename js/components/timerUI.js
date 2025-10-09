@@ -95,6 +95,61 @@ const TimerUI = (() => {
   };
 
   /**
+   * Create main timer display
+   * @private
+   * @returns {HTMLElement} Timer display element
+   */
+  const createTimerDisplay = () => {
+    console.log("TimerUI: Creating main timer display");
+  };
+
+  /**
+   * Create timer header component
+   * @private
+   * @returns {HTMLElement} Header element
+   */
+  const createTimerHeader = () => {
+    console.log("TimerUI: Creating timer header component");
+
+    const header = document.createElement("div");
+    header.className = "timer-header";
+    elements.header = header;
+
+    // Exercise name display
+    const exerciseName = document.createElement("h2");
+    exerciseName.className = "timer-exercise-name";
+    exerciseName.textContent = "Exercise Name";
+    elements.exerciseName = exerciseName;
+
+    header.appendChild(exerciseName);
+
+    console.log("TimerUI: Exercise name display added");
+
+    // Exercise number indicator (X of Y)
+    const exerciseNumber = document.createElement("div");
+    exerciseNumber.className = "timer-exercise-number";
+    exerciseNumber.textContent = "Exercise 1 of 8";
+    elements.exerciseNumber = exerciseNumber;
+
+    header.appendChild(exerciseNumber);
+
+    console.log("TimerUI: Exercise number indicator added");
+
+    // Close button with icon
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "timer-close-btn";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.setAttribute("aria-label", "Close timer");
+    closeBtn.addEventListener("click", hideTimer);
+    elements.closeBtn = closeBtn;
+
+    header.appendChild(closeBtn);
+
+    console.log("TimerUI: Close button with icon added");
+    return header;
+  };
+
+  /**
    * Create the main timer modal structure
    * @private
    */
