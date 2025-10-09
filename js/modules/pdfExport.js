@@ -1,444 +1,333 @@
 /**
  * PDF Export Module
  * 
- * Handles direct PDF generation and download for workout lists.
- * Creates real PDF files using minimal PDF specification.
+ * Handles PDF generation and download for workout lists using jsPDF library.
+ * Simple, clean implementation with professional formatting.
  * 
  * @namespace PDFExport
  */
 
-// Use IIFE to create module namespace and prevent global pollution
 const PDFExport = (() => {
-    'use strict';
-    
-    // Private module state
-    let isInitialized = false;
-    
-    /**
-     * Initialize the module
-     * Called automatically when module loads
-     * @private
-     */
-    const init = () => {
-        if (isInitialized) {
-            console.warn('PDFExport: Module already initialized');
-            return;
-        }
-        
-        console.log('PDFExport: Module initialized successfully');
-        isInitialized = true;
+  "use strict";
+
+  let isInitialized = false;
+
+  /**
+   * Initialize the module
+   */
+  const init = () => {
+    if (isInitialized) {
+      console.warn("PDFExport: Module already initialized");
+      return;
+    }
+
+    if (typeof window.jspdf !== "undefined") {
+      console.log("PDFExport: jsPDF library loaded successfully");
+    } else {
+      console.warn("PDFExport: jsPDF library not found");
+    }
+
+    isInitialized = true;
+    console.log("PDFExport: Module initialized");
+  };
+
+  /**
+   * Check if module is ready
+   */
+  const isReady = () => isInitialized;
+
+  /**
+   * Generate and download PDF using jsPDF
+   */
+  const exportWorkoutToPDF = (workout) => {
+    if (!workout || workout.length === 0) {
+      throw new Error("PDFExport: Valid workout array is required");
+    }
+
+    // Check if jsPDF is available
+    if (typeof window.jspdf === "undefined") {
+      console.warn("PDFExport: jsPDF not available, falling back to text export");
+      exportWorkoutAsText(workout);
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Get current date and time
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const currentTime = new Date().toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // Calculate statistics
+    const stats = calculateWorkoutStats(workout);
+
+    // PDF Layout
+    let y = 20;
+    const lineHeight = 7;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 20;
+
+    // Helper to check if we need a new page
+    const checkNewPage = (space = 10) => {
+      if (y + space > pageHeight - margin) {
+        doc.addPage();
+        y = 20;
+      }
     };
-    
-    /**
-     * Check if module is properly initialized
-     * @returns {boolean} True if module is ready to use
-     * @public
-     */
-    const isReady = () => {
-        return isInitialized;
+
+    // === TITLE ===
+    doc.setFontSize(22);
+    doc.setFont(undefined, "bold");
+    doc.text("MY WORKOUT PLAN", 105, y, { align: "center" });
+    y += 15;
+
+    // === SUMMARY SECTION ===
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text("Workout Summary", 20, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, "normal");
+    doc.text(`Date: ${currentDate} at ${currentTime}`, 20, y);
+    y += lineHeight;
+    doc.text(`Total Exercises: ${workout.length}`, 20, y);
+    y += lineHeight;
+    doc.text(`Total Sets: ${stats.totalSets}`, 20, y);
+    y += lineHeight;
+    doc.text(`Total Reps: ${stats.totalReps}`, 20, y);
+    y += lineHeight;
+    doc.text(`Estimated Duration: ${stats.estimatedDuration} minutes`, 20, y);
+    y += 12;
+
+    // === MUSCLE GROUPS SECTION ===
+    checkNewPage(30);
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text("Muscle Groups", 20, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, "normal");
+    Object.entries(stats.muscleGroups).forEach(([group, count]) => {
+      const label = ExerciseDatabase?.getMuscleGroupLabel?.(group) || group;
+      const percentage = Math.round((count / workout.length) * 100);
+      doc.text(`${label}: ${count} exercises (${percentage}%)`, 20, y);
+      y += lineHeight;
+    });
+    y += 5;
+
+    // === EQUIPMENT SECTION ===
+    if (stats.equipment.length > 0) {
+      checkNewPage(20);
+      doc.setFontSize(14);
+      doc.setFont(undefined, "bold");
+      doc.text("Equipment Needed", 20, y);
+      y += 10;
+
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text(stats.equipment.join(", "), 20, y);
+      y += 12;
+    }
+
+    // === EXERCISES SECTION ===
+    checkNewPage(30);
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text("Exercise List", 20, y);
+    y += 10;
+
+    workout.forEach((exercise, index) => {
+      checkNewPage(30);
+
+      const name = exercise.name || "Unknown Exercise";
+      const muscleGroup = exercise.muscleGroup
+        ? ExerciseDatabase?.getMuscleGroupLabel?.(exercise.muscleGroup) || exercise.muscleGroup
+        : "General";
+      const sets = exercise.sets || 3;
+      const reps = exercise.reps || 10;
+      const equipment = exercise.equipment || "bodyweight";
+
+      // Exercise number and name
+      doc.setFontSize(11);
+      doc.setFont(undefined, "bold");
+      doc.text(`${index + 1}. ${name}`, 20, y);
+      y += 7;
+
+      // Exercise details
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text(`Muscle Group: ${muscleGroup}`, 25, y);
+      y += lineHeight;
+      doc.text(`Sets: ${sets}  |  Reps: ${reps}  |  Equipment: ${equipment}`, 25, y);
+      y += 10;
+    });
+
+    // === FOOTER ===
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont(undefined, "normal");
+      doc.text(
+        `Generated by Workout Generator - ${currentDate}`,
+        105,
+        pageHeight - 10,
+        { align: "center" }
+      );
+      doc.text(`Page ${i} of ${totalPages}`, 190, pageHeight - 10, {
+        align: "right",
+      });
+    }
+
+    // Download the PDF
+    doc.save("my-workout.pdf");
+    console.log("PDFExport: PDF downloaded successfully");
+  };
+
+  /**
+   * Calculate workout statistics
+   */
+  const calculateWorkoutStats = (workout) => {
+    const muscleGroups = {};
+    const equipmentSet = new Set();
+    let totalSets = 0;
+    let totalReps = 0;
+
+    workout.forEach((exercise) => {
+      // Muscle groups
+      const group = exercise.muscleGroup;
+      muscleGroups[group] = (muscleGroups[group] || 0) + 1;
+
+      // Equipment
+      if (exercise.equipment) {
+        equipmentSet.add(exercise.equipment);
+      }
+
+      // Sets and reps
+      const sets = exercise.sets || 3;
+      const reps = exercise.reps || 10;
+      totalSets += sets;
+      totalReps += sets * reps;
+    });
+
+    // Estimate duration: ~3 minutes per set (exercise + rest)
+    const estimatedDuration = totalSets * 3;
+
+    return {
+      muscleGroups,
+      equipment: Array.from(equipmentSet),
+      totalSets,
+      totalReps,
+      estimatedDuration,
     };
-    
-    /**
-     * Generate a minimal PDF document with workout content
-     * @param {Array} workout - Array of exercise objects
-     * @returns {Uint8Array} PDF byte array
-     * @private
-     */
-    const generatePDFBytes = (workout) => {
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        
-        // Build content strings
-        const title = 'My Workout Plan';
-        const dateStr = `Generated on: ${currentDate}`;
-        const countStr = `Total Exercises: ${workout.length}`;
-        
-        // Get muscle group summary
-        const muscleGroupCount = {};
-        workout.forEach(exercise => {
-            const group = exercise.muscleGroup;
-            muscleGroupCount[group] = (muscleGroupCount[group] || 0) + 1;
-        });
-        
-        const groupSummary = Object.entries(muscleGroupCount)
-            .map(([group, count]) => {
-                const label = ExerciseDatabase?.getMuscleGroupLabel?.(group) || group;
-                return `${label}: ${count}`;
-            })
-            .join(', ');
-        
-        // Build exercise list
-        const exerciseLines = workout.map((exercise, index) => {
-            const exerciseName = exercise.name || 'Unknown Exercise';
-            const muscleGroup = exercise.muscleGroup ? 
-                `(${ExerciseDatabase?.getMuscleGroupLabel?.(exercise.muscleGroup) || exercise.muscleGroup})` : 
-                '';
-            return `${index + 1}. ${exerciseName} ${muscleGroup}`;
-        });
-        
-        // Create PDF content
-        const content = [
-            title,
-            '',
-            dateStr,
-            countStr,
-            `Muscle Groups: ${groupSummary}`,
-            '',
-            'EXERCISES:',
-            '----------',
-            ...exerciseLines,
-            '',
-            'Generated by Workout Generator App'
-        ];
-        
-        // Generate PDF structure
-        const pdfContent = createSimplePDF(content);
-        
-        return pdfContent;
-    };
-    
-    /**
-     * Create a simple PDF document structure
-     * @param {string[]} lines - Array of content lines
-     * @returns {Uint8Array} PDF byte array
-     * @private
-     */
-    const createSimplePDF = (lines) => {
-        // PDF header
-        const header = '%PDF-1.4\n';
-        
-        // Calculate content
-        const pageContent = lines.join('\n');
-        const pageContentLength = pageContent.length;
-        
-        // PDF objects
-        const objects = [];
-        
-        // Object 1: Catalog
-        objects.push(
-            '1 0 obj\n' +
-            '<<\n' +
-            '/Type /Catalog\n' +
-            '/Pages 2 0 R\n' +
-            '>>\n' +
-            'endobj\n'
-        );
-        
-        // Object 2: Pages
-        objects.push(
-            '2 0 obj\n' +
-            '<<\n' +
-            '/Type /Pages\n' +
-            '/Kids [3 0 R]\n' +
-            '/Count 1\n' +
-            '>>\n' +
-            'endobj\n'
-        );
-        
-        // Object 3: Page
-        objects.push(
-            '3 0 obj\n' +
-            '<<\n' +
-            '/Type /Page\n' +
-            '/Parent 2 0 R\n' +
-            '/MediaBox [0 0 612 792]\n' +
-            '/Resources <<\n' +
-            '  /Font <<\n' +
-            '    /F1 4 0 R\n' +
-            '  >>\n' +
-            '>>\n' +
-            '/Contents 5 0 R\n' +
-            '>>\n' +
-            'endobj\n'
-        );
-        
-        // Object 4: Font
-        objects.push(
-            '4 0 obj\n' +
-            '<<\n' +
-            '/Type /Font\n' +
-            '/Subtype /Type1\n' +
-            '/BaseFont /Helvetica\n' +
-            '>>\n' +
-            'endobj\n'
-        );
-        
-        // Object 5: Page Content
-        const stream = buildPageStream(lines);
-        objects.push(
-            '5 0 obj\n' +
-            '<<\n' +
-            `/Length ${stream.length}\n` +
-            '>>\n' +
-            'stream\n' +
-            stream +
-            'endstream\n' +
-            'endobj\n'
-        );
-        
-        // Build complete PDF
-        let pdf = header;
-        const objectOffsets = [];
-        
-        // Add objects and track offsets
-        objects.forEach(obj => {
-            objectOffsets.push(pdf.length);
-            pdf += obj;
-        });
-        
-        // Add xref table
-        const xrefOffset = pdf.length;
-        pdf += 'xref\n';
-        pdf += `0 ${objects.length + 1}\n`;
-        pdf += '0000000000 65535 f \n';
-        
-        objectOffsets.forEach(offset => {
-            pdf += offset.toString().padStart(10, '0') + ' 00000 n \n';
-        });
-        
-        // Add trailer
-        pdf += 'trailer\n';
-        pdf += '<<\n';
-        pdf += `/Size ${objects.length + 1}\n`;
-        pdf += '/Root 1 0 R\n';
-        pdf += '>>\n';
-        pdf += 'startxref\n';
-        pdf += xrefOffset + '\n';
-        pdf += '%%EOF\n';
-        
-        // Convert to Uint8Array
-        const encoder = new TextEncoder();
-        return encoder.encode(pdf);
-    };
-    
-    /**
-     * Build PDF page stream content
-     * @param {string[]} lines - Content lines
-     * @returns {string} PDF stream content
-     * @private
-     */
-    const buildPageStream = (lines) => {
-        let stream = 'BT\n';
-        stream += '/F1 12 Tf\n';
-        stream += '50 750 Td\n';
-        stream += '14 TL\n';
-        
-        lines.forEach((line, index) => {
-            // Escape special characters
-            const escapedLine = line.replace(/[()\\]/g, '\\$&');
-            
-            // Title formatting
-            if (index === 0) {
-                stream += '/F1 16 Tf\n';
-                stream += `(${escapedLine}) Tj\n`;
-                stream += 'T*\n';
-                stream += '/F1 12 Tf\n';
-            } else if (line === 'EXERCISES:') {
-                stream += '/F1 14 Tf\n';
-                stream += `(${escapedLine}) Tj\n`;
-                stream += 'T*\n';
-                stream += '/F1 12 Tf\n';
-            } else if (line === '') {
-                stream += 'T*\n';
-            } else {
-                stream += `(${escapedLine}) Tj\n`;
-                stream += 'T*\n';
-            }
-        });
-        
-        stream += 'ET\n';
-        return stream;
-    };
-    
-    /**
-     * Export workout as PDF and download directly
-     * @param {Array} workout - Array of exercise objects
-     * @param {Object} options - Export options
-     * @public
-     */
-    const exportWorkoutToPDF = (workout, options = {}) => {
-        if (!isInitialized) {
-            throw new Error('PDFExport: Module not initialized');
-        }
-        
-        if (!Array.isArray(workout) || workout.length === 0) {
-            throw new Error('PDFExport: Valid workout array is required');
-        }
-        
-        try {
-            // Generate PDF bytes
-            const pdfBytes = generatePDFBytes(workout);
-            
-            // Create blob and download
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            downloadBlob(blob, 'my-workout.pdf');
-            
-        } catch (error) {
-            console.error('PDFExport: PDF generation failed:', error);
-            throw new Error(`PDF generation failed: ${error.message}`);
-        }
-    };
-    
-    /**
-     * Export workout as formatted text file
-     * @param {Array} workout - Array of exercise objects
-     * @public
-     */
-    const exportWorkoutAsText = (workout) => {
-        if (!Array.isArray(workout) || workout.length === 0) {
-            throw new Error('PDFExport: Valid workout array is required');
-        }
-        
-        try {
-            // Create formatted text content
-            let content = 'MY WORKOUT PLAN\n';
-            content += '='.repeat(50) + '\n\n';
-            
-            const currentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            content += `Generated on: ${currentDate}\n`;
-            content += `Total Exercises: ${workout.length}\n\n`;
-            
-            // Add muscle group summary
-            const muscleGroupCount = {};
-            workout.forEach(exercise => {
-                const group = exercise.muscleGroup;
-                muscleGroupCount[group] = (muscleGroupCount[group] || 0) + 1;
-            });
-            
-            content += 'MUSCLE GROUP DISTRIBUTION:\n';
-            Object.entries(muscleGroupCount).forEach(([group, count]) => {
-                const label = ExerciseDatabase?.getMuscleGroupLabel?.(group) || group;
-                content += `- ${label}: ${count} exercise${count > 1 ? 's' : ''}\n`;
-            });
-            
-            content += '\nEXERCISES:\n';
-            content += '-'.repeat(30) + '\n';
-            
-            // Add each exercise
-            workout.forEach((exercise, index) => {
-                const exerciseName = exercise.name || 'Unknown Exercise';
-                const muscleGroup = exercise.muscleGroup ? 
-                    `(${ExerciseDatabase?.getMuscleGroupLabel?.(exercise.muscleGroup) || exercise.muscleGroup})` : 
-                    '';
-                
-                content += `${index + 1}. ${exerciseName} ${muscleGroup}\n`;
-            });
-            
-            content += '\n' + '-'.repeat(50) + '\n';
-            content += 'Generated by Workout Generator App\n';
-            
-            // Create and download blob
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            downloadBlob(blob, 'my-workout.txt');
-            
-        } catch (error) {
-            console.error('PDFExport: Text export failed:', error);
-            throw new Error(`Text export failed: ${error.message}`);
-        }
-    };
-    
-    /**
-     * Download a blob as a file
-     * @param {Blob} blob - The blob to download
-     * @param {string} filename - The filename for download
-     * @private
-     */
-    const downloadBlob = (blob, filename) => {
-        try {
-            // Create download link
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            link.style.display = 'none';
-            
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-            
-            // Cleanup
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            console.log(`PDFExport: Successfully downloaded ${filename}`);
-            
-        } catch (error) {
-            console.error('PDFExport: Download failed:', error);
-            throw new Error(`Download failed: ${error.message}`);
-        }
-    };
-    
-    /**
-     * Main export function - creates direct PDF download
-     * @param {Array} workout - Array of exercise objects
-     * @param {Object} options - Export options
-     * @public
-     */
-    const exportWorkout = (workout, options = {}) => {
-        if (!isInitialized) {
-            throw new Error('PDFExport: Module not initialized');
-        }
-        
-        const { 
-            format = 'pdf',
-            fallbackToText = true 
-        } = options;
-        
-        try {
-            if (format === 'pdf') {
-                exportWorkoutToPDF(workout, options);
-            } else if (format === 'text') {
-                exportWorkoutAsText(workout);
-            } else {
-                throw new Error(`Unsupported export format: ${format}`);
-            }
-            
-        } catch (error) {
-            console.warn('PDFExport: Primary export failed:', error.message);
-            
-            if (fallbackToText && format !== 'text') {
-                console.log('PDFExport: Falling back to text export');
-                try {
-                    exportWorkoutAsText(workout);
-                } catch (fallbackError) {
-                    console.error('PDFExport: Fallback export also failed:', fallbackError);
-                    throw new Error('Both PDF and text export failed');
-                }
-            } else {
-                throw error;
-            }
-        }
-    };
-    
-    // Public API
-    const publicAPI = {
-        isReady,
-        exportWorkout,
-        exportWorkoutToPDF,
-        exportWorkoutAsText
-    };
-    
-    // Auto-initialize when module loads
-    init();
-    
-    // Return public interface
-    return publicAPI;
-    
+  };
+
+  /**
+   * Export workout as simple text file (fallback)
+   */
+  const exportWorkoutAsText = (workout) => {
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const stats = calculateWorkoutStats(workout);
+
+    let content = "MY WORKOUT PLAN\n";
+    content += "=".repeat(50) + "\n\n";
+    content += `Date: ${currentDate}\n`;
+    content += `Total Exercises: ${workout.length}\n`;
+    content += `Total Sets: ${stats.totalSets}\n`;
+    content += `Total Reps: ${stats.totalReps}\n`;
+    content += `Estimated Duration: ${stats.estimatedDuration} minutes\n\n`;
+
+    content += "MUSCLE GROUPS:\n";
+    Object.entries(stats.muscleGroups).forEach(([group, count]) => {
+      const label = ExerciseDatabase?.getMuscleGroupLabel?.(group) || group;
+      content += `- ${label}: ${count} exercises\n`;
+    });
+
+    if (stats.equipment.length > 0) {
+      content += `\nEQUIPMENT: ${stats.equipment.join(", ")}\n`;
+    }
+
+    content += "\nEXERCISES:\n";
+    content += "-".repeat(50) + "\n\n";
+
+    workout.forEach((exercise, index) => {
+      const name = exercise.name || "Unknown Exercise";
+      const muscleGroup = exercise.muscleGroup
+        ? ExerciseDatabase?.getMuscleGroupLabel?.(exercise.muscleGroup) || exercise.muscleGroup
+        : "General";
+      const sets = exercise.sets || 3;
+      const reps = exercise.reps || 10;
+      const equipment = exercise.equipment || "bodyweight";
+
+      content += `${index + 1}. ${name}\n`;
+      content += `   Muscle Group: ${muscleGroup}\n`;
+      content += `   Sets: ${sets} | Reps: ${reps} | Equipment: ${equipment}\n\n`;
+    });
+
+    content += "-".repeat(50) + "\n";
+    content += `Generated by Workout Generator - ${currentDate}\n`;
+
+    // Download as text file
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "my-workout.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log("PDFExport: Text file downloaded successfully");
+  };
+
+  /**
+   * Main export function
+   */
+  const exportWorkout = (workout, options = {}) => {
+    const { format = "pdf" } = options;
+
+    if (format === "pdf") {
+      exportWorkoutToPDF(workout);
+    } else {
+      exportWorkoutAsText(workout);
+    }
+  };
+
+  // Auto-initialize
+  init();
+
+  // Public API
+  return {
+    isReady,
+    exportWorkout,
+    exportWorkoutToPDF,
+    exportWorkoutAsText,
+  };
 })();
 
-// Verify module loaded correctly
-if (typeof PDFExport === 'undefined') {
-    throw new Error('PDFExport module failed to load');
+// Verify module loaded
+if (typeof PDFExport === "undefined") {
+  throw new Error("PDFExport module failed to load");
 }
 
-// Optional: Add to global scope for debugging (remove in production)
-if (typeof window !== 'undefined') {
-    window.PDFExport = PDFExport;
+// Add to window for debugging
+if (typeof window !== "undefined") {
+  window.PDFExport = PDFExport;
 }
+
