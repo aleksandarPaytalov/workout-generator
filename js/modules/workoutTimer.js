@@ -509,6 +509,147 @@ const WorkoutTimer = (() => {
   };
 
   /**
+   * Pause the timer
+   * @public
+   * @returns {boolean} True if timer paused successfully
+   */
+  const pauseTimer = () => {
+    try {
+      if (!isRunning()) {
+        console.warn("WorkoutTimer: Cannot pause - timer not running");
+        return false;
+      }
+
+      if (timerState.isPaused) {
+        console.warn("WorkoutTimer: Timer already paused");
+        return false;
+      }
+
+      // Mark as paused and record pause start time
+      updateTimerState({
+        isPaused: true,
+        pauseStartTime: Date.now(),
+      });
+
+      // Emit paused event
+      emitEvent(TIMER_EVENTS.PAUSED, {
+        exercise: timerState.exercise,
+        phase: timerState.phase,
+        remainingTime: timerState.remainingTime,
+      });
+
+      console.log("WorkoutTimer: Timer paused");
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to pause timer:", error.message);
+      return false;
+    }
+  };
+
+  /**
+   * Resume the timer from paused state
+   * @public
+   * @returns {boolean} True if timer resumed successfully
+   */
+  const resumeTimer = () => {
+    try {
+      if (!timerState.isPaused) {
+        console.warn("WorkoutTimer: Cannot resume - timer not paused");
+        return false;
+      }
+
+      // Calculate total paused time
+      const pauseDuration = Date.now() - timerState.pauseStartTime;
+      const totalPausedTime = timerState.pausedTime + pauseDuration;
+
+      // Update state
+      updateTimerState({
+        isPaused: false,
+        pausedTime: totalPausedTime,
+        pauseStartTime: null,
+      });
+
+      // Emit resumed event
+      emitEvent(TIMER_EVENTS.RESUMED, {
+        exercise: timerState.exercise,
+        phase: timerState.phase,
+        remainingTime: timerState.remainingTime,
+        pauseDuration: Math.floor(pauseDuration / 1000),
+      });
+
+      console.log(
+        `WorkoutTimer: Timer resumed (paused for ${Math.floor(
+          pauseDuration / 1000
+        )}s)`
+      );
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to resume timer:", error.message);
+      return false;
+    }
+  };
+
+  /**
+   * Skip current phase and move to next
+   * @public
+   * @returns {boolean} True if phase skipped successfully
+   */
+  const skipPhase = () => {
+    try {
+      if (!isRunning() && !timerState.isPaused) {
+        console.warn("WorkoutTimer: Cannot skip - timer not running");
+        return false;
+      }
+
+      const currentPhase = timerState.phase;
+      console.log(`WorkoutTimer: Skipping phase "${currentPhase}"`);
+
+      // Force phase completion
+      handlePhaseComplete();
+
+      console.log("WorkoutTimer: Phase skipped successfully");
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to skip phase:", error.message);
+      return false;
+    }
+  };
+
+  /**
+   * Reset current exercise timer to beginning
+   * @public
+   * @returns {boolean} True if timer reset successfully
+   */
+  const resetExercise = () => {
+    try {
+      if (!timerState.exercise) {
+        console.warn("WorkoutTimer: No exercise to reset");
+        return false;
+      }
+
+      const exercise = timerState.exercise;
+      const index = timerState.exerciseIndex;
+
+      console.log(`WorkoutTimer: Resetting exercise "${exercise.name}"`);
+
+      // Stop current timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      // Restart timer with same exercise
+      startTimer(exercise, index);
+
+      console.log("WorkoutTimer: Exercise reset successfully");
+      return true;
+    } catch (error) {
+      console.error("WorkoutTimer: Failed to reset exercise:", error.message);
+      return false;
+    }
+  };
+
+  /**
    * Emit custom event
    * @private
    * @param {string} eventName - Name of the event
@@ -542,6 +683,10 @@ const WorkoutTimer = (() => {
     getTimerState,
     startTimer,
     stopTimer,
+    pauseTimer,
+    resumeTimer,
+    skipPhase,
+    resetExercise,
     TIMER_EVENTS,
   };
 })();
