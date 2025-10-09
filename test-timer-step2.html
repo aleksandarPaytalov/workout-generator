@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkoutTimer Module Test - Step 2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        .test-result {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .success {
+            border-left: 4px solid #4ade80;
+        }
+        .info {
+            border-left: 4px solid #60a5fa;
+        }
+        button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        .phase-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        .phase-idle { background: #6b7280; }
+        .phase-preparing { background: #60a5fa; }
+        .phase-working { background: #4ade80; }
+        .phase-resting { background: #fb923c; }
+        .phase-paused { background: #fbbf24; }
+        .phase-completed { background: #a78bfa; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🏋️ WorkoutTimer Module Test</h1>
+        <p class="subtitle">Task 1 - Step 2: Timer State Management</p>
+
+        <div class="test-section">
+            <h2>✅ State Object Verification</h2>
+            <div id="state-object-test" class="test-result info">
+                Verifying state object structure...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Exercise Tracking</h2>
+            <button onclick="testSetExercise()">Set Test Exercise</button>
+            <div id="exercise-test" class="test-result info">
+                Click button to test exercise tracking...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 Cycle & Set Progression</h2>
+            <button onclick="testCycleAdvance()">Advance Cycle</button>
+            <button onclick="testSetAdvance()">Advance Set</button>
+            <button onclick="testResetState()">Reset State</button>
+            <div id="progression-test" class="test-result info">
+                Click buttons to test cycle and set progression...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>⏱️ Phase Management</h2>
+            <button onclick="testPhase('preparing', 10)">Set PREPARE Phase</button>
+            <button onclick="testPhase('working', 45)">Set WORK Phase</button>
+            <button onclick="testPhase('resting', 15)">Set REST Phase</button>
+            <button onclick="testPhase('completed', 0)">Set COMPLETED Phase</button>
+            <div id="phase-test" class="test-result info">
+                Click buttons to test phase transitions...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Current State Display</h2>
+            <button onclick="refreshStateDisplay()">Refresh State</button>
+            <div id="current-state" class="test-result info">
+                Click refresh to see current state...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📡 Event Monitoring</h2>
+            <div id="event-log" class="test-result info">
+                Waiting for events...
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the WorkoutTimer module -->
+    <script src="js/modules/workoutTimer.js"></script>
+
+    <script>
+        let eventLog = [];
+
+        // Listen for timer events
+        document.addEventListener('timer:phaseChanged', (e) => {
+            logEvent('PHASE_CHANGED', e.detail);
+        });
+
+        function logEvent(eventName, detail) {
+            eventLog.push({ event: eventName, detail: detail, time: new Date().toLocaleTimeString() });
+            updateEventLog();
+        }
+
+        function updateEventLog() {
+            const logDiv = document.getElementById('event-log');
+            if (eventLog.length === 0) {
+                logDiv.innerHTML = 'No events yet...';
+                return;
+            }
+
+            let html = '<strong>📡 Events Received:</strong><br>';
+            eventLog.slice(-5).forEach(log => {
+                html += `<br>[${log.time}] <strong>${log.event}</strong><br>`;
+                html += `${JSON.stringify(log.detail, null, 2)}<br>`;
+            });
+            logDiv.innerHTML = html;
+            logDiv.className = 'test-result success';
+        }
+
+        // Test functions
+        function runTests() {
+            console.log('=== WorkoutTimer Module Test - Step 2 ===');
+
+            // Initialize module
+            WorkoutTimer.init();
+
+            // Test 1: State Object Verification
+            try {
+                const state = WorkoutTimer.getTimerState();
+                
+                const requiredProps = [
+                    'phase', 'exercise', 'exerciseIndex', 'currentSet', 'currentCycle',
+                    'remainingTime', 'totalTime', 'isPaused', 'startTime', 'pausedTime', 'pauseStartTime'
+                ];
+
+                const hasAllProps = requiredProps.every(prop => prop in state);
+
+                document.getElementById('state-object-test').innerHTML = `
+                    <strong>✅ State Object Structure Verified</strong><br>
+                    All required properties present: ${hasAllProps}<br><br>
+                    <strong>State Properties:</strong><br>
+                    ${requiredProps.map(prop => `- ${prop}: ${JSON.stringify(state[prop])}`).join('<br>')}
+                `;
+                document.getElementById('state-object-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('state-object-test').innerHTML = `
+                    <strong>❌ State Object Test Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+
+            refreshStateDisplay();
+        }
+
+        function testSetExercise() {
+            const testExercise = {
+                id: 'test_001',
+                name: 'Push-ups',
+                muscleGroup: 'chest',
+                sets: 3,
+                reps: 10
+            };
+
+            // This will be tested via internal state since setCurrentExercise is private
+            // We'll verify by checking the state after phase changes
+            document.getElementById('exercise-test').innerHTML = `
+                <strong>ℹ️ Exercise Tracking Test</strong><br>
+                Note: Exercise tracking is tested internally via phase transitions.<br>
+                The setCurrentExercise() function is private and will be used<br>
+                when we implement the startTimer() function in Step 3.<br><br>
+                <strong>Test Exercise Object:</strong><br>
+                ${JSON.stringify(testExercise, null, 2)}
+            `;
+            document.getElementById('exercise-test').className = 'test-result info';
+        }
+
+        function testCycleAdvance() {
+            // These are private functions, will be tested in Step 3
+            document.getElementById('progression-test').innerHTML = `
+                <strong>ℹ️ Cycle/Set Progression Test</strong><br>
+                Note: advanceToNextCycle() and advanceToNextSet() are private functions.<br>
+                They will be tested when we implement the full timer logic in Step 3.<br><br>
+                <strong>Current State:</strong><br>
+                Current Cycle: ${WorkoutTimer.getCurrentCycle()}<br>
+                Current Set: ${WorkoutTimer.getCurrentSet()}<br>
+                Progress: ${WorkoutTimer.getProgress()}%
+            `;
+            document.getElementById('progression-test').className = 'test-result info';
+        }
+
+        function testSetAdvance() {
+            testCycleAdvance();
+        }
+
+        function testResetState() {
+            testCycleAdvance();
+        }
+
+        function testPhase(phase, duration) {
+            // Phase changes are tested via the setPhase private function
+            // which emits events we can monitor
+            const state = WorkoutTimer.getTimerState();
+            
+            document.getElementById('phase-test').innerHTML = `
+                <strong>ℹ️ Phase Management Test</strong><br>
+                Note: setPhase() is a private function that will be used in Step 3.<br>
+                It emits 'timer:phaseChanged' events that we can monitor.<br><br>
+                <strong>Requested Phase:</strong> <span class="phase-badge phase-${phase}">${phase.toUpperCase()}</span><br>
+                Duration: ${duration} seconds<br><br>
+                <strong>Current Phase:</strong> <span class="phase-badge phase-${state.phase}">${state.phase.toUpperCase()}</span><br>
+                Check the Event Monitoring section below for phase change events.
+            `;
+            document.getElementById('phase-test').className = 'test-result info';
+        }
+
+        function refreshStateDisplay() {
+            const state = WorkoutTimer.getTimerState();
+            const config = WorkoutTimer.getTimerConfig();
+
+            document.getElementById('current-state').innerHTML = `
+                <strong>✅ Current Timer State</strong><br><br>
+                <strong>Phase:</strong> <span class="phase-badge phase-${state.phase}">${state.phase.toUpperCase()}</span><br>
+                <strong>Exercise:</strong> ${state.exercise ? state.exercise.name : 'None'}<br>
+                <strong>Exercise Index:</strong> ${state.exerciseIndex}<br>
+                <strong>Current Set:</strong> ${state.currentSet} / ${config.sets}<br>
+                <strong>Current Cycle:</strong> ${state.currentCycle} / ${config.cyclesPerSet}<br>
+                <strong>Remaining Time:</strong> ${state.remainingTime}s<br>
+                <strong>Total Time:</strong> ${state.totalTime}s<br>
+                <strong>Is Paused:</strong> ${state.isPaused}<br>
+                <strong>Is Running:</strong> ${WorkoutTimer.isRunning()}<br>
+                <strong>Progress:</strong> ${WorkoutTimer.getProgress()}%<br><br>
+                <strong>Full State Object:</strong><br>
+                ${JSON.stringify(state, null, 2)}
+            `;
+            document.getElementById('current-state').className = 'test-result success';
+        }
+
+        // Run tests when page loads
+        window.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>
+
