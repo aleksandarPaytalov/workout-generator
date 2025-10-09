@@ -8,7 +8,10 @@
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = src;
+    // Add cache-busting parameter using app version
+    const version = window.APP_VERSION || "1.0.0";
+    const cacheBuster = `?v=${version}`;
+    script.src = src + cacheBuster;
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);

@@ -446,6 +446,51 @@ const WorkoutHistory = (() => {
   };
 
   /**
+   * Update workout in history (manual user action only)
+   * @param {string} workoutId - Workout ID to update
+   * @param {Object} updatedWorkout - Updated workout object
+   * @returns {boolean} True if updated successfully
+   * @public
+   */
+  const updateWorkout = (workoutId, updatedWorkout) => {
+    if (!isReady()) {
+      throw new Error("WorkoutHistory: Module not ready");
+    }
+
+    if (!workoutId) {
+      throw new Error("WorkoutHistory: Workout ID required");
+    }
+
+    if (!updatedWorkout) {
+      throw new Error("WorkoutHistory: Updated workout object required");
+    }
+
+    try {
+      const workouts = storageManager.getWorkouts();
+      const index = workouts.findIndex((workout) => workout.id === workoutId);
+
+      if (index === -1) {
+        console.error("WorkoutHistory: Workout not found:", workoutId);
+        return false;
+      }
+
+      // Update the workout in the array
+      workouts[index] = updatedWorkout;
+
+      // Save the entire updated array back to localStorage
+      // We need to clear and re-save all workouts to avoid duplicates
+      storageManager.clearHistory();
+      workouts.forEach((workout) => storageManager.saveWorkout(workout));
+
+      console.log("WorkoutHistory: Workout updated successfully:", workoutId);
+      return true;
+    } catch (error) {
+      console.error("WorkoutHistory: Failed to update workout:", error.message);
+      throw error;
+    }
+  };
+
+  /**
    * Remove workout from history (manual user action only)
    * @param {string} workoutId - Workout ID to remove
    * @returns {boolean} True if removed, false if not found
@@ -1271,6 +1316,7 @@ const WorkoutHistory = (() => {
     addWorkout,
     getHistory,
     getWorkoutById,
+    updateWorkout,
     removeWorkout,
     clearHistory,
     getHistoryStats,

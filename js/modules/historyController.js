@@ -851,7 +851,37 @@ const HistoryController = (() => {
             .join("")}
         </div>
       </div>
-      
+
+      <div class="workout-card-rating-notes">
+        <div class="rating-section">
+          <span class="rating-label">Rate this workout:</span>
+          <div class="rating-stars" data-workout-id="${workout.id}">
+            ${[1, 2, 3, 4, 5]
+              .map(
+                (star) =>
+                  `<span class="star ${
+                    (workout.metadata?.rating || 0) >= star ? "filled" : ""
+                  }" data-rating="${star}">⭐</span>`
+              )
+              .join("")}
+          </div>
+        </div>
+        <div class="notes-section">
+          <label class="notes-label" for="notes-${workout.id}">Notes:</label>
+          <textarea
+            class="notes-input"
+            id="notes-${workout.id}"
+            data-workout-id="${workout.id}"
+            placeholder="Add your notes about this workout..."
+            rows="2"
+          >${workout.metadata?.notes || ""}</textarea>
+          <button class="btn-save-notes" data-workout-id="${workout.id}">
+            <span class="btn-icon">💾</span>
+            <span class="btn-text">Save Notes</span>
+          </button>
+        </div>
+      </div>
+
       <div class="workout-card-actions">
         <button class="btn-repeat-workout" data-workout-id="${workout.id}">
           <span class="btn-icon">🔄</span>
@@ -898,6 +928,26 @@ const HistoryController = (() => {
       deleteBtn.addEventListener("click", () =>
         handleDeleteWorkout(workout.id)
       );
+    }
+
+    // Add event listeners for rating stars
+    const ratingStars = card.querySelectorAll(".rating-stars .star");
+    ratingStars.forEach((star) => {
+      star.addEventListener("click", () => {
+        const rating = parseInt(star.getAttribute("data-rating"));
+        handleRatingChange(workout.id, rating);
+      });
+    });
+
+    // Add event listener for save notes button
+    const saveNotesBtn = card.querySelector(".btn-save-notes");
+    if (saveNotesBtn) {
+      saveNotesBtn.addEventListener("click", () => {
+        const notesInput = card.querySelector(".notes-input");
+        if (notesInput) {
+          handleSaveNotes(workout.id, notesInput.value);
+        }
+      });
     }
 
     return card;
@@ -1050,6 +1100,157 @@ const HistoryController = (() => {
         error.message
       );
       showErrorFeedback("Failed to share workout");
+    }
+  };
+
+  /**
+   * Handle rating change
+   * @param {string} workoutId - ID of workout to rate
+   * @param {number} rating - Rating value (1-5)
+   * @private
+   */
+  const handleRatingChange = (workoutId, rating) => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        const workout = WorkoutHistory.getWorkoutById(workoutId);
+
+        if (workout) {
+          // Update rating in metadata
+          workout.metadata.rating = rating;
+
+          // Save updated workout
+          WorkoutHistory.updateWorkout(workoutId, workout);
+
+          // Refresh the workout data in memory arrays
+          refreshWorkoutInMemory(workoutId);
+
+          // Update the UI to show the new rating
+          updateRatingDisplay(workoutId, rating);
+
+          // Show success feedback
+          showFeedback("⭐", `Rated ${rating} stars!`, "#f59e0b", "#d97706");
+
+          console.log(
+            `HistoryController: Updated rating for workout ${workoutId} to ${rating}`
+          );
+        } else {
+          console.error("HistoryController: Workout not found:", workoutId);
+          showErrorFeedback("Workout not found");
+        }
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to update rating:",
+        error.message
+      );
+      showErrorFeedback("Failed to update rating");
+    }
+  };
+
+  /**
+   * Handle save notes
+   * @param {string} workoutId - ID of workout
+   * @param {string} notes - Notes text
+   * @private
+   */
+  const handleSaveNotes = (workoutId, notes) => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        const workout = WorkoutHistory.getWorkoutById(workoutId);
+
+        if (workout) {
+          // Update notes in metadata
+          workout.metadata.notes = notes.trim();
+
+          // Save updated workout
+          WorkoutHistory.updateWorkout(workoutId, workout);
+
+          // Refresh the workout data in memory arrays
+          refreshWorkoutInMemory(workoutId);
+
+          // Show success feedback
+          showFeedback("💾", "Notes saved!", "#10b981", "#059669");
+
+          console.log(
+            `HistoryController: Saved notes for workout ${workoutId}`
+          );
+        } else {
+          console.error("HistoryController: Workout not found:", workoutId);
+          showErrorFeedback("Workout not found");
+        }
+      }
+    } catch (error) {
+      console.error("HistoryController: Failed to save notes:", error.message);
+      showErrorFeedback("Failed to save notes");
+    }
+  };
+
+  /**
+   * Update rating display in the UI
+   * @param {string} workoutId - ID of workout
+   * @param {number} rating - Rating value (1-5)
+   * @private
+   */
+  const updateRatingDisplay = (workoutId, rating) => {
+    try {
+      const card = document.querySelector(
+        `.workout-card[data-workout-id="${workoutId}"]`
+      );
+      if (card) {
+        const stars = card.querySelectorAll(".rating-stars .star");
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.classList.add("filled");
+          } else {
+            star.classList.remove("filled");
+          }
+        });
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to update rating display:",
+        error.message
+      );
+    }
+  };
+
+  /**
+   * Refresh workout data in memory arrays after updates
+   * This ensures pagination shows the latest data without reloading the entire history
+   * @param {string} workoutId - ID of workout to refresh
+   * @private
+   */
+  const refreshWorkoutInMemory = (workoutId) => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        // Get the updated workout from storage
+        const updatedWorkout = WorkoutHistory.getWorkoutById(workoutId);
+
+        if (updatedWorkout) {
+          // Update in allWorkouts array
+          const allIndex = allWorkouts.findIndex((w) => w.id === workoutId);
+          if (allIndex !== -1) {
+            allWorkouts[allIndex] = updatedWorkout;
+          }
+
+          // Update in displayedWorkouts array
+          const displayedIndex = displayedWorkouts.findIndex(
+            (w) => w.id === workoutId
+          );
+          if (displayedIndex !== -1) {
+            displayedWorkouts[displayedIndex] = updatedWorkout;
+          }
+
+          console.log(
+            `HistoryController: Refreshed workout ${workoutId} in memory`
+          );
+        }
+      }
+    } catch (error) {
+      console.error(
+        "HistoryController: Failed to refresh workout in memory:",
+        error.message
+      );
     }
   };
 
