@@ -117,6 +117,31 @@ const WorkoutTimer = (() => {
         throw new Error("Invalid configuration object");
       }
 
+      // Validate configuration values
+      const validationRules = {
+        prepare: { min: 0, max: 60, name: "Prepare time" },
+        work: { min: 5, max: 600, name: "Work time" },
+        rest: { min: 0, max: 300, name: "Rest time" },
+        cyclesPerSet: { min: 1, max: 20, name: "Cycles per set" },
+        sets: { min: 1, max: 20, name: "Sets" },
+        restBetweenSets: { min: 0, max: 600, name: "Rest between sets" },
+      };
+
+      // Validate each provided config value
+      for (const [key, value] of Object.entries(config)) {
+        if (validationRules[key]) {
+          const rule = validationRules[key];
+          if (typeof value !== "number" || isNaN(value)) {
+            throw new Error(`${rule.name} must be a valid number`);
+          }
+          if (value < rule.min || value > rule.max) {
+            throw new Error(
+              `${rule.name} must be between ${rule.min} and ${rule.max} seconds`
+            );
+          }
+        }
+      }
+
       // Merge with existing config
       timerConfig = { ...timerConfig, ...config };
 
