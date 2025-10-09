@@ -72,6 +72,7 @@ const HistoryController = (() => {
         workoutCardsContainer: document.getElementById("workoutCardsContainer"),
         workoutCount: document.getElementById("workoutCount"),
         clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+        exportDataBtn: document.getElementById("exportDataBtn"),
         // Stats elements
         viewStatsBtn: document.getElementById("viewStatsBtn"),
         statsSection: document.getElementById("statsSection"),
@@ -133,6 +134,11 @@ const HistoryController = (() => {
       // Clear history button
       if (elements.clearHistoryBtn) {
         elements.clearHistoryBtn.addEventListener("click", handleClearHistory);
+      }
+
+      // Export data button
+      if (elements.exportDataBtn) {
+        elements.exportDataBtn.addEventListener("click", handleExportData);
       }
 
       // View stats button
@@ -306,6 +312,71 @@ const HistoryController = (() => {
         "HistoryController: Failed to clear history:",
         error.message
       );
+    }
+  };
+
+  /**
+   * Handle export data button click
+   * Exports workout history as JSON file (user-initiated download)
+   * @private
+   */
+  const handleExportData = () => {
+    try {
+      if (typeof WorkoutHistory !== "undefined" && WorkoutHistory.isReady()) {
+        // Get workouts to export (use filtered workouts if filters are active)
+        const workoutsToExport =
+          displayedWorkouts.length > 0 ? displayedWorkouts : allWorkouts;
+
+        if (workoutsToExport.length === 0) {
+          showFeedback("⚠️", "No workouts to export", "#f59e0b", "#d97706");
+          return;
+        }
+
+        // Create export data object
+        const exportData = {
+          exportDate: new Date().toISOString(),
+          exportTimestamp: Date.now(),
+          appVersion: window.APP_VERSION || "1.0.0",
+          totalWorkouts: workoutsToExport.length,
+          workouts: workoutsToExport,
+        };
+
+        // Convert to JSON string with pretty formatting
+        const jsonString = JSON.stringify(exportData, null, 2);
+
+        // Create blob and download link
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        // Create temporary download link
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+
+        // Generate filename with current date
+        const dateStr = new Date()
+          .toISOString()
+          .split("T")[0]
+          .replace(/-/g, "-");
+        downloadLink.download = `workout-history-${dateStr}.json`;
+
+        // Trigger download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        // Cleanup
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+
+        // Show success feedback
+        showExportDataFeedback(workoutsToExport.length);
+
+        console.log(
+          `HistoryController: Exported ${workoutsToExport.length} workouts`
+        );
+      }
+    } catch (error) {
+      console.error("HistoryController: Failed to export data:", error.message);
+      showFeedback("❌", "Export failed", "#ef4444", "#dc2626");
     }
   };
 
@@ -1311,6 +1382,16 @@ const HistoryController = (() => {
    */
   const showClearHistoryFeedback = () => {
     showFeedback("🗑️", "History cleared", "#ef4444", "#dc2626");
+  };
+
+  /**
+   * Show feedback when data is exported
+   * @param {number} count - Number of workouts exported
+   * @private
+   */
+  const showExportDataFeedback = (count) => {
+    const message = `${count} workout${count !== 1 ? "s" : ""} exported!`;
+    showFeedback("📥", message, "#10b981", "#059669");
   };
 
   /**
