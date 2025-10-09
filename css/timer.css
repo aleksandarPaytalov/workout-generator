@@ -99,3 +99,40 @@
   color: var(--text-secondary, #9ca3af);
 }
 
+/* Timer Display */
+.timer-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem;
+}
+
+.timer-time-display {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .timer-time-display {
+  color: var(--text-primary, #f9fafb);
+}
+
+.timer-set-cycle-info {
+  font-size: 1rem;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+[data-theme="dark"] .timer-set-cycle-info {
+  color: var(--text-secondary, #9ca3af);
+}
+
+.timer-set-cycle-info span {
+  transition: color 0.3s ease;
+}

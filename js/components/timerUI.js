@@ -101,6 +101,30 @@ const TimerUI = (() => {
    */
   const createTimerDisplay = () => {
     console.log("TimerUI: Creating main timer display");
+
+    const display = document.createElement("div");
+    display.className = "timer-display";
+
+    // Large timer display (MM:SS format)
+    const timeDisplay = document.createElement("div");
+    timeDisplay.className = "timer-time-display";
+    timeDisplay.textContent = "00:45";
+    elements.timeDisplay = timeDisplay;
+
+    display.appendChild(timeDisplay);
+
+    console.log("TimerUI: Large timer display added (MM:SS format)");
+
+    // Current set/cycle info display
+    const setInfo = document.createElement("div");
+    setInfo.className = "timer-set-cycle-info";
+    setInfo.innerHTML = "<span>Set 1 of 3</span> • <span>Cycle 1 of 3</span>";
+    elements.setInfo = setInfo;
+
+    display.appendChild(setInfo);
+
+    console.log("TimerUI: Current set/cycle info display added");
+    return display;
   };
 
   /**
