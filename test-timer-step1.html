@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkoutTimer Module Test - Step 1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        .test-result {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .success {
+            border-left: 4px solid #4ade80;
+        }
+        .info {
+            border-left: 4px solid #60a5fa;
+        }
+        button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.ready {
+            background: #4ade80;
+            color: #000;
+        }
+        .status.not-ready {
+            background: #f87171;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🏋️ WorkoutTimer Module Test</h1>
+        <p class="subtitle">Task 1 - Step 1: Module Structure & Initialization</p>
+
+        <div class="test-section">
+            <h2>✅ Module Initialization</h2>
+            <div id="init-test" class="test-result info">
+                Testing module initialization...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Default Configuration</h2>
+            <div id="config-test" class="test-result info">
+                Loading default configuration...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 State Query Functions</h2>
+            <div id="state-test" class="test-result info">
+                Testing state query functions...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>⚙️ Configuration Management</h2>
+            <button onclick="testConfigUpdate()">Test Config Update</button>
+            <div id="config-update-test" class="test-result info">
+                Click button to test configuration update...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Module Status</h2>
+            <div id="status-test" class="test-result info">
+                Checking module status...
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the WorkoutTimer module -->
+    <script src="js/modules/workoutTimer.js"></script>
+
+    <script>
+        // Test the WorkoutTimer module
+        function runTests() {
+            console.log('=== WorkoutTimer Module Test - Step 1 ===');
+
+            // Test 1: Module Initialization
+            try {
+                WorkoutTimer.init();
+                const isReady = WorkoutTimer.isReady();
+                
+                document.getElementById('init-test').innerHTML = `
+                    <strong>✅ Module Initialized Successfully</strong><br>
+                    isReady(): ${isReady}<br>
+                    Status: <span class="status ${isReady ? 'ready' : 'not-ready'}">${isReady ? 'READY' : 'NOT READY'}</span>
+                `;
+                document.getElementById('init-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('init-test').innerHTML = `
+                    <strong>❌ Initialization Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+
+            // Test 2: Default Configuration
+            try {
+                const defaultConfig = WorkoutTimer.getDefaultConfig();
+                const currentConfig = WorkoutTimer.getTimerConfig();
+                
+                document.getElementById('config-test').innerHTML = `
+                    <strong>✅ Configuration Loaded</strong><br>
+                    <strong>Default Config:</strong><br>
+                    ${JSON.stringify(defaultConfig, null, 2)}<br><br>
+                    <strong>Current Config:</strong><br>
+                    ${JSON.stringify(currentConfig, null, 2)}
+                `;
+                document.getElementById('config-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('config-test').innerHTML = `
+                    <strong>❌ Config Test Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+
+            // Test 3: State Query Functions
+            try {
+                const phase = WorkoutTimer.getCurrentPhase();
+                const remainingTime = WorkoutTimer.getRemainingTime();
+                const currentCycle = WorkoutTimer.getCurrentCycle();
+                const currentSet = WorkoutTimer.getCurrentSet();
+                const progress = WorkoutTimer.getProgress();
+                const running = WorkoutTimer.isRunning();
+                const paused = WorkoutTimer.isPaused();
+                const state = WorkoutTimer.getTimerState();
+                
+                document.getElementById('state-test').innerHTML = `
+                    <strong>✅ State Query Functions Working</strong><br>
+                    getCurrentPhase(): "${phase}"<br>
+                    getRemainingTime(): ${remainingTime} seconds<br>
+                    getCurrentCycle(): ${currentCycle}<br>
+                    getCurrentSet(): ${currentSet}<br>
+                    getProgress(): ${progress}%<br>
+                    isRunning(): ${running}<br>
+                    isPaused(): ${paused}<br><br>
+                    <strong>Full State Object:</strong><br>
+                    ${JSON.stringify(state, null, 2)}
+                `;
+                document.getElementById('state-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('state-test').innerHTML = `
+                    <strong>❌ State Query Test Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+
+            // Test 4: Module Status
+            try {
+                const events = WorkoutTimer.TIMER_EVENTS;
+                
+                document.getElementById('status-test').innerHTML = `
+                    <strong>✅ Module Status: OPERATIONAL</strong><br>
+                    Module Ready: ${WorkoutTimer.isReady()}<br>
+                    Timer Running: ${WorkoutTimer.isRunning()}<br>
+                    Timer Paused: ${WorkoutTimer.isPaused()}<br><br>
+                    <strong>Available Events:</strong><br>
+                    ${JSON.stringify(events, null, 2)}
+                `;
+                document.getElementById('status-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('status-test').innerHTML = `
+                    <strong>❌ Status Test Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+        }
+
+        // Test configuration update
+        function testConfigUpdate() {
+            try {
+                const newConfig = {
+                    prepare: 5,
+                    work: 30,
+                    rest: 10
+                };
+                
+                const success = WorkoutTimer.setTimerConfig(newConfig);
+                const updatedConfig = WorkoutTimer.getTimerConfig();
+                
+                document.getElementById('config-update-test').innerHTML = `
+                    <strong>✅ Configuration Updated Successfully</strong><br>
+                    Update Success: ${success}<br>
+                    <strong>New Config:</strong><br>
+                    ${JSON.stringify(updatedConfig, null, 2)}
+                `;
+                document.getElementById('config-update-test').className = 'test-result success';
+            } catch (error) {
+                document.getElementById('config-update-test').innerHTML = `
+                    <strong>❌ Config Update Failed</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>
+
