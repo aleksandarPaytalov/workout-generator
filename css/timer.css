@@ -390,3 +390,148 @@
 .timer-modal {
   animation: slideUp 0.4s ease;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* Modal adjustments for tablet */
+  .timer-modal {
+    width: 90%;
+    max-width: 500px;
+    padding: 1.5rem;
+  }
+
+  /* Header adjustments */
+  .timer-header {
+    padding: 1rem;
+  }
+
+  .timer-exercise-name {
+    font-size: 1.25rem;
+  }
+
+  .timer-exercise-number {
+    font-size: 0.875rem;
+  }
+
+  /* Phase indicator adjustments */
+  .timer-phase-indicator {
+    font-size: 1rem;
+    padding: 0.625rem 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Timer display adjustments */
+  .timer-time-display {
+    font-size: 3rem;
+  }
+
+  .timer-set-cycle-info {
+    font-size: 0.875rem;
+  }
+
+  /* Progress ring adjustments */
+  .timer-progress-ring {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Progress section adjustments */
+  .timer-progress-section {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .timer-set-info,
+  .timer-cycle-info {
+    font-size: 0.875rem;
+  }
+
+  /* Control buttons adjustments */
+  .timer-controls {
+    gap: 0.5rem;
+  }
+
+  .timer-btn-primary,
+  .timer-btn-secondary,
+  .timer-btn-skip {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 375px) {
+  /* Modal adjustments for mobile */
+  .timer-modal {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  /* Header adjustments */
+  .timer-header {
+    padding: 0.75rem;
+  }
+
+  .timer-exercise-name {
+    font-size: 1.125rem;
+  }
+
+  .timer-exercise-number {
+    font-size: 0.75rem;
+  }
+
+  /* Phase indicator adjustments */
+  .timer-phase-indicator {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Timer display adjustments */
+  .timer-time-display {
+    font-size: 2.5rem;
+  }
+
+  .timer-set-cycle-info {
+    font-size: 0.75rem;
+  }
+
+  /* Progress ring adjustments */
+  .timer-progress-ring {
+    width: 180px;
+    height: 180px;
+  }
+
+  /* Progress section adjustments */
+  .timer-progress-section {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .timer-set-info,
+  .timer-cycle-info {
+    font-size: 0.75rem;
+  }
+
+  /* Control buttons adjustments - stack vertically on very small screens */
+  .timer-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .timer-btn-primary,
+  .timer-btn-secondary,
+  .timer-btn-skip {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Make buttons touch-friendly (minimum 44px height) */
+  .timer-btn-primary,
+  .timer-btn-secondary,
+  .timer-btn-skip {
+    min-height: 44px;
+  }
+}
