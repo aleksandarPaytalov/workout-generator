@@ -270,6 +270,20 @@ const TimerController = (() => {
   };
 
   /**
+   * Format time in MM:SS format
+   * @private
+   * @param {number} seconds - Time in seconds
+   * @returns {string} Formatted time string
+   */
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  /**
    * Update timer display with current state
    * @public
    * @param {Object} state - Timer state object
@@ -280,8 +294,92 @@ const TimerController = (() => {
       return;
     }
 
-    // This function will be implemented in step 3
-    console.log("TimerController: Update display called with state:", state);
+    if (!state) {
+      console.warn("TimerController: No state provided to updateDisplay");
+      return;
+    }
+
+    console.log("TimerController: Updating display with state:", state);
+
+    // Update time display (MM:SS format)
+    if (elements.timeDisplay) {
+      const formattedTime = formatTime(state.remainingTime || 0);
+      elements.timeDisplay.textContent = formattedTime;
+    }
+
+    // Update phase indicator
+    if (elements.phaseIndicator && state.phase) {
+      const phaseText = state.phase.toUpperCase();
+      elements.phaseIndicator.textContent = phaseText;
+      elements.phaseIndicator.className = "timer-phase-indicator";
+      elements.phaseIndicator.classList.add(`phase-${state.phase}`);
+    }
+
+    // Update set/cycle information
+    if (elements.setInfo) {
+      const setText = `Set ${state.currentSet || 1} of ${state.totalSets || 3}`;
+      elements.setInfo.textContent = setText;
+    }
+
+    if (elements.cycleInfo) {
+      const cycleText = `Cycle ${state.currentCycle || 1} of ${
+        state.totalCycles || 3
+      }`;
+      elements.cycleInfo.textContent = cycleText;
+    }
+
+    // Update exercise name if available
+    if (elements.exerciseName && state.exercise) {
+      elements.exerciseName.textContent = state.exercise.name || "Exercise";
+    }
+
+    // Update exercise number if available
+    if (elements.exerciseNumber && state.exerciseIndex !== undefined) {
+      const exerciseNum = state.exerciseIndex + 1;
+      elements.exerciseNumber.textContent = `Exercise ${exerciseNum}`;
+    }
+
+    // Update progress ring percentage
+    if (elements.progressCircle && state.totalTime > 0) {
+      const progress =
+        ((state.totalTime - state.remainingTime) / state.totalTime) * 100;
+      const circumference = 2 * Math.PI * 54; // radius = 54 (from SVG)
+      const offset = circumference - (progress / 100) * circumference;
+
+      elements.progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+      elements.progressCircle.style.strokeDashoffset = offset;
+
+      console.log(
+        `TimerController: Progress ring updated - ${progress.toFixed(1)}%`
+      );
+    }
+
+    // Update overall progress bar
+    if (elements.progressFill) {
+      // Calculate overall progress based on sets and cycles
+      const totalSets = state.totalSets || 3;
+      const totalCycles = state.totalCycles || 3;
+      const currentSet = state.currentSet || 1;
+      const currentCycle = state.currentCycle || 1;
+
+      // Calculate completed sets and cycles
+      const completedSets = currentSet - 1;
+      const completedCycles = currentCycle - 1;
+
+      // Calculate overall progress percentage
+      const totalUnits = totalSets * totalCycles;
+      const completedUnits = completedSets * totalCycles + completedCycles;
+      const overallProgress = (completedUnits / totalUnits) * 100;
+
+      // Update progress bar width
+      elements.progressFill.style.width = `${overallProgress}%`;
+
+      console.log(
+        `TimerController: Overall progress bar updated - ${overallProgress.toFixed(
+          1
+        )}%`
+      );
+    }
   };
 
   // Public API
