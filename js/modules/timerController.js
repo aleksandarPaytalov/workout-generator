@@ -165,6 +165,66 @@ const TimerController = (() => {
   };
 
   /**
+   * Handle keyboard shortcuts
+   * @private
+   * @param {KeyboardEvent} event - Keyboard event
+   */
+  const handleKeyboardShortcuts = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    // Only handle shortcuts when timer modal is visible
+    if (!elements.modal || elements.modal.style.display === "none") {
+      return;
+    }
+
+    // Escape key - close timer
+    if (event.key === "Escape") {
+      event.preventDefault();
+      console.log("TimerController: Escape key pressed - closing timer");
+      hideTimer();
+    }
+
+    // Space key - pause/resume timer
+    if (event.key === " " || event.code === "Space") {
+      event.preventDefault();
+      console.log("TimerController: Space key pressed - toggling pause");
+      handlePause();
+    }
+  };
+
+  /**
+   * Handle modal backdrop click
+   * @private
+   * @param {MouseEvent} event - Click event
+   */
+  const handleBackdropClick = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    // Only close if clicking directly on the overlay (not on modal content)
+    if (event.target === elements.overlay) {
+      console.log("TimerController: Backdrop clicked - closing timer");
+      hideTimer();
+    }
+  };
+
+  /**
+   * Handle close button click
+   * @private
+   */
+  const handleCloseButton = () => {
+    if (!isInitialized) {
+      return;
+    }
+
+    console.log("TimerController: Close button clicked");
+    hideTimer();
+  };
+
+  /**
    * Set up button event listeners
    * @private
    */
@@ -211,6 +271,22 @@ const TimerController = (() => {
     if (elements.settingsBtn) {
       elements.settingsBtn.addEventListener("click", handleSettings);
       console.log("TimerController: Settings button listener added");
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", handleKeyboardShortcuts);
+    console.log("TimerController: Keyboard shortcuts listener added");
+
+    // Modal backdrop click
+    if (elements.overlay) {
+      elements.overlay.addEventListener("click", handleBackdropClick);
+      console.log("TimerController: Backdrop click listener added");
+    }
+
+    // Close button
+    if (elements.closeBtn) {
+      elements.closeBtn.addEventListener("click", handleCloseButton);
+      console.log("TimerController: Close button listener added");
     }
 
     console.log("TimerController: Button listeners set up successfully");
@@ -516,8 +592,47 @@ const TimerController = (() => {
       return false;
     }
 
+    if (!exercise) {
+      console.error("TimerController: No exercise provided");
+      return false;
+    }
+
     console.log("TimerController: Showing timer for exercise:", exercise);
-    return TimerUI.show();
+
+    // Update exercise information in UI
+    if (elements.exerciseName) {
+      elements.exerciseName.textContent = exercise.name || "Exercise";
+    }
+
+    if (elements.exerciseNumber && exercise.index !== undefined) {
+      elements.exerciseNumber.textContent = `Exercise ${exercise.index + 1}`;
+    }
+
+    // Reset button states to initial
+    if (elements.startBtn) {
+      elements.startBtn.style.display = "inline-block";
+    }
+    if (elements.pauseBtn) {
+      elements.pauseBtn.style.display = "none";
+      elements.pauseBtn.textContent = "Pause";
+    }
+
+    // Set phase indicator to idle
+    if (elements.phaseIndicator) {
+      elements.phaseIndicator.textContent = "READY";
+      elements.phaseIndicator.className = "timer-phase-indicator phase-idle";
+    }
+
+    // Show the timer modal
+    const shown = TimerUI.show();
+
+    if (shown) {
+      console.log("TimerController: Timer modal shown successfully");
+    } else {
+      console.error("TimerController: Failed to show timer modal");
+    }
+
+    return shown;
   };
 
   /**
@@ -532,7 +647,24 @@ const TimerController = (() => {
     }
 
     console.log("TimerController: Hiding timer");
-    return TimerUI.hide();
+
+    // Stop the timer if it's running
+    const isRunning = workoutTimerModule.isRunning();
+    if (isRunning) {
+      console.log("TimerController: Stopping timer before hiding");
+      workoutTimerModule.stopTimer();
+    }
+
+    // Hide the timer modal
+    const hidden = TimerUI.hide();
+
+    if (hidden) {
+      console.log("TimerController: Timer modal hidden successfully");
+    } else {
+      console.error("TimerController: Failed to hide timer modal");
+    }
+
+    return hidden;
   };
 
   /**
