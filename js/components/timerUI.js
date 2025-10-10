@@ -101,6 +101,76 @@ const TimerUI = (() => {
    */
   const createControlButtons = () => {
     console.log("TimerUI: Creating control buttons");
+
+    const controls = document.createElement("div");
+    controls.className = "timer-controls";
+
+    // Start/Pause button (primary, large)
+    const startBtn = document.createElement("button");
+    startBtn.className = "timer-btn-primary";
+    startBtn.textContent = "Start";
+    startBtn.setAttribute("data-action", "start");
+    elements.startBtn = startBtn;
+
+    controls.appendChild(startBtn);
+
+    console.log("TimerUI: Start/Pause button added (primary, large)");
+
+    // Skip button (secondary)
+    const skipBtn = document.createElement("button");
+    skipBtn.className = "timer-btn-skip";
+    skipBtn.textContent = "Skip Phase";
+    skipBtn.setAttribute("data-action", "skip");
+    elements.skipBtn = skipBtn;
+
+    controls.appendChild(skipBtn);
+
+    console.log("TimerUI: Skip button added (secondary)");
+
+    // Reset button (secondary)
+    const resetBtn = document.createElement("button");
+    resetBtn.className = "timer-btn-secondary";
+    resetBtn.textContent = "Reset";
+    resetBtn.setAttribute("data-action", "reset");
+    elements.resetBtn = resetBtn;
+
+    controls.appendChild(resetBtn);
+
+    console.log("TimerUI: Reset button added (secondary)");
+
+    // Previous Exercise button
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "timer-btn-secondary";
+    prevBtn.textContent = "← Previous";
+    prevBtn.setAttribute("data-action", "previous");
+    elements.prevBtn = prevBtn;
+
+    controls.appendChild(prevBtn);
+
+    console.log("TimerUI: Previous Exercise button added");
+
+    // Next Exercise button
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "timer-btn-secondary";
+    nextBtn.textContent = "Next →";
+    nextBtn.setAttribute("data-action", "next");
+    elements.nextBtn = nextBtn;
+
+    controls.appendChild(nextBtn);
+
+    console.log("TimerUI: Next Exercise button added");
+
+    // Settings button
+    const settingsBtn = document.createElement("button");
+    settingsBtn.className = "timer-btn-secondary";
+    settingsBtn.textContent = "⚙️ Settings";
+    settingsBtn.setAttribute("data-action", "settings");
+    elements.settingsBtn = settingsBtn;
+
+    controls.appendChild(settingsBtn);
+
+    console.log("TimerUI: Settings button added");
+    return controls;
   };
 
   /**
