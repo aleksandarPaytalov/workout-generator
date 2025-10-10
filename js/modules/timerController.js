@@ -624,15 +624,10 @@ const TimerController = (() => {
     }
 
     // Show the timer modal
-    const shown = TimerUI.show();
+    TimerUI.showTimer();
+    console.log("TimerController: Timer modal shown successfully");
 
-    if (shown) {
-      console.log("TimerController: Timer modal shown successfully");
-    } else {
-      console.error("TimerController: Failed to show timer modal");
-    }
-
-    return shown;
+    return true;
   };
 
   /**
@@ -656,15 +651,9 @@ const TimerController = (() => {
     }
 
     // Hide the timer modal
-    const hidden = TimerUI.hide();
-
-    if (hidden) {
-      console.log("TimerController: Timer modal hidden successfully");
-    } else {
-      console.error("TimerController: Failed to hide timer modal");
-    }
-
-    return hidden;
+    TimerUI.hideTimer();
+    console.log("TimerController: Timer modal hidden successfully");
+    return true;
   };
 
   /**

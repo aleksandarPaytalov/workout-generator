@@ -105,7 +105,7 @@ const TimerUI = (() => {
     const controls = document.createElement("div");
     controls.className = "timer-controls";
 
-    // Start/Pause button (primary, large)
+    // Start button (primary, large)
     const startBtn = document.createElement("button");
     startBtn.className = "timer-btn-primary";
     startBtn.textContent = "Start";
@@ -114,7 +114,19 @@ const TimerUI = (() => {
 
     controls.appendChild(startBtn);
 
-    console.log("TimerUI: Start/Pause button added (primary, large)");
+    console.log("TimerUI: Start button added (primary, large)");
+
+    // Pause button (primary, large) - initially hidden
+    const pauseBtn = document.createElement("button");
+    pauseBtn.className = "timer-btn-primary";
+    pauseBtn.textContent = "Pause";
+    pauseBtn.setAttribute("data-action", "pause");
+    pauseBtn.style.display = "none";
+    elements.pauseBtn = pauseBtn;
+
+    controls.appendChild(pauseBtn);
+
+    console.log("TimerUI: Pause button added (primary, large)");
 
     // Skip button (secondary)
     const skipBtn = document.createElement("button");
@@ -399,6 +411,28 @@ const TimerUI = (() => {
 
     console.log("TimerUI: Modal container created with modern styling");
 
+    // Build modal content
+    const header = createTimerHeader();
+    const display = createTimerDisplay();
+    const phaseIndicator = createPhaseIndicator();
+    const progressRing = createProgressRing();
+    const progressSection = createProgressSection();
+    const controls = createControlButtons();
+
+    // Assemble modal
+    modal.appendChild(header);
+    modal.appendChild(phaseIndicator);
+    modal.appendChild(display);
+    modal.appendChild(progressRing);
+    modal.appendChild(progressSection);
+    modal.appendChild(controls);
+
+    // Append modal to overlay
+    overlay.appendChild(modal);
+
+    // Append overlay to body
+    document.body.appendChild(overlay);
+
     // Add close button functionality - click overlay to close
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) {
@@ -406,7 +440,7 @@ const TimerUI = (() => {
       }
     });
 
-    console.log("TimerUI: Close button functionality added");
+    console.log("TimerUI: Timer modal fully assembled and added to DOM");
   };
 
   // Public API
