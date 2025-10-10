@@ -95,6 +95,62 @@ const TimerUI = (() => {
   };
 
   /**
+   * Create circular progress ring using SVG
+   * @private
+   * @returns {HTMLElement} Progress ring element
+   */
+  const createProgressRing = () => {
+    console.log("TimerUI: Creating circular progress ring using SVG");
+
+    const container = document.createElement("div");
+    container.className = "timer-progress-ring";
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "280");
+    svg.setAttribute("height", "280");
+    svg.setAttribute("viewBox", "0 0 280 280");
+
+    // Background circle
+    const bgCircle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    bgCircle.setAttribute("cx", "140");
+    bgCircle.setAttribute("cy", "140");
+    bgCircle.setAttribute("r", "120");
+    bgCircle.setAttribute("fill", "none");
+    bgCircle.setAttribute("stroke", "#e5e7eb");
+    bgCircle.setAttribute("stroke-width", "12");
+
+    // Progress circle - circular progress calculation
+    const progressCircle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    progressCircle.setAttribute("cx", "140");
+    progressCircle.setAttribute("cy", "140");
+    progressCircle.setAttribute("r", "120");
+    progressCircle.setAttribute("fill", "none");
+    progressCircle.setAttribute("stroke", "#3b82f6");
+    progressCircle.setAttribute("stroke-width", "12");
+    progressCircle.setAttribute("stroke-linecap", "round");
+    // Circumference = 2 * PI * radius = 2 * 3.14159 * 120 = 754
+    progressCircle.setAttribute("stroke-dasharray", "754");
+    progressCircle.setAttribute("stroke-dashoffset", "0");
+    progressCircle.setAttribute("transform", "rotate(-90 140 140)");
+    elements.progressCircle = progressCircle;
+
+    svg.appendChild(bgCircle);
+    svg.appendChild(progressCircle);
+    container.appendChild(svg);
+
+    elements.progressRing = container;
+
+    console.log("TimerUI: Circular progress calculation implemented");
+    return container;
+  };
+
+  /**
    * Create phase indicator component
    * @private
    * @returns {HTMLElement} Phase indicator element
@@ -123,7 +179,11 @@ const TimerUI = (() => {
     const display = document.createElement("div");
     display.className = "timer-display";
 
-    // Large timer display (MM:SS format)
+    // Create progress ring
+    const progressRing = createProgressRing();
+    display.appendChild(progressRing);
+
+    // Large timer display (MM:SS format) - positioned in center of ring
     const timeDisplay = document.createElement("div");
     timeDisplay.className = "timer-time-display";
     timeDisplay.textContent = "00:45";
@@ -131,7 +191,7 @@ const TimerUI = (() => {
 
     display.appendChild(timeDisplay);
 
-    console.log("TimerUI: Large timer display added (MM:SS format)");
+    console.log("TimerUI: Large timer display added in center (MM:SS format)");
 
     // Current set/cycle info display
     const setInfo = document.createElement("div");

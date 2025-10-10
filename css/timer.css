@@ -107,16 +107,21 @@
   justify-content: center;
   margin-bottom: 2rem;
   padding: 2rem 1rem;
+  position: relative;
 }
 
 .timer-time-display {
-  font-size: 4rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3.5rem;
   font-weight: 700;
   color: var(--text-primary, #111827);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.05em;
-  margin-bottom: 1rem;
   transition: all 0.3s ease;
+  z-index: 10;
 }
 
 [data-theme="dark"] .timer-time-display {
@@ -184,4 +189,45 @@
   50% {
     transform: scale(1.02);
   }
+}
+
+/* Progress Ring */
+.timer-progress-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-progress-ring circle {
+  transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+}
+
+/* Color-code ring based on phase */
+.timer-phase-indicator[data-phase="prepare"]
+  ~ .timer-display
+  .timer-progress-ring
+  circle:last-child {
+  stroke: #3b82f6;
+}
+
+.timer-phase-indicator[data-phase="work"]
+  ~ .timer-display
+  .timer-progress-ring
+  circle:last-child {
+  stroke: #10b981;
+}
+
+.timer-phase-indicator[data-phase="rest"]
+  ~ .timer-display
+  .timer-progress-ring
+  circle:last-child {
+  stroke: #f59e0b;
+}
+
+.timer-phase-indicator[data-phase="completed"]
+  ~ .timer-display
+  .timer-progress-ring
+  circle:last-child {
+  stroke: #8b5cf6;
 }
