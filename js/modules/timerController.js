@@ -14,6 +14,20 @@ const TimerController = (() => {
   let workoutTimerModule = null;
   let timerUIModule = null;
 
+  // Timer event names (matching WorkoutTimer module)
+  const TIMER_EVENTS = {
+    STARTED: "timer:started",
+    PAUSED: "timer:paused",
+    RESUMED: "timer:resumed",
+    STOPPED: "timer:stopped",
+    TICK: "timer:tick",
+    PHASE_CHANGED: "timer:phaseChanged",
+    CYCLE_COMPLETED: "timer:cycleCompleted",
+    SET_COMPLETED: "timer:setCompleted",
+    EXERCISE_COMPLETED: "timer:exerciseCompleted",
+    WORKOUT_COMPLETED: "timer:workoutCompleted",
+  };
+
   // DOM element references (populated from TimerUI module)
   const elements = {
     modal: null,
@@ -37,6 +51,117 @@ const TimerController = (() => {
     prevBtn: null,
     nextBtn: null,
     settingsBtn: null,
+  };
+
+  /**
+   * Handle timer tick event
+   * @private
+   * @param {CustomEvent} event - Timer tick event
+   */
+  const handleTimerTick = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    const state = event.detail;
+    console.log(
+      "TimerController: Timer tick - Remaining time:",
+      state.remainingTime
+    );
+
+    // Update timer display with current state
+    // This will call the updateDisplay function which will be fully implemented in step 3
+    updateDisplay(state);
+  };
+
+  /**
+   * Handle phase changed event
+   * @private
+   * @param {CustomEvent} event - Phase changed event
+   */
+  const handlePhaseChanged = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    const state = event.detail;
+    console.log(
+      "TimerController: Phase changed to:",
+      state.phase,
+      "| Set:",
+      state.currentSet,
+      "| Cycle:",
+      state.currentCycle
+    );
+
+    // Update phase indicator in UI
+    if (elements.phaseIndicator) {
+      const phaseText = state.phase.toUpperCase();
+      elements.phaseIndicator.textContent = phaseText;
+
+      // Update phase indicator styling based on phase
+      elements.phaseIndicator.className = "timer-phase-indicator";
+      elements.phaseIndicator.classList.add(`phase-${state.phase}`);
+    }
+
+    // Update full display with new state
+    updateDisplay(state);
+  };
+
+  /**
+   * Handle exercise completed event
+   * @private
+   * @param {CustomEvent} event - Exercise completed event
+   */
+  const handleExerciseCompleted = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    const state = event.detail;
+    console.log(
+      "TimerController: Exercise completed!",
+      "Exercise:",
+      state.exercise?.name || "Unknown"
+    );
+
+    // Update phase indicator to show completion
+    if (elements.phaseIndicator) {
+      elements.phaseIndicator.textContent = "COMPLETED";
+      elements.phaseIndicator.className =
+        "timer-phase-indicator phase-completed";
+    }
+
+    // Show completion message
+    console.log("TimerController: Exercise timer completed successfully!");
+
+    // Update display with final state
+    updateDisplay(state);
+
+    // Optional: Auto-advance to next exercise if configured
+    // This will be implemented when we add workout navigation
+  };
+
+  /**
+   * Set up event listeners for timer events
+   * @private
+   */
+  const setupEventListeners = () => {
+    console.log("TimerController: Setting up event listeners...");
+
+    // Listen to timer:tick for display updates
+    document.addEventListener(TIMER_EVENTS.TICK, handleTimerTick);
+
+    // Listen to timer:phaseChanged for phase transitions
+    document.addEventListener(TIMER_EVENTS.PHASE_CHANGED, handlePhaseChanged);
+
+    // Listen to timer:exerciseCompleted for completion
+    document.addEventListener(
+      TIMER_EVENTS.EXERCISE_COMPLETED,
+      handleExerciseCompleted
+    );
+
+    console.log("TimerController: Event listeners set up successfully");
   };
 
   /**
@@ -91,6 +216,9 @@ const TimerController = (() => {
       }
 
       console.log("TimerController: DOM elements populated successfully");
+
+      // Set up event listeners for timer events
+      setupEventListeners();
 
       isInitialized = true;
       console.log("TimerController: Initialized successfully");
