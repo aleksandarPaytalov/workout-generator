@@ -95,6 +95,62 @@ const TimerUI = (() => {
   };
 
   /**
+   * Create control buttons
+   * @private
+   * @returns {HTMLElement} Controls element
+   */
+  const createControlButtons = () => {
+    console.log("TimerUI: Creating control buttons");
+  };
+
+  /**
+   * Create progress section (sets, cycles, progress bar)
+   * @private
+   * @returns {HTMLElement} Progress section element
+   */
+  const createProgressSection = () => {
+    console.log("TimerUI: Creating progress section");
+
+    const section = document.createElement("div");
+    section.className = "timer-progress-section";
+
+    // Set progress display (Set X of Y)
+    const setInfo = document.createElement("div");
+    setInfo.className = "timer-set-info";
+    setInfo.innerHTML = "<strong>Set:</strong> <span>1 of 3</span>";
+    elements.setInfo = setInfo;
+
+    section.appendChild(setInfo);
+
+    console.log("TimerUI: Set progress display added (Set X of Y)");
+
+    // Cycle progress display (Cycle X of Y)
+    const cycleInfo = document.createElement("div");
+    cycleInfo.className = "timer-cycle-info";
+    cycleInfo.innerHTML = "<strong>Cycle:</strong> <span>1 of 3</span>";
+    elements.cycleInfo = cycleInfo;
+
+    section.appendChild(cycleInfo);
+
+    console.log("TimerUI: Cycle progress display added (Cycle X of Y)");
+
+    // Overall progress bar
+    const progressBar = document.createElement("div");
+    progressBar.className = "timer-progress-bar";
+
+    const progressFill = document.createElement("div");
+    progressFill.className = "timer-progress-fill";
+    progressFill.style.width = "0%";
+    elements.progressFill = progressFill;
+
+    progressBar.appendChild(progressFill);
+    section.appendChild(progressBar);
+
+    console.log("TimerUI: Overall progress bar added");
+    return section;
+  };
+
+  /**
    * Create circular progress ring using SVG
    * @private
    * @returns {HTMLElement} Progress ring element
