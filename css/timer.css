@@ -361,3 +361,32 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.timer-overlay {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.timer-modal {
+  animation: slideUp 0.4s ease;
+}
