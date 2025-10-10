@@ -165,6 +165,58 @@ const TimerController = (() => {
   };
 
   /**
+   * Set up button event listeners
+   * @private
+   */
+  const setupButtonListeners = () => {
+    console.log("TimerController: Setting up button listeners...");
+
+    // Start button
+    if (elements.startBtn) {
+      elements.startBtn.addEventListener("click", handleStart);
+      console.log("TimerController: Start button listener added");
+    }
+
+    // Pause/Resume button
+    if (elements.pauseBtn) {
+      elements.pauseBtn.addEventListener("click", handlePause);
+      console.log("TimerController: Pause button listener added");
+    }
+
+    // Skip button
+    if (elements.skipBtn) {
+      elements.skipBtn.addEventListener("click", handleSkip);
+      console.log("TimerController: Skip button listener added");
+    }
+
+    // Reset button
+    if (elements.resetBtn) {
+      elements.resetBtn.addEventListener("click", handleReset);
+      console.log("TimerController: Reset button listener added");
+    }
+
+    // Next exercise button
+    if (elements.nextBtn) {
+      elements.nextBtn.addEventListener("click", handleNext);
+      console.log("TimerController: Next button listener added");
+    }
+
+    // Previous exercise button
+    if (elements.prevBtn) {
+      elements.prevBtn.addEventListener("click", handlePrevious);
+      console.log("TimerController: Previous button listener added");
+    }
+
+    // Settings button
+    if (elements.settingsBtn) {
+      elements.settingsBtn.addEventListener("click", handleSettings);
+      console.log("TimerController: Settings button listener added");
+    }
+
+    console.log("TimerController: Button listeners set up successfully");
+  };
+
+  /**
    * Initialize the Timer Controller module
    * @public
    * @returns {boolean} True if initialization successful
@@ -220,6 +272,9 @@ const TimerController = (() => {
       // Set up event listeners for timer events
       setupEventListeners();
 
+      // Set up button event listeners
+      setupButtonListeners();
+
       isInitialized = true;
       console.log("TimerController: Initialized successfully");
       return true;
@@ -236,6 +291,217 @@ const TimerController = (() => {
    */
   const isReady = () => {
     return isInitialized;
+  };
+
+  /**
+   * Handle start button click
+   * @private
+   */
+  const handleStart = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Start button clicked");
+
+    // Get current exercise (will be passed when timer is shown)
+    // For now, create a test exercise
+    const testExercise = {
+      name: "Test Exercise",
+      muscleGroup: "chest",
+      sets: 3,
+      reps: 10,
+    };
+
+    // Start the timer with the exercise
+    const started = workoutTimerModule.startTimer(testExercise);
+
+    if (started) {
+      console.log("TimerController: Timer started successfully");
+
+      // Update button states
+      if (elements.startBtn) {
+        elements.startBtn.style.display = "none";
+      }
+      if (elements.pauseBtn) {
+        elements.pauseBtn.style.display = "inline-block";
+        elements.pauseBtn.textContent = "Pause";
+      }
+    } else {
+      console.error("TimerController: Failed to start timer");
+    }
+  };
+
+  /**
+   * Handle pause button click
+   * @private
+   */
+  const handlePause = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Pause button clicked");
+
+    // Check if timer is currently paused
+    const isPaused = workoutTimerModule.isPaused();
+
+    if (isPaused) {
+      // Resume the timer
+      const resumed = workoutTimerModule.resumeTimer();
+
+      if (resumed) {
+        console.log("TimerController: Timer resumed successfully");
+
+        // Update button text to "Pause"
+        if (elements.pauseBtn) {
+          elements.pauseBtn.textContent = "Pause";
+        }
+      } else {
+        console.error("TimerController: Failed to resume timer");
+      }
+    } else {
+      // Pause the timer
+      const paused = workoutTimerModule.pauseTimer();
+
+      if (paused) {
+        console.log("TimerController: Timer paused successfully");
+
+        // Update button text to "Resume"
+        if (elements.pauseBtn) {
+          elements.pauseBtn.textContent = "Resume";
+        }
+      } else {
+        console.error("TimerController: Failed to pause timer");
+      }
+    }
+  };
+
+  /**
+   * Handle skip button click
+   * @private
+   */
+  const handleSkip = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Skip button clicked");
+
+    // Skip to next phase
+    const skipped = workoutTimerModule.skipPhase();
+
+    if (skipped) {
+      console.log("TimerController: Phase skipped successfully");
+    } else {
+      console.error("TimerController: Failed to skip phase");
+    }
+  };
+
+  /**
+   * Handle reset button click
+   * @private
+   */
+  const handleReset = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Reset button clicked");
+
+    // Reset the current exercise timer
+    const reset = workoutTimerModule.resetExercise();
+
+    if (reset) {
+      console.log("TimerController: Exercise timer reset successfully");
+
+      // Update button states back to initial
+      if (elements.startBtn) {
+        elements.startBtn.style.display = "inline-block";
+      }
+      if (elements.pauseBtn) {
+        elements.pauseBtn.style.display = "none";
+        elements.pauseBtn.textContent = "Pause";
+      }
+
+      // Update phase indicator
+      if (elements.phaseIndicator) {
+        elements.phaseIndicator.textContent = "IDLE";
+        elements.phaseIndicator.className = "timer-phase-indicator phase-idle";
+      }
+    } else {
+      console.error("TimerController: Failed to reset exercise timer");
+    }
+  };
+
+  /**
+   * Handle next exercise button click
+   * @private
+   */
+  const handleNext = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Next exercise button clicked");
+
+    // This will be implemented when we integrate with workout data
+    // For now, just log the action
+    console.log("TimerController: Moving to next exercise (to be implemented)");
+
+    // TODO: Get next exercise from workout array
+    // TODO: Stop current timer
+    // TODO: Start timer with next exercise
+  };
+
+  /**
+   * Handle previous exercise button click
+   * @private
+   */
+  const handlePrevious = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Previous exercise button clicked");
+
+    // This will be implemented when we integrate with workout data
+    // For now, just log the action
+    console.log(
+      "TimerController: Moving to previous exercise (to be implemented)"
+    );
+
+    // TODO: Get previous exercise from workout array
+    // TODO: Stop current timer
+    // TODO: Start timer with previous exercise
+  };
+
+  /**
+   * Handle settings button click
+   * @private
+   */
+  const handleSettings = () => {
+    if (!isInitialized) {
+      console.error("TimerController: Not initialized");
+      return;
+    }
+
+    console.log("TimerController: Settings button clicked");
+
+    // This will open the timer settings modal
+    // For now, just log the action
+    console.log("TimerController: Opening settings modal (to be implemented)");
+
+    // TODO: Create and show settings modal
+    // TODO: Load current settings from TimerSettings module
+    // TODO: Allow user to modify settings
+    // TODO: Save settings when user confirms
   };
 
   /**
