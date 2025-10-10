@@ -37,6 +37,10 @@ const WorkoutApp = (() => {
         "FooterController",
         "PDFExport",
         "DragDrop",
+        "TimerSettings",
+        "WorkoutTimer",
+        "TimerUI",
+        "TimerController",
       ];
 
       for (const moduleName of requiredModules) {
@@ -124,6 +128,43 @@ const WorkoutApp = (() => {
           console.warn(
             "FooterController failed to initialize - footer functionality will be limited"
           );
+        }
+      }
+
+      // Initialize Timer modules if available
+      if (typeof TimerSettings !== "undefined") {
+        TimerSettings.init();
+        if (!TimerSettings.isReady()) {
+          console.warn("TimerSettings failed to initialize");
+        } else {
+          console.log("TimerSettings: Ready for manual user operations");
+        }
+      }
+
+      if (typeof WorkoutTimer !== "undefined") {
+        WorkoutTimer.init();
+        if (!WorkoutTimer.isReady()) {
+          console.warn("WorkoutTimer failed to initialize");
+        } else {
+          console.log("WorkoutTimer: Ready for manual user operations");
+        }
+      }
+
+      if (typeof TimerUI !== "undefined") {
+        TimerUI.init();
+        if (!TimerUI.isReady()) {
+          console.warn("TimerUI failed to initialize");
+        } else {
+          console.log("TimerUI: Ready for manual user operations");
+        }
+      }
+
+      if (typeof TimerController !== "undefined") {
+        TimerController.init();
+        if (!TimerController.isReady()) {
+          console.warn("TimerController failed to initialize");
+        } else {
+          console.log("TimerController: Ready for manual user operations");
         }
       }
 

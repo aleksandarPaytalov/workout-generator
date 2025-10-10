@@ -40,6 +40,12 @@ async function loadAllScripts() {
     await loadScript("./js/modules/dragDrop.js");
     await loadScript("./js/modules/pdfExport.js");
 
+    // Timer modules
+    await loadScript("./js/modules/timerSettings.js");
+    await loadScript("./js/modules/workoutTimer.js");
+    await loadScript("./js/components/timerUI.js");
+    await loadScript("./js/modules/timerController.js");
+
     // Main Application - Load last to initialize everything
     await loadScript("./js/app.js");
 
