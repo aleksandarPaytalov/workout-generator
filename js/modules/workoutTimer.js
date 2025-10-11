@@ -348,6 +348,7 @@ const WorkoutTimer = (() => {
       remainingTime: duration,
       totalTime: duration,
       startTime: Date.now(),
+      pausedTime: 0, // Reset paused time when starting new phase
     });
 
     console.log(`WorkoutTimer: Phase changed to "${phase}" (${duration}s)`);
