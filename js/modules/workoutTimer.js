@@ -395,8 +395,10 @@ const WorkoutTimer = (() => {
         remainingTime: remaining,
         totalTime: timerState.totalTime,
         exercise: timerState.exercise,
-        set: timerState.currentSet,
-        cycle: timerState.currentCycle,
+        currentSet: timerState.currentSet,
+        currentCycle: timerState.currentCycle,
+        totalSets: timerConfig.sets,
+        totalCycles: timerConfig.cyclesPerSet,
       });
 
       // Check if phase is complete

@@ -197,22 +197,44 @@ const TimerUI = (() => {
     section.className = "timer-progress-section";
 
     // Set progress display (Set X of Y)
-    const setInfo = document.createElement("div");
-    setInfo.className = "timer-set-info";
-    setInfo.innerHTML = "<strong>Set:</strong> <span>1 of 3</span>";
-    elements.setInfo = setInfo;
+    const setInfoContainer = document.createElement("div");
+    setInfoContainer.className = "timer-progress-set";
 
-    section.appendChild(setInfo);
+    const setLabel = document.createElement("strong");
+    setLabel.textContent = "Set:";
+
+    const setValueSpan = document.createElement("span");
+    setValueSpan.className = "timer-set-value";
+    setValueSpan.textContent = " 1 of 3";
+
+    setInfoContainer.appendChild(setLabel);
+    setInfoContainer.appendChild(setValueSpan);
+
+    // Store reference to the value span for updates
+    elements.setInfoProgress = setValueSpan;
+
+    section.appendChild(setInfoContainer);
 
     console.log("TimerUI: Set progress display added (Set X of Y)");
 
     // Cycle progress display (Cycle X of Y)
-    const cycleInfo = document.createElement("div");
-    cycleInfo.className = "timer-cycle-info";
-    cycleInfo.innerHTML = "<strong>Cycle:</strong> <span>1 of 3</span>";
-    elements.cycleInfo = cycleInfo;
+    const cycleInfoContainer = document.createElement("div");
+    cycleInfoContainer.className = "timer-progress-cycle";
 
-    section.appendChild(cycleInfo);
+    const cycleLabel = document.createElement("strong");
+    cycleLabel.textContent = "Cycle:";
+
+    const cycleValueSpan = document.createElement("span");
+    cycleValueSpan.className = "timer-cycle-value";
+    cycleValueSpan.textContent = " 1 of 3";
+
+    cycleInfoContainer.appendChild(cycleLabel);
+    cycleInfoContainer.appendChild(cycleValueSpan);
+
+    // Store reference to the value span for updates
+    elements.cycleInfoProgress = cycleValueSpan;
+
+    section.appendChild(cycleInfoContainer);
 
     console.log("TimerUI: Cycle progress display added (Cycle X of Y)");
 
@@ -332,12 +354,30 @@ const TimerUI = (() => {
     console.log("TimerUI: Large timer display added in center (MM:SS format)");
 
     // Current set/cycle info display
-    const setInfo = document.createElement("div");
-    setInfo.className = "timer-set-cycle-info";
-    setInfo.innerHTML = "<span>Set 1 of 3</span> • <span>Cycle 1 of 3</span>";
-    elements.setInfo = setInfo;
+    const setCycleContainer = document.createElement("div");
+    setCycleContainer.className = "timer-set-cycle-info";
 
-    display.appendChild(setInfo);
+    // Create separate elements for set and cycle info
+    const setInfoSpan = document.createElement("span");
+    setInfoSpan.className = "timer-set-info";
+    setInfoSpan.textContent = "Set 1 of 3";
+
+    const separator = document.createElement("span");
+    separator.textContent = " • ";
+
+    const cycleInfoSpan = document.createElement("span");
+    cycleInfoSpan.className = "timer-cycle-info";
+    cycleInfoSpan.textContent = "Cycle 1 of 3";
+
+    setCycleContainer.appendChild(setInfoSpan);
+    setCycleContainer.appendChild(separator);
+    setCycleContainer.appendChild(cycleInfoSpan);
+
+    // Store references to the individual elements
+    elements.setInfo = setInfoSpan;
+    elements.cycleInfo = cycleInfoSpan;
+
+    display.appendChild(setCycleContainer);
 
     console.log("TimerUI: Current set/cycle info display added");
     return display;

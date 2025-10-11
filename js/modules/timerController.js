@@ -799,7 +799,7 @@ const TimerController = (() => {
       elements.phaseIndicator.classList.add(`phase-${state.phase}`);
     }
 
-    // Update set/cycle information
+    // Update set/cycle information (main display)
     if (elements.setInfo) {
       const setText = `Set ${state.currentSet || 1} of ${state.totalSets || 3}`;
       elements.setInfo.textContent = setText;
@@ -810,6 +810,19 @@ const TimerController = (() => {
         state.totalCycles || 3
       }`;
       elements.cycleInfo.textContent = cycleText;
+    }
+
+    // Update set/cycle information (progress section)
+    if (elements.setInfoProgress) {
+      const setText = ` ${state.currentSet || 1} of ${state.totalSets || 3}`;
+      elements.setInfoProgress.textContent = setText;
+    }
+
+    if (elements.cycleInfoProgress) {
+      const cycleText = ` ${state.currentCycle || 1} of ${
+        state.totalCycles || 3
+      }`;
+      elements.cycleInfoProgress.textContent = cycleText;
     }
 
     // Update exercise name if available
