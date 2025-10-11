@@ -615,14 +615,219 @@ const TimerController = (() => {
 
     console.log("TimerController: Settings button clicked");
 
-    // This will open the timer settings modal
-    // For now, just log the action
-    console.log("TimerController: Opening settings modal (to be implemented)");
+    // Create settings modal if not already created
+    if (!elements.settingsOverlay) {
+      timerUIModule.createSettingsModal();
+      setupSettingsListeners();
+    }
 
-    // TODO: Create and show settings modal
-    // TODO: Load current settings from TimerSettings module
-    // TODO: Allow user to modify settings
-    // TODO: Save settings when user confirms
+    // Load current settings from TimerSettings module
+    loadSettingsIntoForm();
+
+    // Show settings modal
+    timerUIModule.showSettingsModal();
+    console.log("TimerController: Settings modal opened");
+  };
+
+  /**
+   * Setup settings modal event listeners
+   * @private
+   */
+  const setupSettingsListeners = () => {
+    const elements = timerUIModule.getElements();
+
+    // Close button
+    if (elements.settingsCloseBtn) {
+      elements.settingsCloseBtn.addEventListener("click", () => {
+        timerUIModule.hideSettingsModal();
+      });
+    }
+
+    // Cancel button
+    if (elements.settingsCancelBtn) {
+      elements.settingsCancelBtn.addEventListener("click", () => {
+        timerUIModule.hideSettingsModal();
+      });
+    }
+
+    // Save button
+    if (elements.settingsSaveBtn) {
+      elements.settingsSaveBtn.addEventListener("click", handleSaveSettings);
+    }
+
+    // Reset button
+    if (elements.settingsResetBtn) {
+      elements.settingsResetBtn.addEventListener("click", handleResetSettings);
+    }
+
+    // Backdrop click
+    if (elements.settingsOverlay) {
+      elements.settingsOverlay.addEventListener("click", (e) => {
+        if (e.target === elements.settingsOverlay) {
+          timerUIModule.hideSettingsModal();
+        }
+      });
+    }
+
+    console.log("TimerController: Settings modal listeners setup");
+  };
+
+  /**
+   * Load current settings into form
+   * @private
+   */
+  const loadSettingsIntoForm = () => {
+    console.log("TimerController: loadSettingsIntoForm called");
+    console.log("TimerController: typeof TimerSettings:", typeof TimerSettings);
+    console.log(
+      "TimerController: TimerSettings.isReady():",
+      typeof TimerSettings !== "undefined"
+        ? TimerSettings.isReady()
+        : "undefined"
+    );
+
+    if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
+      console.error("TimerController: TimerSettings module not ready");
+      return;
+    }
+
+    const settings = TimerSettings.getSettings();
+    const elements = timerUIModule.getElements();
+
+    if (!elements.settingsForm) {
+      console.error("TimerController: Settings form not found");
+      return;
+    }
+
+    // Load numeric settings
+    const numericFields = [
+      "prepare",
+      "work",
+      "rest",
+      "cyclesPerSet",
+      "sets",
+      "restBetweenSets",
+    ];
+
+    numericFields.forEach((field) => {
+      const input = elements.settingsForm.querySelector(
+        `#timer-setting-${field}`
+      );
+      if (input && settings[field] !== undefined) {
+        input.value = settings[field];
+      }
+    });
+
+    // Load checkbox settings
+    const checkboxFields = ["soundEnabled", "voiceEnabled"];
+
+    checkboxFields.forEach((field) => {
+      const input = elements.settingsForm.querySelector(
+        `#timer-setting-${field}`
+      );
+      if (input && settings[field] !== undefined) {
+        input.checked = settings[field];
+      }
+    });
+
+    console.log("TimerController: Settings loaded into form");
+  };
+
+  /**
+   * Handle save settings button click
+   * @private
+   */
+  const handleSaveSettings = () => {
+    if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
+      console.error("TimerController: TimerSettings module not ready");
+      return;
+    }
+
+    const elements = timerUIModule.getElements();
+
+    if (!elements.settingsForm) {
+      console.error("TimerController: Settings form not found");
+      return;
+    }
+
+    // Collect form data
+    const formData = new FormData(elements.settingsForm);
+    const newSettings = {};
+
+    // Parse numeric fields
+    const numericFields = [
+      "prepare",
+      "work",
+      "rest",
+      "cyclesPerSet",
+      "sets",
+      "restBetweenSets",
+    ];
+
+    numericFields.forEach((field) => {
+      const value = formData.get(field);
+      if (value !== null) {
+        newSettings[field] = parseInt(value, 10);
+      }
+    });
+
+    // Parse checkbox fields
+    newSettings.soundEnabled = formData.get("soundEnabled") === "on";
+    newSettings.voiceEnabled = formData.get("voiceEnabled") === "on";
+
+    console.log("TimerController: New settings collected:", newSettings);
+
+    // Update settings
+    const result = TimerSettings.updateSettings(newSettings);
+
+    if (result.success) {
+      console.log("TimerController: Settings saved successfully");
+
+      // Update timer configuration if timer module is ready
+      if (workoutTimerModule && workoutTimerModule.isReady()) {
+        const updatedSettings = TimerSettings.getSettings();
+        workoutTimerModule.setTimerConfig(updatedSettings);
+        console.log("TimerController: Timer configuration updated");
+      }
+
+      // Hide modal
+      timerUIModule.hideSettingsModal();
+
+      // Show success message (optional)
+      console.log("TimerController: Settings saved and applied");
+    } else {
+      console.error("TimerController: Failed to save settings:", result.errors);
+      alert("Failed to save settings:\n" + result.errors.join("\n"));
+    }
+  };
+
+  /**
+   * Handle reset settings button click
+   * @private
+   */
+  const handleResetSettings = () => {
+    if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
+      console.error("TimerController: TimerSettings module not ready");
+      return;
+    }
+
+    // Confirm reset
+    const confirmed = confirm(
+      "Are you sure you want to reset all settings to defaults?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    // Reset to defaults
+    TimerSettings.resetToDefaults();
+    console.log("TimerController: Settings reset to defaults");
+
+    // Reload form with default values
+    loadSettingsIntoForm();
+
+    console.log("TimerController: Settings form reloaded with defaults");
   };
 
   /**

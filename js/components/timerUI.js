@@ -483,6 +483,264 @@ const TimerUI = (() => {
     console.log("TimerUI: Timer modal fully assembled and added to DOM");
   };
 
+  /**
+   * Create settings modal
+   * @public
+   * @returns {HTMLElement} Settings modal element
+   */
+  const createSettingsModal = () => {
+    console.log("TimerUI: Creating settings modal");
+
+    // Create modal overlay
+    const overlay = document.createElement("div");
+    overlay.className = "timer-settings-overlay";
+    overlay.style.display = "none";
+
+    // Create modal container
+    const modal = document.createElement("div");
+    modal.className = "timer-settings-modal";
+
+    // Create modal header
+    const header = document.createElement("div");
+    header.className = "timer-settings-header";
+
+    const title = document.createElement("h2");
+    title.textContent = "Timer Settings";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "timer-settings-close";
+    closeBtn.textContent = "×";
+    closeBtn.setAttribute("aria-label", "Close settings");
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+
+    // Create modal body
+    const body = document.createElement("div");
+    body.className = "timer-settings-body";
+
+    // Create form
+    const form = document.createElement("form");
+    form.className = "timer-settings-form";
+
+    // Prepare time input
+    const prepareGroup = createSettingInput(
+      "prepare",
+      "Prepare Time",
+      "seconds",
+      0,
+      60,
+      10
+    );
+    form.appendChild(prepareGroup);
+
+    // Work time input
+    const workGroup = createSettingInput(
+      "work",
+      "Work Time",
+      "seconds",
+      5,
+      600,
+      45
+    );
+    form.appendChild(workGroup);
+
+    // Rest time input
+    const restGroup = createSettingInput(
+      "rest",
+      "Rest Time",
+      "seconds",
+      0,
+      300,
+      15
+    );
+    form.appendChild(restGroup);
+
+    // Cycles per set input
+    const cyclesGroup = createSettingInput(
+      "cyclesPerSet",
+      "Cycles per Set",
+      "cycles",
+      1,
+      20,
+      3
+    );
+    form.appendChild(cyclesGroup);
+
+    // Sets input
+    const setsGroup = createSettingInput("sets", "Sets", "sets", 1, 20, 3);
+    form.appendChild(setsGroup);
+
+    // Rest between sets input
+    const restBetweenSetsGroup = createSettingInput(
+      "restBetweenSets",
+      "Rest Between Sets",
+      "seconds",
+      0,
+      600,
+      60
+    );
+    form.appendChild(restBetweenSetsGroup);
+
+    // Sound enabled checkbox
+    const soundGroup = createSettingCheckbox(
+      "soundEnabled",
+      "Enable Sound Notifications",
+      true
+    );
+    form.appendChild(soundGroup);
+
+    // Voice enabled checkbox
+    const voiceGroup = createSettingCheckbox(
+      "voiceEnabled",
+      "Enable Voice Announcements",
+      false
+    );
+    form.appendChild(voiceGroup);
+
+    body.appendChild(form);
+
+    // Create modal footer
+    const footer = document.createElement("div");
+    footer.className = "timer-settings-footer";
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "timer-settings-btn timer-settings-btn-secondary";
+    resetBtn.textContent = "Reset to Defaults";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.className = "timer-settings-btn timer-settings-btn-secondary";
+    cancelBtn.textContent = "Cancel";
+
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "timer-settings-btn timer-settings-btn-primary";
+    saveBtn.textContent = "Save Settings";
+
+    footer.appendChild(resetBtn);
+    footer.appendChild(cancelBtn);
+    footer.appendChild(saveBtn);
+
+    // Assemble modal
+    modal.appendChild(header);
+    modal.appendChild(body);
+    modal.appendChild(footer);
+    overlay.appendChild(modal);
+
+    // Append to body
+    document.body.appendChild(overlay);
+
+    // Store references
+    elements.settingsOverlay = overlay;
+    elements.settingsModal = modal;
+    elements.settingsCloseBtn = closeBtn;
+    elements.settingsForm = form;
+    elements.settingsResetBtn = resetBtn;
+    elements.settingsCancelBtn = cancelBtn;
+    elements.settingsSaveBtn = saveBtn;
+
+    console.log("TimerUI: Settings modal created successfully");
+
+    return overlay;
+  };
+
+  /**
+   * Create setting input field
+   * @private
+   */
+  const createSettingInput = (name, label, unit, min, max, defaultValue) => {
+    const group = document.createElement("div");
+    group.className = "timer-setting-group";
+
+    const labelEl = document.createElement("label");
+    labelEl.className = "timer-setting-label";
+    labelEl.setAttribute("for", `timer-setting-${name}`);
+    labelEl.textContent = label;
+
+    const inputContainer = document.createElement("div");
+    inputContainer.className = "timer-setting-input-container";
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.id = `timer-setting-${name}`;
+    input.name = name;
+    input.className = "timer-setting-input";
+    input.min = min;
+    input.max = max;
+    input.value = defaultValue;
+
+    const unitLabel = document.createElement("span");
+    unitLabel.className = "timer-setting-unit";
+    unitLabel.textContent = unit;
+
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(unitLabel);
+    group.appendChild(labelEl);
+    group.appendChild(inputContainer);
+
+    return group;
+  };
+
+  /**
+   * Create setting checkbox field
+   * @private
+   */
+  const createSettingCheckbox = (name, label, defaultValue) => {
+    const group = document.createElement("div");
+    group.className = "timer-setting-group timer-setting-checkbox-group";
+
+    const checkboxContainer = document.createElement("div");
+    checkboxContainer.className = "timer-setting-checkbox-container";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = `timer-setting-${name}`;
+    input.name = name;
+    input.className = "timer-setting-checkbox";
+    input.checked = defaultValue;
+
+    const labelEl = document.createElement("label");
+    labelEl.className = "timer-setting-checkbox-label";
+    labelEl.setAttribute("for", `timer-setting-${name}`);
+    labelEl.textContent = label;
+
+    checkboxContainer.appendChild(input);
+    checkboxContainer.appendChild(labelEl);
+    group.appendChild(checkboxContainer);
+
+    return group;
+  };
+
+  /**
+   * Show settings modal
+   * @public
+   */
+  const showSettingsModal = () => {
+    if (!elements.settingsOverlay) {
+      console.error("TimerUI: Settings modal not created");
+      return;
+    }
+
+    elements.settingsOverlay.style.display = "flex";
+    console.log("TimerUI: Settings modal shown");
+  };
+
+  /**
+   * Hide settings modal
+   * @public
+   */
+  const hideSettingsModal = () => {
+    if (!elements.settingsOverlay) {
+      console.error("TimerUI: Settings modal not created");
+      return;
+    }
+
+    elements.settingsOverlay.style.display = "none";
+    console.log("TimerUI: Settings modal hidden");
+  };
+
   // Public API
   return {
     init,
@@ -490,5 +748,8 @@ const TimerUI = (() => {
     showTimer,
     hideTimer,
     getElements: () => elements,
+    createSettingsModal,
+    showSettingsModal,
+    hideSettingsModal,
   };
 })();

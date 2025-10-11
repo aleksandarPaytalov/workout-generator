@@ -29,6 +29,7 @@
 
 /* 5.3. Timer Component Styles */
 @import url("./timer.css?v=1");
+@import url("./components/timer-settings.css?v=1");
 
 /* 6. Utility Classes */
 @import url("./utilities.css?v=9");
