@@ -148,6 +148,41 @@ const TimerController = (() => {
   };
 
   /**
+   * Handle workout completed event
+   * @private
+   * @param {CustomEvent} event - Workout completed event
+   */
+  const handleWorkoutCompleted = (event) => {
+    if (!isInitialized) {
+      return;
+    }
+
+    const state = event.detail;
+    console.log(
+      "TimerController: 🎉 WORKOUT COMPLETED! 🎉",
+      "Total exercises:",
+      state.totalExercises
+    );
+
+    // Update phase indicator to show workout completion
+    if (elements.phaseIndicator) {
+      elements.phaseIndicator.textContent = "🎉 WORKOUT COMPLETE! 🎉";
+      elements.phaseIndicator.className =
+        "timer-phase-indicator phase-completed";
+    }
+
+    // Show congratulatory message
+    alert(
+      `🎉 Congratulations! 🎉\n\nYou've completed the entire workout!\n\nTotal exercises: ${state.totalExercises}\n\nGreat job! Keep up the excellent work!`
+    );
+
+    console.log("TimerController: Workout completed successfully!");
+
+    // Update display with final state
+    updateDisplay(state);
+  };
+
+  /**
    * Set up event listeners for timer events
    * @private
    */
@@ -164,6 +199,12 @@ const TimerController = (() => {
     document.addEventListener(
       TIMER_EVENTS.EXERCISE_COMPLETED,
       handleExerciseCompleted
+    );
+
+    // Listen to timer:workoutCompleted for workout completion
+    document.addEventListener(
+      TIMER_EVENTS.WORKOUT_COMPLETED,
+      handleWorkoutCompleted
     );
 
     console.log("TimerController: Event listeners set up successfully");
@@ -386,17 +427,23 @@ const TimerController = (() => {
 
     console.log("TimerController: Start button clicked");
 
-    // Get current exercise (will be passed when timer is shown)
-    // For now, create a test exercise
-    const testExercise = {
+    // Use the current exercise that was set when showTimer was called
+    const exercise = currentExercise || {
       name: "Test Exercise",
       muscleGroup: "chest",
       sets: 3,
       reps: 10,
     };
 
-    // Start the timer with the exercise
-    const started = workoutTimerModule.startTimer(testExercise);
+    // Get total exercises from workout
+    const totalExercises = currentWorkout.length || 1;
+
+    // Start the timer with the exercise, index, and total count
+    const started = workoutTimerModule.startTimer(
+      exercise,
+      currentExerciseIndex,
+      totalExercises
+    );
 
     if (started) {
       console.log("TimerController: Timer started successfully");

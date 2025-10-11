@@ -33,6 +33,7 @@ const WorkoutTimer = (() => {
     phase: "idle", // Current phase: idle, preparing, working, resting, paused, completed
     exercise: null, // Current exercise object
     exerciseIndex: 0, // Index in workout array
+    totalExercises: 1, // Total number of exercises in workout
     currentSet: 1, // Current set number
     currentCycle: 1, // Current cycle number
     remainingTime: 0, // Remaining time in seconds
@@ -271,8 +272,9 @@ const WorkoutTimer = (() => {
    * @private
    * @param {Object} exercise - Exercise object
    * @param {number} index - Exercise index in workout
+   * @param {number} totalExercises - Total number of exercises in workout
    */
-  const setCurrentExercise = (exercise, index = 0) => {
+  const setCurrentExercise = (exercise, index = 0, totalExercises = 1) => {
     if (!exercise) {
       console.error("WorkoutTimer: Invalid exercise object");
       return false;
@@ -281,11 +283,16 @@ const WorkoutTimer = (() => {
     updateTimerState({
       exercise: exercise,
       exerciseIndex: index,
+      totalExercises: totalExercises,
       currentSet: 1,
       currentCycle: 1,
     });
 
-    console.log(`WorkoutTimer: Exercise set - ${exercise.name} (${index})`);
+    console.log(
+      `WorkoutTimer: Exercise set - ${exercise.name} (${
+        index + 1
+      } of ${totalExercises})`
+    );
     return true;
   };
 
@@ -452,9 +459,29 @@ const WorkoutTimer = (() => {
           // Exercise completed
           stopTimer();
           setPhase("completed", 0);
-          emitEvent(TIMER_EVENTS.EXERCISE_COMPLETED, {
-            exercise: timerState.exercise,
-          });
+
+          // Check if this is the last exercise in the workout
+          const isLastExercise =
+            timerState.exerciseIndex >= timerState.totalExercises - 1;
+
+          if (isLastExercise) {
+            // Workout completed!
+            console.log(
+              "WorkoutTimer: Workout completed! All exercises finished."
+            );
+            emitEvent(TIMER_EVENTS.WORKOUT_COMPLETED, {
+              exercise: timerState.exercise,
+              totalExercises: timerState.totalExercises,
+              exerciseIndex: timerState.exerciseIndex,
+            });
+          } else {
+            // Just this exercise completed
+            emitEvent(TIMER_EVENTS.EXERCISE_COMPLETED, {
+              exercise: timerState.exercise,
+              exerciseIndex: timerState.exerciseIndex,
+              totalExercises: timerState.totalExercises,
+            });
+          }
         }
       }
     } else if (currentPhase === "resting") {
@@ -469,9 +496,10 @@ const WorkoutTimer = (() => {
    * @public
    * @param {Object} exercise - Exercise object to time
    * @param {number} index - Exercise index in workout (optional)
+   * @param {number} totalExercises - Total number of exercises in workout (optional)
    * @returns {boolean} True if timer started successfully
    */
-  const startTimer = (exercise, index = 0) => {
+  const startTimer = (exercise, index = 0, totalExercises = 1) => {
     try {
       if (!isInitialized) {
         throw new Error("WorkoutTimer not initialized");
@@ -482,7 +510,7 @@ const WorkoutTimer = (() => {
       }
 
       // Set current exercise
-      if (!setCurrentExercise(exercise, index)) {
+      if (!setCurrentExercise(exercise, index, totalExercises)) {
         throw new Error("Failed to set exercise");
       }
 
@@ -498,7 +526,11 @@ const WorkoutTimer = (() => {
       // Start countdown
       startCountdown();
 
-      console.log(`WorkoutTimer: Timer started for "${exercise.name}"`);
+      console.log(
+        `WorkoutTimer: Timer started for "${exercise.name}" (${
+          index + 1
+        } of ${totalExercises})`
+      );
       return true;
     } catch (error) {
       console.error("WorkoutTimer: Failed to start timer:", error.message);
