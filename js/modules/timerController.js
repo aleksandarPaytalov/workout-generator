@@ -14,6 +14,11 @@ const TimerController = (() => {
   let workoutTimerModule = null;
   let timerUIModule = null;
 
+  // Workout data storage
+  let currentWorkout = [];
+  let currentExerciseIndex = 0;
+  let currentExercise = null;
+
   // Timer event names (matching WorkoutTimer module)
   const TIMER_EVENTS = {
     STARTED: "timer:started",
@@ -526,13 +531,34 @@ const TimerController = (() => {
 
     console.log("TimerController: Next exercise button clicked");
 
-    // This will be implemented when we integrate with workout data
-    // For now, just log the action
-    console.log("TimerController: Moving to next exercise (to be implemented)");
+    // Check if we have workout data
+    if (currentWorkout.length === 0) {
+      console.warn("TimerController: No workout data available");
+      return;
+    }
 
-    // TODO: Get next exercise from workout array
-    // TODO: Stop current timer
-    // TODO: Start timer with next exercise
+    // Check if we can move to next exercise
+    if (currentExerciseIndex >= currentWorkout.length - 1) {
+      console.log("TimerController: Already at last exercise");
+      return;
+    }
+
+    // Stop current timer
+    if (workoutTimerModule && workoutTimerModule.isRunning()) {
+      workoutTimerModule.stopTimer();
+    }
+
+    // Move to next exercise
+    currentExerciseIndex++;
+    const nextExercise = currentWorkout[currentExerciseIndex];
+
+    console.log(
+      `TimerController: Moving to exercise ${currentExerciseIndex + 1}:`,
+      nextExercise.name
+    );
+
+    // Show timer for next exercise
+    showTimer(nextExercise, currentExerciseIndex, currentWorkout.length);
   };
 
   /**
@@ -547,15 +573,34 @@ const TimerController = (() => {
 
     console.log("TimerController: Previous exercise button clicked");
 
-    // This will be implemented when we integrate with workout data
-    // For now, just log the action
+    // Check if we have workout data
+    if (currentWorkout.length === 0) {
+      console.warn("TimerController: No workout data available");
+      return;
+    }
+
+    // Check if we can move to previous exercise
+    if (currentExerciseIndex === 0) {
+      console.log("TimerController: Already at first exercise");
+      return;
+    }
+
+    // Stop current timer
+    if (workoutTimerModule && workoutTimerModule.isRunning()) {
+      workoutTimerModule.stopTimer();
+    }
+
+    // Move to previous exercise
+    currentExerciseIndex--;
+    const prevExercise = currentWorkout[currentExerciseIndex];
+
     console.log(
-      "TimerController: Moving to previous exercise (to be implemented)"
+      `TimerController: Moving to exercise ${currentExerciseIndex + 1}:`,
+      prevExercise.name
     );
 
-    // TODO: Get previous exercise from workout array
-    // TODO: Stop current timer
-    // TODO: Start timer with previous exercise
+    // Show timer for previous exercise
+    showTimer(prevExercise, currentExerciseIndex, currentWorkout.length);
   };
 
   /**
@@ -581,12 +626,49 @@ const TimerController = (() => {
   };
 
   /**
+   * Set workout data for navigation
+   * @public
+   * @param {Array} workout - Array of exercise objects
+   */
+  const setWorkout = (workout) => {
+    if (!Array.isArray(workout)) {
+      console.error("TimerController: Workout must be an array");
+      return;
+    }
+
+    currentWorkout = workout;
+    console.log(
+      `TimerController: Workout data set (${workout.length} exercises)`
+    );
+  };
+
+  /**
+   * Update navigation button states based on current position
+   * @private
+   */
+  const updateNavigationButtons = () => {
+    if (!elements.prevBtn || !elements.nextBtn) {
+      return;
+    }
+
+    // Disable previous button if at first exercise
+    elements.prevBtn.disabled = currentExerciseIndex === 0;
+
+    // Disable next button if at last exercise or no workout data
+    elements.nextBtn.disabled =
+      currentWorkout.length === 0 ||
+      currentExerciseIndex >= currentWorkout.length - 1;
+  };
+
+  /**
    * Show timer for an exercise
    * @public
    * @param {Object} exercise - Exercise object to start timer for
+   * @param {number} exerciseIndex - Index of exercise in workout (optional)
+   * @param {number} totalExercises - Total number of exercises in workout (optional)
    * @returns {boolean} True if timer shown successfully
    */
-  const showTimer = (exercise) => {
+  const showTimer = (exercise, exerciseIndex, totalExercises) => {
     if (!isInitialized) {
       console.error("TimerController: Not initialized");
       return false;
@@ -599,13 +681,25 @@ const TimerController = (() => {
 
     console.log("TimerController: Showing timer for exercise:", exercise);
 
+    // Store current exercise data
+    currentExercise = exercise;
+    currentExerciseIndex =
+      exerciseIndex !== undefined ? exerciseIndex : exercise.index || 0;
+
     // Update exercise information in UI
     if (elements.exerciseName) {
       elements.exerciseName.textContent = exercise.name || "Exercise";
     }
 
-    if (elements.exerciseNumber && exercise.index !== undefined) {
-      elements.exerciseNumber.textContent = `Exercise ${exercise.index + 1}`;
+    if (elements.exerciseNumber) {
+      const total =
+        totalExercises ||
+        exercise.totalExercises ||
+        currentWorkout.length ||
+        "?";
+      elements.exerciseNumber.textContent = `Exercise ${
+        currentExerciseIndex + 1
+      } of ${total}`;
     }
 
     // Reset button states to initial
@@ -622,6 +716,9 @@ const TimerController = (() => {
       elements.phaseIndicator.textContent = "READY";
       elements.phaseIndicator.className = "timer-phase-indicator phase-idle";
     }
+
+    // Update next/previous button states
+    updateNavigationButtons();
 
     // Show the timer modal
     TimerUI.showTimer();
@@ -776,5 +873,6 @@ const TimerController = (() => {
     showTimer,
     hideTimer,
     updateDisplay,
+    setWorkout,
   };
 })();

@@ -39,6 +39,7 @@ const UIController = (() => {
     currentExerciseCount: null,
     modeIndicator: null,
     workoutActions: null,
+    startWorkoutTimerBtn: null,
     exportPdfBtn: null,
     shuffleBtn: null,
   };
@@ -136,6 +137,9 @@ const UIController = (() => {
     );
     elements.modeIndicator = document.getElementById("modeIndicator");
     elements.workoutActions = document.getElementById("workoutActions");
+    elements.startWorkoutTimerBtn = document.getElementById(
+      "startWorkoutTimerBtn"
+    );
     elements.exportPdfBtn = document.getElementById("exportPdfBtn");
     elements.shuffleBtn = document.getElementById("shuffleBtn");
 
@@ -181,6 +185,14 @@ const UIController = (() => {
 
     // Clear button
     elements.clearBtn.addEventListener("click", handleClearWorkout);
+
+    // Workout timer button
+    if (elements.startWorkoutTimerBtn) {
+      elements.startWorkoutTimerBtn.addEventListener(
+        "click",
+        handleStartWorkoutTimer
+      );
+    }
 
     // Export and shuffle buttons (will be implemented in later tasks)
     if (elements.exportPdfBtn) {
@@ -385,6 +397,10 @@ const UIController = (() => {
   const updateWorkoutActions = () => {
     const hasWorkout = currentWorkout.length > 0;
 
+    if (elements.startWorkoutTimerBtn) {
+      elements.startWorkoutTimerBtn.disabled = !hasWorkout;
+    }
+
     if (elements.exportPdfBtn) {
       elements.exportPdfBtn.disabled = !hasWorkout;
     }
@@ -537,6 +553,10 @@ const UIController = (() => {
 
     li.appendChild(exerciseInfo);
 
+    // Add timer button for this exercise
+    const timerButton = createTimerButton(exercise, index);
+    li.appendChild(timerButton);
+
     // Add replacement dropdown for replace mode (will be enhanced in later tasks)
     if (currentOperationMode === "replace") {
       const replaceContainer = createReplaceDropdown(exercise, index);
@@ -544,6 +564,111 @@ const UIController = (() => {
     }
 
     return li;
+  };
+
+  /**
+   * Create timer button for an exercise
+   * @param {Object} exercise - Exercise object
+   * @param {number} index - Exercise position in workout
+   * @returns {HTMLElement} Timer button element
+   * @private
+   */
+  const createTimerButton = (exercise, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn-exercise-timer";
+    button.setAttribute("data-exercise-index", index);
+    button.setAttribute("title", `Start timer for ${exercise.name}`);
+    button.innerHTML = "⏱️ Start Timer";
+
+    // Add click event listener
+    button.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent event bubbling
+      handleExerciseTimerClick(exercise, index);
+    });
+
+    return button;
+  };
+
+  /**
+   * Handle exercise timer button click
+   * @param {Object} exercise - Exercise object
+   * @param {number} index - Exercise position in workout
+   * @private
+   */
+  const handleExerciseTimerClick = (exercise, index) => {
+    console.log(
+      `UIController: Starting timer for exercise ${index + 1}:`,
+      exercise.name
+    );
+
+    // Check if TimerController is available
+    if (typeof TimerController === "undefined" || !TimerController.isReady()) {
+      console.error("UIController: TimerController not available");
+      alert("Timer feature is not available. Please refresh the page.");
+      return;
+    }
+
+    // Set workout data in TimerController for navigation
+    TimerController.setWorkout(currentWorkout);
+
+    // Prepare exercise data with index information
+    const exerciseData = {
+      ...exercise,
+      index: index,
+      totalExercises: currentWorkout.length,
+    };
+
+    // Show timer for this exercise
+    try {
+      TimerController.showTimer(exerciseData, index, currentWorkout.length);
+      console.log("UIController: Timer shown successfully");
+    } catch (error) {
+      console.error("UIController: Error showing timer:", error);
+      alert("Failed to start timer. Please try again.");
+    }
+  };
+
+  /**
+   * Handle start workout timer button click
+   * Starts timer for the entire workout, beginning with the first exercise
+   * @private
+   */
+  const handleStartWorkoutTimer = () => {
+    console.log("UIController: Starting workout timer");
+
+    // Check if we have a workout
+    if (!currentWorkout || currentWorkout.length === 0) {
+      console.error("UIController: No workout available");
+      alert("Please generate a workout first.");
+      return;
+    }
+
+    // Check if TimerController is available
+    if (typeof TimerController === "undefined" || !TimerController.isReady()) {
+      console.error("UIController: TimerController not available");
+      alert("Timer feature is not available. Please refresh the page.");
+      return;
+    }
+
+    // Set workout data in TimerController for navigation
+    TimerController.setWorkout(currentWorkout);
+
+    // Start with the first exercise
+    const firstExercise = {
+      ...currentWorkout[0],
+      index: 0,
+      totalExercises: currentWorkout.length,
+    };
+
+    // Show timer for first exercise
+    try {
+      TimerController.showTimer(firstExercise, 0, currentWorkout.length);
+      console.log("UIController: Workout timer started with first exercise");
+    } catch (error) {
+      console.error("UIController: Error starting workout timer:", error);
+      alert("Failed to start workout timer. Please try again.");
+    }
   };
 
   /**
