@@ -457,12 +457,16 @@ const WorkoutTimer = (() => {
           startCountdown();
         } else {
           // Exercise completed
+          // Save exercise info BEFORE stopping timer (stopTimer resets state)
+          const completedExercise = timerState.exercise;
+          const completedExerciseIndex = timerState.exerciseIndex;
+          const totalExercises = timerState.totalExercises;
+
           stopTimer();
           setPhase("completed", 0);
 
           // Check if this is the last exercise in the workout
-          const isLastExercise =
-            timerState.exerciseIndex >= timerState.totalExercises - 1;
+          const isLastExercise = completedExerciseIndex >= totalExercises - 1;
 
           if (isLastExercise) {
             // Workout completed!
@@ -470,16 +474,16 @@ const WorkoutTimer = (() => {
               "WorkoutTimer: Workout completed! All exercises finished."
             );
             emitEvent(TIMER_EVENTS.WORKOUT_COMPLETED, {
-              exercise: timerState.exercise,
-              totalExercises: timerState.totalExercises,
-              exerciseIndex: timerState.exerciseIndex,
+              exercise: completedExercise,
+              totalExercises: totalExercises,
+              exerciseIndex: completedExerciseIndex,
             });
           } else {
             // Just this exercise completed
             emitEvent(TIMER_EVENTS.EXERCISE_COMPLETED, {
-              exercise: timerState.exercise,
-              exerciseIndex: timerState.exerciseIndex,
-              totalExercises: timerState.totalExercises,
+              exercise: completedExercise,
+              exerciseIndex: completedExerciseIndex,
+              totalExercises: totalExercises,
             });
           }
         }
