@@ -125,24 +125,60 @@ const TimerController = (() => {
     console.log(
       "TimerController: Exercise completed!",
       "Exercise:",
-      state.exercise?.name || "Unknown"
+      state.exercise?.name || "Unknown",
+      `(${state.exerciseIndex + 1} of ${state.totalExercises})`
     );
 
-    // Update phase indicator to show completion
-    if (elements.phaseIndicator) {
-      elements.phaseIndicator.textContent = "COMPLETED";
-      elements.phaseIndicator.className =
-        "timer-phase-indicator phase-completed";
+    // Check if we have workout data and can move to next exercise
+    if (currentWorkout.length === 0) {
+      console.warn(
+        "TimerController: No workout data available for auto-advance"
+      );
+      return;
     }
 
-    // Show completion message
-    console.log("TimerController: Exercise timer completed successfully!");
+    // Check if we can move to next exercise
+    if (currentExerciseIndex >= currentWorkout.length - 1) {
+      console.log(
+        "TimerController: Already at last exercise - no auto-advance"
+      );
+      return;
+    }
 
-    // Update display with final state
-    updateDisplay(state);
+    // Auto-advance to next exercise
+    console.log("TimerController: Auto-advancing to next exercise...");
 
-    // Optional: Auto-advance to next exercise if configured
-    // This will be implemented when we add workout navigation
+    // Move to next exercise
+    currentExerciseIndex++;
+    const nextExercise = currentWorkout[currentExerciseIndex];
+
+    console.log(
+      `TimerController: Auto-starting exercise ${currentExerciseIndex + 1}:`,
+      nextExercise.name
+    );
+
+    // Start timer for next exercise automatically
+    const totalExercises = currentWorkout.length;
+    workoutTimerModule.startTimer(
+      nextExercise,
+      currentExerciseIndex,
+      totalExercises
+    );
+
+    // Update exercise info display
+    if (elements.exerciseNumber) {
+      elements.exerciseNumber.textContent = `Exercise ${
+        currentExerciseIndex + 1
+      } of ${totalExercises}`;
+    }
+
+    // Update exercise name in header
+    if (elements.exerciseName) {
+      elements.exerciseName.textContent = nextExercise.name;
+    }
+
+    // Update navigation buttons
+    updateNavigationButtons();
   };
 
   /**
@@ -1070,7 +1106,8 @@ const TimerController = (() => {
     // Update exercise number if available
     if (elements.exerciseNumber && state.exerciseIndex !== undefined) {
       const exerciseNum = state.exerciseIndex + 1;
-      elements.exerciseNumber.textContent = `Exercise ${exerciseNum}`;
+      const total = state.totalExercises || currentWorkout.length || "?";
+      elements.exerciseNumber.textContent = `Exercise ${exerciseNum} of ${total}`;
     }
 
     // Update progress ring percentage (fills clockwise from 0% to 100%)
