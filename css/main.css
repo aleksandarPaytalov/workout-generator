@@ -124,7 +124,7 @@
   );
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: visible; /* Changed from 'hidden' to 'visible' to prevent clipping on tablet screens (768px-1200px) */
 }
 
 .app-container::before {

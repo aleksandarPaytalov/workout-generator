@@ -164,25 +164,28 @@
    ================================================================ */
 
 /* Desktop Layout - Side by Side */
+/* ===================================================================
+   Tablet Styles (768px - 1199px) - Vertical Stack Layout
+   ================================================================ */
+
 @media (min-width: 768px) {
   .app-container {
     padding: var(--space-6);
   }
 
+  /* Keep vertical layout on tablets to prevent horizontal overflow */
   .app-main {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--space-10);
+    flex-direction: column;
+    gap: var(--space-8);
   }
 
   .workout-controls {
-    flex: 0 0 400px;
-    position: sticky;
-    top: var(--space-6);
+    width: 100%;
+    max-width: 100%;
   }
 
   .workout-display {
-    flex: 1;
+    width: 100%;
     min-height: 600px;
   }
 
@@ -207,19 +210,32 @@
 }
 
 /* ===================================================================
-   Large Desktop Styles (min-width: 1024px)
+   Large Desktop Styles (min-width: 1200px) - Side-by-Side Layout
    ================================================================ */
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .app-container {
     padding: var(--space-8);
   }
 
-  .workout-controls {
-    flex: 0 0 450px;
+  /* Switch to side-by-side layout on large screens */
+  .app-main {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-12);
   }
 
-  .app-main {
-    gap: var(--space-12);
+  .workout-controls {
+    flex: 0 0 450px;
+    width: 450px;
+    max-width: 450px;
+    position: sticky;
+    top: var(--space-8);
+  }
+
+  .workout-display {
+    flex: 1;
+    width: auto;
+    min-height: 600px;
   }
 }
