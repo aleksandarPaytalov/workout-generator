@@ -45,8 +45,6 @@ const TimerController = (() => {
     timeDisplay: null,
     progressRing: null,
     progressCircle: null,
-    setInfo: null,
-    cycleInfo: null,
     progressBar: null,
     progressFill: null,
     startBtn: null,
@@ -1051,20 +1049,7 @@ const TimerController = (() => {
       elements.phaseIndicator.classList.add(`phase-${state.phase}`);
     }
 
-    // Update set/cycle information (main display)
-    if (elements.setInfo) {
-      const setText = `Set ${state.currentSet || 1} of ${state.totalSets || 3}`;
-      elements.setInfo.textContent = setText;
-    }
-
-    if (elements.cycleInfo) {
-      const cycleText = `Cycle ${state.currentCycle || 1} of ${
-        state.totalCycles || 3
-      }`;
-      elements.cycleInfo.textContent = cycleText;
-    }
-
-    // Update set/cycle information (progress section)
+    // Update set/cycle information (progress section only - removed from main display)
     if (elements.setInfoProgress) {
       const setText = ` ${state.currentSet || 1} of ${state.totalSets || 3}`;
       elements.setInfoProgress.textContent = setText;

@@ -334,7 +334,9 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Timer display element
    */
   const createTimerDisplay = () => {
-    console.log("TimerUI: Creating main timer display");
+    console.log(
+      "TimerUI: Creating main timer display with integrated progress ring"
+    );
 
     const display = document.createElement("div");
     display.className = "timer-display";
@@ -351,35 +353,9 @@ const TimerUI = (() => {
 
     display.appendChild(timeDisplay);
 
-    console.log("TimerUI: Large timer display added in center (MM:SS format)");
-
-    // Current set/cycle info display
-    const setCycleContainer = document.createElement("div");
-    setCycleContainer.className = "timer-set-cycle-info";
-
-    // Create separate elements for set and cycle info
-    const setInfoSpan = document.createElement("span");
-    setInfoSpan.className = "timer-set-info";
-    setInfoSpan.textContent = "Set 1 of 3";
-
-    const separator = document.createElement("span");
-    separator.textContent = " • ";
-
-    const cycleInfoSpan = document.createElement("span");
-    cycleInfoSpan.className = "timer-cycle-info";
-    cycleInfoSpan.textContent = "Cycle 1 of 3";
-
-    setCycleContainer.appendChild(setInfoSpan);
-    setCycleContainer.appendChild(separator);
-    setCycleContainer.appendChild(cycleInfoSpan);
-
-    // Store references to the individual elements
-    elements.setInfo = setInfoSpan;
-    elements.cycleInfo = cycleInfoSpan;
-
-    display.appendChild(setCycleContainer);
-
-    console.log("TimerUI: Current set/cycle info display added");
+    console.log(
+      "TimerUI: Timer display created with integrated progress ring (set/cycle info removed)"
+    );
     return display;
   };
 
@@ -453,17 +429,15 @@ const TimerUI = (() => {
 
     // Build modal content
     const header = createTimerHeader();
-    const display = createTimerDisplay();
+    const display = createTimerDisplay(); // Now includes integrated progress ring
     const phaseIndicator = createPhaseIndicator();
-    const progressRing = createProgressRing();
     const progressSection = createProgressSection();
     const controls = createControlButtons();
 
     // Assemble modal
     modal.appendChild(header);
     modal.appendChild(phaseIndicator);
-    modal.appendChild(display);
-    modal.appendChild(progressRing);
+    modal.appendChild(display); // Display now contains the progress ring
     modal.appendChild(progressSection);
     modal.appendChild(controls);
 
