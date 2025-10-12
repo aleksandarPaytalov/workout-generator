@@ -212,7 +212,8 @@
   border-radius: var(--border-radius-xl);
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Changed from 'hidden' to 'visible' to prevent clipping buttons */
+  gap: var(--space-6); /* Ensure minimum spacing between title and buttons */
 }
 
 .workout-header::before {
@@ -238,6 +239,8 @@
   text-shadow: 0 1px 2px rgba(139, 92, 246, 0.1);
   position: relative;
   z-index: 1;
+  flex-shrink: 1; /* Prevent title from shrinking too much */
+  min-width: 0; /* Allow text to wrap if needed */
 }
 
 .workout-actions {
@@ -245,6 +248,11 @@
   gap: var(--space-3);
   position: relative;
   z-index: 1;
+  flex-shrink: 1; /* Prevent buttons from shrinking */
+  /* flex-wrap is controlled by media queries in mobile.css:
+     - ≤480px: column layout (vertical stack)
+     - 481-640px: wrap (2 rows)
+     - ≥641px: nowrap (single row) */
 }
 
 /* ===================================================================

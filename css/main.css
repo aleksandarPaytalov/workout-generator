@@ -1003,24 +1003,8 @@
   box-shadow: var(--shadow-focus);
 }
 
-/* Workout header layout */
-.workout-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: var(--border-width) solid var(--color-border);
-}
-
-.workout-title {
-  margin-bottom: 0;
-}
-
-.workout-actions {
-  display: flex;
-  gap: var(--space-3);
-}
+/* Workout header layout - MOVED TO components.css to avoid duplication */
+/* See css/components.css lines 200-253 for .workout-header, .workout-title, .workout-actions */
 
 /* Workout content area */
 .workout-content {
