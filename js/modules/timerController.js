@@ -1073,14 +1073,15 @@ const TimerController = (() => {
       elements.exerciseNumber.textContent = `Exercise ${exerciseNum}`;
     }
 
-    // Update progress ring percentage
+    // Update progress ring percentage (fills clockwise from 0% to 100%)
     if (elements.progressCircle && state.totalTime > 0) {
       const progress =
         ((state.totalTime - state.remainingTime) / state.totalTime) * 100;
-      const circumference = 2 * Math.PI * 54; // radius = 54 (from SVG)
+      const radius = 120; // Match the SVG circle radius
+      const circumference = 2 * Math.PI * radius; // ≈ 754
+      // Calculate offset: starts at full circumference (0%) and decreases to 0 (100%)
       const offset = circumference - (progress / 100) * circumference;
 
-      elements.progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
       elements.progressCircle.style.strokeDashoffset = offset;
 
       console.log(

@@ -294,10 +294,11 @@ const TimerUI = (() => {
     progressCircle.setAttribute("stroke", "#3b82f6");
     progressCircle.setAttribute("stroke-width", "12");
     progressCircle.setAttribute("stroke-linecap", "round");
-    // Circumference = 2 * PI * radius = 2 * 3.14159 * 120 = 754
-    progressCircle.setAttribute("stroke-dasharray", "754");
-    progressCircle.setAttribute("stroke-dashoffset", "0");
-    progressCircle.setAttribute("transform", "rotate(-90 140 140)");
+    // Circumference = 2 * PI * radius = 2 * 3.14159 * 120 ≈ 754
+    const circumference = 2 * Math.PI * 120;
+    progressCircle.setAttribute("stroke-dasharray", `${circumference}`);
+    progressCircle.setAttribute("stroke-dashoffset", `${circumference}`); // Start at 0% (full offset)
+    progressCircle.setAttribute("transform", "rotate(-90 140 140)"); // Start from top
     elements.progressCircle = progressCircle;
 
     svg.appendChild(bgCircle);
