@@ -753,8 +753,26 @@ const TimerUI = (() => {
 
     const labelEl = document.createElement("label");
     labelEl.className = "timer-setting-checkbox-label";
-    labelEl.setAttribute("for", `timer-setting-${name}`);
+    // DON'T use 'for' attribute - handle clicks manually
     labelEl.textContent = label;
+
+    // Add click event listener to label to manually toggle checkbox
+    labelEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Toggle the checkbox
+      input.checked = !input.checked;
+
+      // Manually trigger change event
+      const changeEvent = new Event("change", { bubbles: true });
+      input.dispatchEvent(changeEvent);
+
+      console.log(
+        `TimerUI: Checkbox "${name}" clicked, new value:`,
+        input.checked
+      );
+    });
 
     // Add change event listener to log checkbox state
     input.addEventListener("change", (e) => {

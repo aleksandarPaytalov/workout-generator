@@ -837,7 +837,12 @@ const AudioManager = (() => {
    * @public
    */
   const setEnabled = (enabled) => {
+    console.log(
+      `AudioManager: setEnabled called with: ${enabled} (type: ${typeof enabled})`
+    );
+    console.log(`AudioManager: soundEnabled BEFORE: ${soundEnabled}`);
     soundEnabled = enabled;
+    console.log(`AudioManager: soundEnabled AFTER: ${soundEnabled}`);
     console.log(`AudioManager: Sound ${enabled ? "ENABLED" : "DISABLED"}`);
   };
 
@@ -847,6 +852,9 @@ const AudioManager = (() => {
    * @public
    */
   const isEnabled = () => {
+    console.log(
+      `AudioManager: isEnabled() called - returning: ${soundEnabled}`
+    );
     return soundEnabled;
   };
 

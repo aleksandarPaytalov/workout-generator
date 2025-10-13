@@ -850,6 +850,10 @@ const TimerController = (() => {
     }
 
     const settings = TimerSettings.getSettings();
+    console.log(
+      "TimerController: Current settings from TimerSettings:",
+      settings
+    );
     const elements = timerUIModule.getElements();
 
     if (!elements.settingsForm) {
@@ -884,7 +888,16 @@ const TimerController = (() => {
         `#timer-setting-${field}`
       );
       if (input && settings[field] !== undefined) {
+        // Set the checked property
         input.checked = settings[field];
+
+        console.log(
+          `TimerController: Loaded checkbox "${field}" = ${settings[field]} (input.checked = ${input.checked})`
+        );
+      } else {
+        console.warn(
+          `TimerController: Checkbox "${field}" not found or setting undefined`
+        );
       }
     });
 
@@ -939,9 +952,25 @@ const TimerController = (() => {
       }
     });
 
-    // Parse checkbox fields
-    newSettings.soundEnabled = formData.get("soundEnabled") === "on";
-    newSettings.voiceEnabled = formData.get("voiceEnabled") === "on";
+    // Parse checkbox fields - IMPORTANT: Unchecked checkboxes don't appear in FormData
+    // We need to check the actual checkbox element's checked property
+    const soundEnabledCheckbox = elements.settingsForm.querySelector(
+      "#timer-setting-soundEnabled"
+    );
+    const voiceEnabledCheckbox = elements.settingsForm.querySelector(
+      "#timer-setting-voiceEnabled"
+    );
+
+    newSettings.soundEnabled = soundEnabledCheckbox
+      ? soundEnabledCheckbox.checked
+      : false;
+    newSettings.voiceEnabled = voiceEnabledCheckbox
+      ? voiceEnabledCheckbox.checked
+      : false;
+
+    console.log(
+      `TimerController: Checkbox values - soundEnabled: ${newSettings.soundEnabled}, voiceEnabled: ${newSettings.voiceEnabled}`
+    );
 
     // Get selected start sound
     const soundSelect =
@@ -966,11 +995,21 @@ const TimerController = (() => {
 
       // Update AudioManager sound enabled state
       if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+        console.log(
+          `TimerController: Updating AudioManager - soundEnabled: ${newSettings.soundEnabled}`
+        );
         AudioManager.setEnabled(newSettings.soundEnabled);
         console.log(
           `TimerController: AudioManager sound ${
             newSettings.soundEnabled ? "ENABLED" : "DISABLED"
           }`
+        );
+        console.log(
+          `TimerController: AudioManager.isEnabled() = ${AudioManager.isEnabled()}`
+        );
+      } else {
+        console.warn(
+          "TimerController: AudioManager not available or not ready"
         );
       }
 

@@ -186,8 +186,17 @@ const TimerSettings = (function () {
         };
       }
 
+      // Log what we're about to merge
+      console.log("TimerSettings: Merging config:", config);
+      console.log(
+        "TimerSettings: Current settings before merge:",
+        currentSettings
+      );
+
       // Merge with current settings
       currentSettings = { ...currentSettings, ...config };
+
+      console.log("TimerSettings: Settings after merge:", currentSettings);
 
       // Save to localStorage
       const saved = saveSettings();
@@ -198,7 +207,10 @@ const TimerSettings = (function () {
         };
       }
 
-      console.log("TimerSettings: Settings updated:", currentSettings);
+      console.log(
+        "TimerSettings: Settings updated and saved:",
+        currentSettings
+      );
       return {
         success: true,
         errors: [],
