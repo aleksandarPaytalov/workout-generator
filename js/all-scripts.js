@@ -42,6 +42,7 @@ async function loadAllScripts() {
 
     // Timer modules
     await loadScript("./js/modules/timerSettings.js");
+    await loadScript("./js/modules/audioManager.js");
     await loadScript("./js/modules/workoutTimer.js");
     await loadScript("./js/components/timerUI.js");
     await loadScript("./js/modules/timerController.js");

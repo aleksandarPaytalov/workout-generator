@@ -41,6 +41,7 @@ const WorkoutApp = (() => {
         "WorkoutTimer",
         "TimerUI",
         "TimerController",
+        "AudioManager",
       ];
 
       for (const moduleName of requiredModules) {
@@ -138,6 +139,28 @@ const WorkoutApp = (() => {
           console.warn("TimerSettings failed to initialize");
         } else {
           console.log("TimerSettings: Ready for manual user operations");
+        }
+      }
+
+      // Initialize AudioManager after TimerSettings (to respect soundEnabled setting)
+      if (typeof AudioManager !== "undefined") {
+        AudioManager.init();
+        if (!AudioManager.isReady()) {
+          console.warn(
+            "AudioManager failed to initialize - sound effects will be disabled"
+          );
+        } else {
+          console.log("AudioManager: Ready for manual user operations");
+          // Sync with TimerSettings if available
+          if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
+            const settings = TimerSettings.getSettings();
+            AudioManager.setEnabled(settings.soundEnabled);
+            console.log(
+              `AudioManager: Sound ${
+                settings.soundEnabled ? "ENABLED" : "DISABLED"
+              } (from TimerSettings)`
+            );
+          }
         }
       }
 

@@ -56,6 +56,9 @@ const TimerController = (() => {
     settingsBtn: null,
   };
 
+  // Countdown beep tracking
+  let lastCountdownBeep = -1; // Track last beep second to avoid duplicates
+
   /**
    * Handle timer tick event
    * @private
@@ -96,6 +99,28 @@ const TimerController = (() => {
       "| Cycle:",
       state.currentCycle
     );
+
+    // Play whistle sound when WORKING phase starts (each repetition)
+    if (
+      state.phase === "working" &&
+      typeof AudioManager !== "undefined" &&
+      AudioManager.isReady() &&
+      AudioManager.isEnabled()
+    ) {
+      AudioManager.playWhistleSound();
+      console.log("TimerController: Playing whistle for WORKING phase start");
+    }
+
+    // Play end sound when transitioning to a new phase (except when starting PREPARE or WORKING phase)
+    if (
+      state.phase !== "preparing" &&
+      state.phase !== "working" &&
+      typeof AudioManager !== "undefined" &&
+      AudioManager.isReady() &&
+      AudioManager.isEnabled()
+    ) {
+      AudioManager.playEndSound();
+    }
 
     // Update phase indicator in UI
     if (elements.phaseIndicator) {
@@ -197,6 +222,15 @@ const TimerController = (() => {
       "Total exercises:",
       state.totalExercises
     );
+
+    // Play end sound for workout completion
+    if (
+      typeof AudioManager !== "undefined" &&
+      AudioManager.isReady() &&
+      AudioManager.isEnabled()
+    ) {
+      AudioManager.playEndSound();
+    }
 
     // Update phase indicator to show workout completion
     if (elements.phaseIndicator) {
@@ -481,6 +515,9 @@ const TimerController = (() => {
 
     if (started) {
       console.log("TimerController: Timer started successfully");
+
+      // Note: Whistle sound will play automatically when WORKING phase starts
+      // (handled in handlePhaseChanged function)
 
       // Update button states
       if (elements.startBtn) {
@@ -1075,6 +1112,22 @@ const TimerController = (() => {
     if (elements.timeDisplay) {
       const formattedTime = formatTime(state.remainingTime || 0);
       elements.timeDisplay.textContent = formattedTime;
+    }
+
+    // Play countdown beeps for last 5 seconds
+    if (state.remainingTime <= 5 && state.remainingTime > 0) {
+      if (state.remainingTime !== lastCountdownBeep) {
+        lastCountdownBeep = state.remainingTime;
+        if (
+          typeof AudioManager !== "undefined" &&
+          AudioManager.isReady() &&
+          AudioManager.isEnabled()
+        ) {
+          AudioManager.playCountdownBeep();
+        }
+      }
+    } else {
+      lastCountdownBeep = -1; // Reset when not in countdown range
     }
 
     // Update phase indicator
