@@ -102,14 +102,65 @@ const AudioManager = (() => {
   };
 
   /**
-   * Play start sound
-   * Plays when timer/phase starts
-   * Sound: 800Hz, 200ms, medium volume
+   * Play start sound based on selected sound ID
+   * Master function that calls the appropriate sound function
+   * @param {string} soundId - ID of the sound to play (default: "whistle")
    * @public
    */
-  const playStartSound = () => {
-    console.log("AudioManager: Playing START sound");
-    playBeep(800, 0.2, 0.3); // 800Hz, 200ms, medium volume
+  const playStartSound = (soundId = "whistle") => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Start sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    // Resume context if suspended
+    if (audioContext.state === "suspended") {
+      console.log("AudioManager: Resuming suspended AudioContext");
+      audioContext.resume().then(() => {
+        console.log("AudioManager: AudioContext resumed successfully");
+      });
+    }
+
+    // Call appropriate sound function based on soundId
+    switch (soundId) {
+      case "whistle":
+        playRefereeWhistle();
+        break;
+      case "boxingBell":
+        playBoxingBell();
+        break;
+      case "airHorn":
+        playAirHorn();
+        break;
+      case "beepSequence":
+        playBeepSequence();
+        break;
+      case "countdownVoice":
+        playCountdownVoice();
+        break;
+      case "siren":
+        playSiren();
+        break;
+      case "chime":
+        playChime();
+        break;
+      case "buzzer":
+        playBuzzer();
+        break;
+      case "gong":
+        playGong();
+        break;
+      case "electronicBeep":
+        playElectronicBeep();
+        break;
+      default:
+        console.warn(
+          `AudioManager: Unknown sound ID "${soundId}", using default whistle`
+        );
+        playRefereeWhistle();
+    }
   };
 
   /**
@@ -140,7 +191,7 @@ const AudioManager = (() => {
    * Sound: Multi-layered whistle with harmonics and vibrato for realistic, warm tone
    * @public
    */
-  const playWhistleSound = () => {
+  const playRefereeWhistle = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       console.log(
         "AudioManager: Whistle sound playback skipped (disabled or not initialized)"
@@ -242,6 +293,545 @@ const AudioManager = (() => {
   };
 
   /**
+   * Play boxing bell sound (DING DING DING)
+   * Three quick bell strikes
+   * Sound: 1200Hz sine wave, 3 strikes × 150ms each with 100ms gaps
+   * @public
+   */
+  const playBoxingBell = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Boxing bell sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const frequency = 1200; // Bell frequency
+      const strikeDuration = 0.15; // 150ms per strike
+      const gapDuration = 0.1; // 100ms gap between strikes
+      const volume = 0.4;
+
+      // Play 3 bell strikes
+      for (let i = 0; i < 3; i++) {
+        const startTime = currentTime + i * (strikeDuration + gapDuration);
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+
+        // Sharp attack, quick decay for bell-like sound
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.01,
+          startTime + strikeDuration
+        );
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + strikeDuration);
+      }
+
+      console.log("AudioManager: Playing BOXING BELL sound (DING DING DING)");
+    } catch (error) {
+      console.error("AudioManager: Error playing boxing bell sound", error);
+    }
+  };
+
+  /**
+   * Play air horn sound
+   * Powerful blast sound
+   * Sound: 400Hz square wave, 800ms duration with slight frequency wobble
+   * @public
+   */
+  const playAirHorn = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Air horn sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const baseFrequency = 400;
+      const duration = 0.8; // 800ms
+      const volume = 0.5; // Louder than whistle
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = "square"; // Harsh, loud sound
+      oscillator.frequency.setValueAtTime(baseFrequency, currentTime);
+
+      // Add slight frequency wobble for realism
+      oscillator.frequency.linearRampToValueAtTime(
+        baseFrequency * 0.98,
+        currentTime + duration / 2
+      );
+      oscillator.frequency.linearRampToValueAtTime(
+        baseFrequency,
+        currentTime + duration
+      );
+
+      // Volume envelope
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, currentTime + 0.05);
+      gainNode.gain.setValueAtTime(volume, currentTime + duration - 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+
+      console.log("AudioManager: Playing AIR HORN sound (400Hz, 800ms)");
+    } catch (error) {
+      console.error("AudioManager: Error playing air horn sound", error);
+    }
+  };
+
+  /**
+   * Play beep sequence sound
+   * Three ascending beeps
+   * Sound: 800Hz → 1000Hz → 1200Hz, 200ms each with 150ms gaps
+   * @public
+   */
+  const playBeepSequence = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Beep sequence sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const frequencies = [800, 1000, 1200]; // Ascending frequencies
+      const beepDuration = 0.2; // 200ms per beep
+      const gapDuration = 0.15; // 150ms gap
+      const volume = 0.35;
+
+      frequencies.forEach((frequency, index) => {
+        const startTime = currentTime + index * (beepDuration + gapDuration);
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.type = "sine"; // Clean tones
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+
+        gainNode.gain.setValueAtTime(volume, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.01,
+          startTime + beepDuration
+        );
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + beepDuration);
+      });
+
+      console.log(
+        "AudioManager: Playing BEEP SEQUENCE sound (800Hz → 1000Hz → 1200Hz)"
+      );
+    } catch (error) {
+      console.error("AudioManager: Error playing beep sequence sound", error);
+    }
+  };
+
+  /**
+   * Play countdown voice sound
+   * Synthesized "3, 2, 1, GO!" effect using frequency modulation
+   * Sound: Four segments with varying frequencies to simulate speech
+   * @public
+   */
+  const playCountdownVoice = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Countdown voice sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const volume = 0.3;
+
+      // "3" - 300ms
+      const osc1 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioContext.destination);
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(200, currentTime);
+      osc1.frequency.linearRampToValueAtTime(180, currentTime + 0.3);
+      gain1.gain.setValueAtTime(volume, currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.3);
+      osc1.start(currentTime);
+      osc1.stop(currentTime + 0.3);
+
+      // "2" - 300ms
+      const osc2 = audioContext.createOscillator();
+      const gain2 = audioContext.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioContext.destination);
+      osc2.type = "sawtooth";
+      osc2.frequency.setValueAtTime(220, currentTime + 0.4);
+      osc2.frequency.linearRampToValueAtTime(200, currentTime + 0.7);
+      gain2.gain.setValueAtTime(volume, currentTime + 0.4);
+      gain2.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.7);
+      osc2.start(currentTime + 0.4);
+      osc2.stop(currentTime + 0.7);
+
+      // "1" - 300ms
+      const osc3 = audioContext.createOscillator();
+      const gain3 = audioContext.createGain();
+      osc3.connect(gain3);
+      gain3.connect(audioContext.destination);
+      osc3.type = "sawtooth";
+      osc3.frequency.setValueAtTime(240, currentTime + 0.8);
+      osc3.frequency.linearRampToValueAtTime(220, currentTime + 1.1);
+      gain3.gain.setValueAtTime(volume, currentTime + 0.8);
+      gain3.gain.exponentialRampToValueAtTime(0.01, currentTime + 1.1);
+      osc3.start(currentTime + 0.8);
+      osc3.stop(currentTime + 1.1);
+
+      // "GO!" - 500ms (higher pitch, more energetic)
+      const osc4 = audioContext.createOscillator();
+      const gain4 = audioContext.createGain();
+      osc4.connect(gain4);
+      gain4.connect(audioContext.destination);
+      osc4.type = "sawtooth";
+      osc4.frequency.setValueAtTime(300, currentTime + 1.2);
+      osc4.frequency.linearRampToValueAtTime(280, currentTime + 1.7);
+      gain4.gain.setValueAtTime(volume * 1.2, currentTime + 1.2);
+      gain4.gain.exponentialRampToValueAtTime(0.01, currentTime + 1.7);
+      osc4.start(currentTime + 1.2);
+      osc4.stop(currentTime + 1.7);
+
+      console.log("AudioManager: Playing COUNTDOWN VOICE sound (3, 2, 1, GO!)");
+    } catch (error) {
+      console.error("AudioManager: Error playing countdown voice sound", error);
+    }
+  };
+
+  /**
+   * Play siren sound
+   * Rising alarm sound
+   * Sound: Frequency sweep 600Hz → 1200Hz over 1 second, sawtooth wave
+   * @public
+   */
+  const playSiren = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Siren sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const duration = 1.0; // 1 second
+      const volume = 0.4;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = "sawtooth"; // Harsh alarm sound
+
+      // Frequency sweep: 600Hz → 1200Hz
+      oscillator.frequency.setValueAtTime(600, currentTime);
+      oscillator.frequency.linearRampToValueAtTime(
+        1200,
+        currentTime + duration
+      );
+
+      // Volume envelope
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, currentTime + 0.05);
+      gainNode.gain.setValueAtTime(volume, currentTime + duration - 0.15);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+
+      console.log("AudioManager: Playing SIREN sound (600Hz → 1200Hz, 1s)");
+    } catch (error) {
+      console.error("AudioManager: Error playing siren sound", error);
+    }
+  };
+
+  /**
+   * Play chime sound
+   * Pleasant bell chime
+   * Sound: 800Hz with harmonics, triangle wave, long decay (2 seconds)
+   * @public
+   */
+  const playChime = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Chime sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const baseFrequency = 800;
+      const duration = 2.0; // Long decay for bell-like resonance
+      const volume = 0.3;
+
+      // Base frequency
+      const osc1 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioContext.destination);
+      osc1.type = "triangle"; // Softer tone
+      osc1.frequency.setValueAtTime(baseFrequency, currentTime);
+      gain1.gain.setValueAtTime(volume, currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+      osc1.start(currentTime);
+      osc1.stop(currentTime + duration);
+
+      // First harmonic (1600Hz)
+      const osc2 = audioContext.createOscillator();
+      const gain2 = audioContext.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioContext.destination);
+      osc2.type = "triangle";
+      osc2.frequency.setValueAtTime(baseFrequency * 2, currentTime);
+      gain2.gain.setValueAtTime(volume * 0.5, currentTime);
+      gain2.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+      osc2.start(currentTime);
+      osc2.stop(currentTime + duration);
+
+      // Second harmonic (2400Hz)
+      const osc3 = audioContext.createOscillator();
+      const gain3 = audioContext.createGain();
+      osc3.connect(gain3);
+      gain3.connect(audioContext.destination);
+      osc3.type = "triangle";
+      osc3.frequency.setValueAtTime(baseFrequency * 3, currentTime);
+      gain3.gain.setValueAtTime(volume * 0.25, currentTime);
+      gain3.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+      osc3.start(currentTime);
+      osc3.stop(currentTime + duration);
+
+      console.log("AudioManager: Playing CHIME sound (800Hz + harmonics, 2s)");
+    } catch (error) {
+      console.error("AudioManager: Error playing chime sound", error);
+    }
+  };
+
+  /**
+   * Play buzzer sound
+   * Game show style buzzer
+   * Sound: 200Hz square wave, 600ms, sharp attack, no fade
+   * @public
+   */
+  const playBuzzer = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Buzzer sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const frequency = 200; // Low, harsh frequency
+      const duration = 0.6; // 600ms
+      const volume = 0.4;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = "square"; // Harsh sound
+      oscillator.frequency.setValueAtTime(frequency, currentTime);
+
+      // Sharp attack, no fade (abrupt end)
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, currentTime + 0.01);
+      gainNode.gain.setValueAtTime(volume, currentTime + duration - 0.01);
+      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration);
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+
+      console.log("AudioManager: Playing BUZZER sound (200Hz, 600ms)");
+    } catch (error) {
+      console.error("AudioManager: Error playing buzzer sound", error);
+    }
+  };
+
+  /**
+   * Play gong sound
+   * Deep resonant gong
+   * Sound: 150Hz with rich harmonics, multiple oscillators, long decay (3 seconds) with vibrato
+   * @public
+   */
+  const playGong = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Gong sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const baseFrequency = 150; // Deep, low frequency
+      const duration = 3.0; // Long decay
+      const volume = 0.35;
+
+      // Base frequency
+      const osc1 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioContext.destination);
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(baseFrequency, currentTime);
+
+      // Add vibrato for realism
+      const vibrato = audioContext.createOscillator();
+      const vibratoGain = audioContext.createGain();
+      vibrato.frequency.setValueAtTime(3, currentTime); // 3Hz vibrato
+      vibratoGain.gain.setValueAtTime(5, currentTime);
+      vibrato.connect(vibratoGain);
+      vibratoGain.connect(osc1.frequency);
+      vibrato.start(currentTime);
+      vibrato.stop(currentTime + duration);
+
+      gain1.gain.setValueAtTime(volume, currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+      osc1.start(currentTime);
+      osc1.stop(currentTime + duration);
+
+      // Harmonics for complex tone
+      const harmonics = [2, 3, 4, 5];
+      harmonics.forEach((harmonic) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(baseFrequency * harmonic, currentTime);
+        gain.gain.setValueAtTime(volume / (harmonic * 2), currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+        osc.start(currentTime);
+        osc.stop(currentTime + duration);
+      });
+
+      console.log("AudioManager: Playing GONG sound (150Hz + harmonics, 3s)");
+    } catch (error) {
+      console.error("AudioManager: Error playing gong sound", error);
+    }
+  };
+
+  /**
+   * Play electronic beep sound
+   * Futuristic sci-fi beep
+   * Sound: 1500Hz sine wave, 400ms, frequency sweep at end (1500Hz → 1200Hz)
+   * @public
+   */
+  const playElectronicBeep = () => {
+    if (!isInitialized || !soundEnabled || !audioContext) {
+      console.log(
+        "AudioManager: Electronic beep sound playback skipped (disabled or not initialized)"
+      );
+      return;
+    }
+
+    try {
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      const currentTime = audioContext.currentTime;
+      const startFrequency = 1500;
+      const endFrequency = 1200;
+      const duration = 0.4; // 400ms
+      const volume = 0.35;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = "sine"; // Clean, modern sound
+      oscillator.frequency.setValueAtTime(startFrequency, currentTime);
+      oscillator.frequency.linearRampToValueAtTime(
+        endFrequency,
+        currentTime + duration
+      );
+
+      // Volume envelope
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, currentTime + 0.02);
+      gainNode.gain.setValueAtTime(volume, currentTime + duration - 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + duration);
+
+      console.log(
+        "AudioManager: Playing ELECTRONIC BEEP sound (1500Hz → 1200Hz, 400ms)"
+      );
+    } catch (error) {
+      console.error("AudioManager: Error playing electronic beep sound", error);
+    }
+  };
+
+  /**
    * Enable or disable sound playback
    * @param {boolean} enabled - True to enable sounds, false to disable
    * @public
@@ -275,10 +865,19 @@ const AudioManager = (() => {
   return {
     init,
     isReady,
-    playStartSound,
+    playStartSound, // Master function - accepts soundId parameter
+    playRefereeWhistle, // Individual sound functions (renamed from playWhistleSound)
+    playBoxingBell,
+    playAirHorn,
+    playBeepSequence,
+    playCountdownVoice,
+    playSiren,
+    playChime,
+    playBuzzer,
+    playGong,
+    playElectronicBeep,
     playEndSound,
     playCountdownBeep,
-    playWhistleSound,
     setEnabled,
     isEnabled,
     getContextState,

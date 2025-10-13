@@ -557,6 +557,61 @@ const TimerUI = (() => {
     );
     form.appendChild(restBetweenSetsGroup);
 
+    // Sound selector section
+    const soundSection = document.createElement("div");
+    soundSection.className = "timer-setting-group";
+
+    const soundLabel = document.createElement("label");
+    soundLabel.className = "timer-setting-label";
+    soundLabel.textContent = "Start Sound";
+
+    const soundDescription = document.createElement("p");
+    soundDescription.className = "timer-setting-description";
+    soundDescription.textContent =
+      "Choose the sound that plays when each work phase starts";
+
+    soundSection.appendChild(soundLabel);
+    soundSection.appendChild(soundDescription);
+
+    // Sound selector container
+    const soundSelectorContainer = document.createElement("div");
+    soundSelectorContainer.className = "sound-selector-container";
+
+    // Dropdown select
+    const soundSelect = document.createElement("select");
+    soundSelect.id = "startSoundSelect";
+    soundSelect.className = "timer-setting-select";
+
+    // Populate dropdown with available sounds
+    if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
+      const availableSounds = TimerSettings.getAvailableStartSounds();
+      availableSounds.forEach((sound) => {
+        const option = document.createElement("option");
+        option.value = sound.id;
+        option.textContent = `${sound.name} - ${sound.description}`;
+        soundSelect.appendChild(option);
+      });
+    } else {
+      // Fallback if TimerSettings not available
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "whistle";
+      defaultOption.textContent = "Referee Whistle - Classic sports whistle";
+      soundSelect.appendChild(defaultOption);
+    }
+
+    soundSelectorContainer.appendChild(soundSelect);
+
+    // Preview button
+    const previewBtn = document.createElement("button");
+    previewBtn.type = "button";
+    previewBtn.className = "btn-preview-sound";
+    previewBtn.innerHTML = "🔊 Preview";
+    previewBtn.title = "Preview selected sound";
+    soundSelectorContainer.appendChild(previewBtn);
+
+    soundSection.appendChild(soundSelectorContainer);
+    form.appendChild(soundSection);
+
     // Sound enabled checkbox
     const soundGroup = createSettingCheckbox(
       "soundEnabled",

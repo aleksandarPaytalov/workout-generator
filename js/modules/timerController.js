@@ -100,15 +100,24 @@ const TimerController = (() => {
       state.currentCycle
     );
 
-    // Play whistle sound when WORKING phase starts (each repetition)
+    // Play selected start sound when WORKING phase starts (each repetition)
     if (
       state.phase === "working" &&
       typeof AudioManager !== "undefined" &&
       AudioManager.isReady() &&
       AudioManager.isEnabled()
     ) {
-      AudioManager.playWhistleSound();
-      console.log("TimerController: Playing whistle for WORKING phase start");
+      // Get selected start sound from settings
+      let selectedSound = "whistle"; // default
+      if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
+        const settings = TimerSettings.getSettings();
+        selectedSound = settings.startSound || "whistle";
+      }
+
+      AudioManager.playStartSound(selectedSound);
+      console.log(
+        `TimerController: Playing start sound "${selectedSound}" for WORKING phase`
+      );
     }
 
     // Play end sound when transitioning to a new phase (except when starting PREPARE or WORKING phase)
@@ -787,6 +796,26 @@ const TimerController = (() => {
       });
     }
 
+    // Preview sound button
+    const previewBtn =
+      elements.settingsModal?.querySelector(".btn-preview-sound");
+    if (previewBtn) {
+      previewBtn.addEventListener("click", () => {
+        const soundSelect =
+          elements.settingsModal?.querySelector("#startSoundSelect");
+        const selectedSound = soundSelect?.value || "whistle";
+
+        if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+          console.log(`TimerController: Previewing sound: ${selectedSound}`);
+          AudioManager.playStartSound(selectedSound);
+        } else {
+          console.warn(
+            "TimerController: AudioManager not available for preview"
+          );
+        }
+      });
+    }
+
     console.log("TimerController: Settings modal listeners setup");
   };
 
@@ -848,6 +877,16 @@ const TimerController = (() => {
       }
     });
 
+    // Load start sound selection
+    const soundSelect =
+      elements.settingsModal?.querySelector("#startSoundSelect");
+    if (soundSelect && settings.startSound) {
+      soundSelect.value = settings.startSound;
+      console.log(
+        `TimerController: Loaded start sound: ${settings.startSound}`
+      );
+    }
+
     console.log("TimerController: Settings loaded into form");
   };
 
@@ -892,6 +931,12 @@ const TimerController = (() => {
     // Parse checkbox fields
     newSettings.soundEnabled = formData.get("soundEnabled") === "on";
     newSettings.voiceEnabled = formData.get("voiceEnabled") === "on";
+
+    // Get selected start sound
+    const soundSelect =
+      elements.settingsModal?.querySelector("#startSoundSelect");
+    const startSound = soundSelect?.value || "whistle";
+    newSettings.startSound = startSound;
 
     console.log("TimerController: New settings collected:", newSettings);
 

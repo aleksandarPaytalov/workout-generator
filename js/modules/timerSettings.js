@@ -24,7 +24,38 @@ const TimerSettings = (function () {
     soundEnabled: true, // Enable sound notifications
     voiceEnabled: false, // Enable voice announcements
     theme: "auto", // Timer theme (auto/light/dark)
+    startSound: "whistle", // Start sound selection (default: referee whistle)
   };
+
+  // Available start sound options
+  const availableStartSounds = [
+    {
+      id: "whistle",
+      name: "Referee Whistle",
+      description: "Classic sports whistle",
+    },
+    { id: "boxingBell", name: "Boxing Bell", description: "DING DING DING!" },
+    { id: "airHorn", name: "Air Horn", description: "Powerful blast" },
+    {
+      id: "beepSequence",
+      name: "Beep Sequence",
+      description: "Three ascending beeps",
+    },
+    {
+      id: "countdownVoice",
+      name: "Countdown Voice",
+      description: "3, 2, 1, GO!",
+    },
+    { id: "siren", name: "Siren", description: "Rising alarm sound" },
+    { id: "chime", name: "Chime", description: "Pleasant bell chime" },
+    { id: "buzzer", name: "Buzzer", description: "Game show buzzer" },
+    { id: "gong", name: "Gong", description: "Deep resonant gong" },
+    {
+      id: "electronicBeep",
+      name: "Electronic Beep",
+      description: "Futuristic beep",
+    },
+  ];
 
   // Current settings (will be loaded from localStorage or use defaults)
   let currentSettings = { ...defaultSettings };
@@ -236,9 +267,7 @@ const TimerSettings = (function () {
       const settingsJson = localStorage.getItem(STORAGE_KEY);
 
       if (!settingsJson) {
-        console.log(
-          "TimerSettings: No saved settings found, using defaults"
-        );
+        console.log("TimerSettings: No saved settings found, using defaults");
         currentSettings = { ...defaultSettings };
         return true;
       }
@@ -276,6 +305,15 @@ const TimerSettings = (function () {
     return { ...validationRules };
   };
 
+  /**
+   * Get available start sound options
+   * @public
+   * @returns {Array} Array of available start sound objects
+   */
+  const getAvailableStartSounds = () => {
+    return [...availableStartSounds];
+  };
+
   // Public API
   return {
     init,
@@ -285,6 +323,6 @@ const TimerSettings = (function () {
     updateSettings,
     resetToDefaults,
     getValidationRules,
+    getAvailableStartSounds,
   };
 })();
-
