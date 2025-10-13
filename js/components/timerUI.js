@@ -498,6 +498,12 @@ const TimerUI = (() => {
     const form = document.createElement("form");
     form.className = "timer-settings-form";
 
+    // Prevent form submission (which would reload the page)
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      console.log("TimerUI: Form submit prevented");
+    });
+
     // Prepare time input
     const prepareGroup = createSettingInput(
       "prepare",
@@ -626,6 +632,20 @@ const TimerUI = (() => {
       "Enable Voice Announcements",
       false
     );
+
+    // Add "Coming Soon" badge to voice announcements
+    const voiceLabel = voiceGroup.querySelector(
+      ".timer-setting-checkbox-label"
+    );
+    if (voiceLabel) {
+      const comingSoonBadge = document.createElement("span");
+      comingSoonBadge.className = "coming-soon-badge";
+      comingSoonBadge.textContent = "Coming Soon";
+      comingSoonBadge.title =
+        "Voice announcements feature is under development";
+      voiceLabel.appendChild(comingSoonBadge);
+    }
+
     form.appendChild(voiceGroup);
 
     body.appendChild(form);
@@ -736,6 +756,15 @@ const TimerUI = (() => {
     labelEl.setAttribute("for", `timer-setting-${name}`);
     labelEl.textContent = label;
 
+    // Add change event listener to log checkbox state
+    input.addEventListener("change", (e) => {
+      console.log(
+        `TimerUI: Checkbox "${name}" changed, new value:`,
+        e.target.checked
+      );
+    });
+
+    // IMPORTANT: Input must come BEFORE label for CSS adjacent sibling selector (+) to work
     checkboxContainer.appendChild(input);
     checkboxContainer.appendChild(labelEl);
     group.appendChild(checkboxContainer);

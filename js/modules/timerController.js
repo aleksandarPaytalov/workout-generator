@@ -474,6 +474,17 @@ const TimerController = (() => {
       // Set up button event listeners
       setupButtonListeners();
 
+      // Initialize AudioManager with soundEnabled setting
+      if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+        if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
+          const settings = TimerSettings.getSettings();
+          AudioManager.setEnabled(settings.soundEnabled);
+          console.log(
+            `TimerController: AudioManager initialized with soundEnabled: ${settings.soundEnabled}`
+          );
+        }
+      }
+
       isInitialized = true;
       console.log("TimerController: Initialized successfully");
       return true;
@@ -953,15 +964,78 @@ const TimerController = (() => {
         console.log("TimerController: Timer configuration updated");
       }
 
+      // Update AudioManager sound enabled state
+      if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+        AudioManager.setEnabled(newSettings.soundEnabled);
+        console.log(
+          `TimerController: AudioManager sound ${
+            newSettings.soundEnabled ? "ENABLED" : "DISABLED"
+          }`
+        );
+      }
+
       // Hide modal
       timerUIModule.hideSettingsModal();
 
-      // Show success message (optional)
+      // Show success toast notification
+      showToast(
+        `Settings saved! Sound notifications ${
+          newSettings.soundEnabled ? "enabled" : "disabled"
+        }`,
+        "success"
+      );
       console.log("TimerController: Settings saved and applied");
     } else {
       console.error("TimerController: Failed to save settings:", result.errors);
-      alert("Failed to save settings:\n" + result.errors.join("\n"));
+      showToast(
+        "Failed to save settings: " + result.errors.join(", "),
+        "error"
+      );
     }
+  };
+
+  /**
+   * Show toast notification
+   * @private
+   * @param {string} message - Message to display
+   * @param {string} type - Type of toast (success, error, info)
+   */
+  const showToast = (message, type = "info") => {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector(".toast-container");
+    if (!toastContainer) {
+      toastContainer = document.createElement("div");
+      toastContainer.className = "toast-container";
+      document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+
+    // Add icon based on type
+    const icon = type === "success" ? "✓" : type === "error" ? "✕" : "ℹ";
+    toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-message">${message}</span>`;
+
+    // Add to container
+    toastContainer.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => {
+      toast.classList.add("toast-show");
+    }, 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.classList.remove("toast-show");
+      setTimeout(() => {
+        toast.remove();
+        // Remove container if empty
+        if (toastContainer.children.length === 0) {
+          toastContainer.remove();
+        }
+      }, 300);
+    }, 3000);
   };
 
   /**
