@@ -902,6 +902,48 @@ const AudioManager = (() => {
     return audioContext.state;
   };
 
+  /**
+   * Unlock audio context for iOS Safari
+   * MUST be called during a user interaction (button click, touch, etc.)
+   * This pre-initializes the AudioContext so sounds can play later
+   * @public
+   * @returns {Promise<boolean>} True if successfully unlocked
+   */
+  const unlockAudioContext = async () => {
+    if (!isInitialized || !audioContext) {
+      Logger.warn(
+        "AudioManager",
+        "Cannot unlock - AudioManager not initialized"
+      );
+      return false;
+    }
+
+    try {
+      Logger.info(
+        "AudioManager",
+        `Unlocking AudioContext (current state: ${audioContext.state})`
+      );
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+        Logger.info(
+          "AudioManager",
+          `✅ AudioContext unlocked! State: ${audioContext.state}`
+        );
+        return true;
+      } else {
+        Logger.debug(
+          "AudioManager",
+          `AudioContext already in ${audioContext.state} state`
+        );
+        return true;
+      }
+    } catch (error) {
+      Logger.error("AudioManager", "Failed to unlock AudioContext", error);
+      return false;
+    }
+  };
+
   // Public API
   return {
     init,
@@ -922,6 +964,7 @@ const AudioManager = (() => {
     setEnabled,
     isEnabled,
     getContextState,
+    unlockAudioContext, // CRITICAL for iOS Safari - call on user interaction
   };
 })();
 

@@ -507,13 +507,23 @@ const TimerController = (() => {
    * Handle start button click
    * @private
    */
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!isInitialized) {
       Logger.error("TimerController", "Not initialized");
       return;
     }
 
     Logger.info("TimerController", "Start button clicked");
+
+    // CRITICAL FIX for iOS Safari: Unlock AudioContext during user interaction
+    // This must happen BEFORE the timer starts, while we're still in the click handler
+    if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+      Logger.info(
+        "TimerController",
+        "🔓 Unlocking AudioContext for iOS Safari..."
+      );
+      await AudioManager.unlockAudioContext();
+    }
 
     // Use the current exercise that was set when showTimer was called
     const exercise = currentExercise || {
@@ -556,13 +566,18 @@ const TimerController = (() => {
    * Handle pause button click
    * @private
    */
-  const handlePause = () => {
+  const handlePause = async () => {
     if (!isInitialized) {
       Logger.error("TimerController", "Not initialized");
       return;
     }
 
     Logger.info("TimerController", "Pause button clicked");
+
+    // Unlock AudioContext on any user interaction (helps with iOS Safari)
+    if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+      await AudioManager.unlockAudioContext();
+    }
 
     // Check if timer is currently paused
     const isPaused = workoutTimerModule.isPaused();
@@ -811,12 +826,15 @@ const TimerController = (() => {
     const previewBtn =
       elements.settingsModal?.querySelector(".btn-preview-sound");
     if (previewBtn) {
-      previewBtn.addEventListener("click", () => {
+      previewBtn.addEventListener("click", async () => {
         const soundSelect =
           elements.settingsModal?.querySelector("#startSoundSelect");
         const selectedSound = soundSelect?.value || "whistle";
 
         if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
+          // Unlock AudioContext on user interaction (critical for iOS Safari)
+          await AudioManager.unlockAudioContext();
+
           Logger.debug("TimerController", `Previewing sound: ${selectedSound}`);
           AudioManager.playStartSound(selectedSound);
         } else {
