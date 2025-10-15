@@ -52,7 +52,7 @@ const UIController = (() => {
    */
   const init = () => {
     if (isInitialized) {
-      console.warn("UIController: Module already initialized");
+      Logger.warn("UIController", "Module already initialized");
       return;
     }
 
@@ -83,8 +83,9 @@ const UIController = (() => {
 
     // PDFExport is optional for core functionality, but log warning if missing
     if (typeof PDFExport === "undefined" || !PDFExport.isReady()) {
-      console.warn(
-        "UIController: PDFExport module not available - export functionality will be limited"
+      Logger.warn(
+        "UIController",
+        "PDFExport module not available - export functionality will be limited"
       );
     }
 
@@ -99,7 +100,7 @@ const UIController = (() => {
     updateModeIndicator();
     updateExerciseCountDisplay();
 
-    console.log("UIController: Module initialized successfully");
+    Logger.info("UIController", "Module initialized successfully");
     isInitialized = true;
   };
 
@@ -228,7 +229,7 @@ const UIController = (() => {
    * @public
    */
   const showLoadingState = () => {
-    console.log("UIController: Showing loading state");
+    Logger.debug("UIController", "Showing loading state");
     hideAllStates();
     elements.loadingState.hidden = false;
     elements.loadingState.style.display = "flex";
@@ -244,7 +245,7 @@ const UIController = (() => {
   const showErrorState = (
     message = "An error occurred while generating the workout."
   ) => {
-    console.log("UIController: Showing error state");
+    Logger.debug("UIController", "Showing error state");
     hideAllStates();
     elements.errorState.hidden = false;
     elements.errorState.style.display = "flex";
@@ -259,7 +260,7 @@ const UIController = (() => {
    * @public
    */
   const showEmptyState = () => {
-    console.log("UIController: Showing empty state");
+    Logger.debug("UIController", "Showing empty state");
     hideAllStates();
     elements.emptyState.hidden = false;
     elements.emptyState.style.display = "flex";
@@ -273,7 +274,7 @@ const UIController = (() => {
    * @private
    */
   const showPopulatedState = () => {
-    console.log("UIController: Showing populated state");
+    Logger.debug("UIController", "Showing populated state");
     hideAllStates();
     elements.workoutListContainer.hidden = false;
     elements.workoutListContainer.style.display = "block";
@@ -444,10 +445,11 @@ const UIController = (() => {
     if (typeof DragDrop !== "undefined" && DragDrop.isReady()) {
       try {
         DragDrop.makeDraggable(elements.workoutList);
-        console.log("UIController: Drag and drop functionality enabled");
+        Logger.debug("UIController", "Drag and drop functionality enabled");
       } catch (error) {
-        console.warn(
-          "UIController: Could not enable drag and drop:",
+        Logger.warn(
+          "UIController",
+          "Could not enable drag and drop:",
           error.message
         );
       }
@@ -481,21 +483,24 @@ const UIController = (() => {
 
           // Save to workout history (user-initiated action)
           const savedWorkout = WorkoutHistory.addWorkout(workoutData, settings);
-          console.log(
-            "UIController: Workout saved to history:",
+          Logger.debug(
+            "UIController",
+            "Workout saved to history:",
             savedWorkout.id
           );
 
           // Show user feedback for successful save
           showWorkoutSavedFeedback();
         } else {
-          console.warn(
-            "UIController: WorkoutHistory not available - workout not saved to history"
+          Logger.warn(
+            "UIController",
+            "WorkoutHistory not available - workout not saved to history"
           );
         }
       } catch (error) {
-        console.error(
-          "UIController: Failed to save workout to history:",
+        Logger.error(
+          "UIController",
+          "Failed to save workout to history:",
           error.message
         );
         // Don't show error to user as this is a background operation
@@ -597,14 +602,15 @@ const UIController = (() => {
    * @private
    */
   const handleExerciseTimerClick = (exercise, index) => {
-    console.log(
-      `UIController: Starting timer for exercise ${index + 1}:`,
+    Logger.debug(
+      "UIController",
+      `Starting timer for exercise ${index + 1}:`,
       exercise.name
     );
 
     // Check if TimerController is available
     if (typeof TimerController === "undefined" || !TimerController.isReady()) {
-      console.error("UIController: TimerController not available");
+      Logger.error("UIController", "TimerController not available");
       alert("Timer feature is not available. Please refresh the page.");
       return;
     }
@@ -622,9 +628,9 @@ const UIController = (() => {
     // Show timer for this exercise
     try {
       TimerController.showTimer(exerciseData, index, currentWorkout.length);
-      console.log("UIController: Timer shown successfully");
+      Logger.debug("UIController", "Timer shown successfully");
     } catch (error) {
-      console.error("UIController: Error showing timer:", error);
+      Logger.error("UIController", "Error showing timer:", error);
       alert("Failed to start timer. Please try again.");
     }
   };
@@ -635,18 +641,18 @@ const UIController = (() => {
    * @private
    */
   const handleStartWorkoutTimer = () => {
-    console.log("UIController: Starting workout timer");
+    Logger.debug("UIController", "Starting workout timer");
 
     // Check if we have a workout
     if (!currentWorkout || currentWorkout.length === 0) {
-      console.error("UIController: No workout available");
+      Logger.error("UIController", "No workout available");
       alert("Please generate a workout first.");
       return;
     }
 
     // Check if TimerController is available
     if (typeof TimerController === "undefined" || !TimerController.isReady()) {
-      console.error("UIController: TimerController not available");
+      Logger.error("UIController", "TimerController not available");
       alert("Timer feature is not available. Please refresh the page.");
       return;
     }
@@ -664,9 +670,9 @@ const UIController = (() => {
     // Show timer for first exercise
     try {
       TimerController.showTimer(firstExercise, 0, currentWorkout.length);
-      console.log("UIController: Workout timer started with first exercise");
+      Logger.debug("UIController", "Workout timer started with first exercise");
     } catch (error) {
-      console.error("UIController: Error starting workout timer:", error);
+      Logger.error("UIController", "Error starting workout timer:", error);
       alert("Failed to start workout timer. Please try again.");
     }
   };
@@ -711,8 +717,9 @@ const UIController = (() => {
         handleExerciseReplacement(e, index)
       );
     } catch (error) {
-      console.warn(
-        `UIController: Could not generate replacement options for exercise at index ${index}:`,
+      Logger.warn(
+        "UIController",
+        `Could not generate replacement options for exercise at index ${index}:`,
         error.message
       );
     }
@@ -822,12 +829,12 @@ const UIController = (() => {
           // Render the generated workout
           renderWorkoutList(workout, true); // true = new workout for stats
         } catch (error) {
-          console.error("UIController: Workout generation failed:", error);
+          Logger.error("UIController", "Workout generation failed:", error);
           showErrorState(error.message);
         }
       }, 500); // Slightly longer delay so user can see loading state
     } catch (error) {
-      console.error("UIController: Form submission failed:", error);
+      Logger.error("UIController", "Form submission failed:", error);
       showErrorState("Failed to process form data. Please try again.");
     }
   };
@@ -878,7 +885,7 @@ const UIController = (() => {
       // Re-render workout with updated exercise
       renderWorkoutList(updatedWorkout);
     } catch (error) {
-      console.error("UIController: Exercise replacement failed:", error);
+      Logger.error("UIController", "Exercise replacement failed:", error);
       showErrorState(`Failed to replace exercise: ${error.message}`);
 
       // Reset dropdown to default
@@ -905,7 +912,7 @@ const UIController = (() => {
    */
   const handleExportPdf = () => {
     if (currentWorkout.length === 0) {
-      console.warn("UIController: No workout to export");
+      Logger.warn("UIController", "No workout to export");
       return;
     }
 
@@ -932,7 +939,7 @@ const UIController = (() => {
         elements.exportPdfBtn.textContent = originalText;
       }, 1000);
     } catch (error) {
-      console.error("UIController: PDF export failed:", error);
+      Logger.error("UIController", "PDF export failed:", error);
 
       // Reset button
       elements.exportPdfBtn.disabled = false;
@@ -974,15 +981,16 @@ const UIController = (() => {
 
       // If still no valid shuffle, keep current order
       if (!validShuffle) {
-        console.warn(
-          "UIController: Could not generate valid shuffle, keeping current order"
+        Logger.warn(
+          "UIController",
+          "Could not generate valid shuffle, keeping current order"
         );
         return;
       }
 
       renderWorkoutList(validShuffle);
     } catch (error) {
-      console.error("UIController: Shuffle failed:", error);
+      Logger.error("UIController", "Shuffle failed:", error);
       showErrorState(`Failed to shuffle workout: ${error.message}`);
     }
   };
@@ -1045,7 +1053,11 @@ const UIController = (() => {
 
       return validOrdering;
     } catch (error) {
-      console.error("UIController: Valid reordering generation failed:", error);
+      Logger.error(
+        "UIController",
+        "Valid reordering generation failed:",
+        error
+      );
       return null;
     }
   };
@@ -1080,14 +1092,21 @@ const UIController = (() => {
       if (exercises && exercises.length > 0) {
         // Render the workout (false = not a new workout, don't save to history again)
         renderWorkoutList(exercises, false);
-        console.log(`UIController: Repeated workout ${workoutId} from history`);
+        Logger.debug(
+          "UIController",
+          `Repeated workout ${workoutId} from history`
+        );
       } else {
-        console.error("UIController: No exercises provided for repeat workout");
+        Logger.error(
+          "UIController",
+          "No exercises provided for repeat workout"
+        );
         showErrorState("Failed to repeat workout");
       }
     } catch (error) {
-      console.error(
-        "UIController: Failed to handle repeat workout:",
+      Logger.error(
+        "UIController",
+        "Failed to handle repeat workout:",
         error.message
       );
       showErrorState("Failed to repeat workout");
@@ -1102,8 +1121,9 @@ const UIController = (() => {
    */
   const handleHistoryGenerateSimilar = (event) => {
     try {
-      console.log(
-        "UIController: handleHistoryGenerateSimilar called",
+      Logger.debug(
+        "UIController",
+        "handleHistoryGenerateSimilar called",
         event.detail
       );
       const { settings, workoutId } = event.detail;
@@ -1125,26 +1145,30 @@ const UIController = (() => {
 
             // Render the generated workout (true = new workout, save to history)
             renderWorkoutList(workout, true);
-            console.log(
-              `UIController: Generated similar workout based on ${workoutId}`
+            Logger.debug(
+              "UIController",
+              `Generated similar workout based on ${workoutId}`
             );
           } catch (error) {
-            console.error(
-              "UIController: Similar workout generation failed:",
+            Logger.error(
+              "UIController",
+              "Similar workout generation failed:",
               error
             );
             showErrorState(error.message);
           }
         }, 500);
       } else {
-        console.error(
-          "UIController: Invalid settings provided for similar workout"
+        Logger.error(
+          "UIController",
+          "Invalid settings provided for similar workout"
         );
         showErrorState("Failed to generate similar workout");
       }
     } catch (error) {
-      console.error(
-        "UIController: Failed to handle generate similar:",
+      Logger.error(
+        "UIController",
+        "Failed to handle generate similar:",
         error.message
       );
       showErrorState("Failed to generate similar workout");
@@ -1179,10 +1203,11 @@ const UIController = (() => {
         });
       }
 
-      console.log("UIController: Form updated with settings:", settings);
+      Logger.debug("UIController", "Form updated with settings:", settings);
     } catch (error) {
-      console.error(
-        "UIController: Failed to update form from settings:",
+      Logger.error(
+        "UIController",
+        "Failed to update form from settings:",
         error.message
       );
     }

@@ -42,17 +42,17 @@ const TimerUI = (() => {
    */
   const init = () => {
     if (isInitialized) {
-      console.warn("TimerUI: Already initialized");
+      Logger.warn("TimerUI", "Already initialized");
       return false;
     }
 
     try {
       createTimerModal();
       isInitialized = true;
-      console.log("TimerUI: Initialized successfully");
+      Logger.info("TimerUI", "Initialized successfully");
       return true;
     } catch (error) {
-      console.error("TimerUI: Initialization failed:", error);
+      Logger.error("TimerUI", "Initialization failed:", error);
       return false;
     }
   };
@@ -72,12 +72,12 @@ const TimerUI = (() => {
    */
   const showTimer = () => {
     if (!isInitialized) {
-      console.error("TimerUI: Module not initialized");
+      Logger.error("TimerUI", "Module not initialized");
       return;
     }
 
     elements.overlay.style.display = "flex";
-    console.log("TimerUI: Timer modal shown");
+    Logger.debug("TimerUI", "Timer modal shown");
   };
 
   /**
@@ -86,12 +86,12 @@ const TimerUI = (() => {
    */
   const hideTimer = () => {
     if (!isInitialized) {
-      console.error("TimerUI: Module not initialized");
+      Logger.error("TimerUI", "Module not initialized");
       return;
     }
 
     elements.overlay.style.display = "none";
-    console.log("TimerUI: Timer modal hidden");
+    Logger.debug("TimerUI", "Timer modal hidden");
   };
 
   /**
@@ -100,7 +100,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Controls element
    */
   const createControlButtons = () => {
-    console.log("TimerUI: Creating control buttons");
+    Logger.debug("TimerUI", "Creating control buttons");
 
     const controls = document.createElement("div");
     controls.className = "timer-controls";
@@ -114,7 +114,7 @@ const TimerUI = (() => {
 
     controls.appendChild(startBtn);
 
-    console.log("TimerUI: Start button added (primary, large)");
+    Logger.debug("TimerUI", "Start button added (primary, large)");
 
     // Pause button (primary, large) - initially hidden
     const pauseBtn = document.createElement("button");
@@ -126,7 +126,7 @@ const TimerUI = (() => {
 
     controls.appendChild(pauseBtn);
 
-    console.log("TimerUI: Pause button added (primary, large)");
+    Logger.debug("TimerUI", "Pause button added (primary, large)");
 
     // Skip button (secondary)
     const skipBtn = document.createElement("button");
@@ -137,7 +137,7 @@ const TimerUI = (() => {
 
     controls.appendChild(skipBtn);
 
-    console.log("TimerUI: Skip button added (secondary)");
+    Logger.debug("TimerUI", "Skip button added (secondary)");
 
     // Reset button (secondary)
     const resetBtn = document.createElement("button");
@@ -148,7 +148,7 @@ const TimerUI = (() => {
 
     controls.appendChild(resetBtn);
 
-    console.log("TimerUI: Reset button added (secondary)");
+    Logger.debug("TimerUI", "Reset button added (secondary)");
 
     // Previous Exercise button
     const prevBtn = document.createElement("button");
@@ -159,7 +159,7 @@ const TimerUI = (() => {
 
     controls.appendChild(prevBtn);
 
-    console.log("TimerUI: Previous Exercise button added");
+    Logger.debug("TimerUI", "Previous Exercise button added");
 
     // Next Exercise button
     const nextBtn = document.createElement("button");
@@ -170,7 +170,7 @@ const TimerUI = (() => {
 
     controls.appendChild(nextBtn);
 
-    console.log("TimerUI: Next Exercise button added");
+    Logger.debug("TimerUI", "Next Exercise button added");
 
     // Settings button
     const settingsBtn = document.createElement("button");
@@ -181,7 +181,7 @@ const TimerUI = (() => {
 
     controls.appendChild(settingsBtn);
 
-    console.log("TimerUI: Settings button added");
+    Logger.debug("TimerUI", "Settings button added");
     return controls;
   };
 
@@ -191,7 +191,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Progress section element
    */
   const createProgressSection = () => {
-    console.log("TimerUI: Creating progress section");
+    Logger.debug("TimerUI", "Creating progress section");
 
     const section = document.createElement("div");
     section.className = "timer-progress-section";
@@ -215,7 +215,7 @@ const TimerUI = (() => {
 
     section.appendChild(setInfoContainer);
 
-    console.log("TimerUI: Set progress display added (Set X of Y)");
+    Logger.debug("TimerUI", "Set progress display added (Set X of Y)");
 
     // Cycle progress display (Cycle X of Y)
     const cycleInfoContainer = document.createElement("div");
@@ -236,7 +236,7 @@ const TimerUI = (() => {
 
     section.appendChild(cycleInfoContainer);
 
-    console.log("TimerUI: Cycle progress display added (Cycle X of Y)");
+    Logger.debug("TimerUI", "Cycle progress display added (Cycle X of Y)");
 
     // Overall progress bar
     const progressBar = document.createElement("div");
@@ -250,7 +250,7 @@ const TimerUI = (() => {
     progressBar.appendChild(progressFill);
     section.appendChild(progressBar);
 
-    console.log("TimerUI: Overall progress bar added");
+    Logger.debug("TimerUI", "Overall progress bar added");
     return section;
   };
 
@@ -260,7 +260,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Progress ring element
    */
   const createProgressRing = () => {
-    console.log("TimerUI: Creating circular progress ring using SVG");
+    Logger.debug("TimerUI", "Creating circular progress ring using SVG");
 
     const container = document.createElement("div");
     container.className = "timer-progress-ring";
@@ -307,7 +307,7 @@ const TimerUI = (() => {
 
     elements.progressRing = container;
 
-    console.log("TimerUI: Circular progress calculation implemented");
+    Logger.debug("TimerUI", "Circular progress calculation implemented");
     return container;
   };
 
@@ -317,7 +317,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Phase indicator element
    */
   const createPhaseIndicator = () => {
-    console.log("TimerUI: Creating phase indicator component");
+    Logger.debug("TimerUI", "Creating phase indicator component");
 
     const indicator = document.createElement("div");
     indicator.className = "timer-phase-indicator";
@@ -325,7 +325,7 @@ const TimerUI = (() => {
     indicator.setAttribute("data-phase", "prepare");
     elements.phaseIndicator = indicator;
 
-    console.log("TimerUI: Phase indicator created with PREPARE state");
+    Logger.debug("TimerUI", "Phase indicator created with PREPARE state");
     return indicator;
   };
 
@@ -335,8 +335,9 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Timer display element
    */
   const createTimerDisplay = () => {
-    console.log(
-      "TimerUI: Creating main timer display with integrated progress ring"
+    Logger.debug(
+      "TimerUI",
+      "Creating main timer display with integrated progress ring"
     );
 
     const display = document.createElement("div");
@@ -354,8 +355,9 @@ const TimerUI = (() => {
 
     display.appendChild(timeDisplay);
 
-    console.log(
-      "TimerUI: Timer display created with integrated progress ring (set/cycle info removed)"
+    Logger.debug(
+      "TimerUI",
+      "Timer display created with integrated progress ring (set/cycle info removed)"
     );
     return display;
   };
@@ -366,7 +368,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Header element
    */
   const createTimerHeader = () => {
-    console.log("TimerUI: Creating timer header component");
+    Logger.debug("TimerUI", "Creating timer header component");
 
     const header = document.createElement("div");
     header.className = "timer-header";
@@ -380,7 +382,7 @@ const TimerUI = (() => {
 
     header.appendChild(exerciseName);
 
-    console.log("TimerUI: Exercise name display added");
+    Logger.debug("TimerUI", "Exercise name display added");
 
     // Exercise number indicator (X of Y)
     const exerciseNumber = document.createElement("div");
@@ -390,7 +392,7 @@ const TimerUI = (() => {
 
     header.appendChild(exerciseNumber);
 
-    console.log("TimerUI: Exercise number indicator added");
+    Logger.debug("TimerUI", "Exercise number indicator added");
 
     // Close button with icon
     const closeBtn = document.createElement("button");
@@ -402,7 +404,7 @@ const TimerUI = (() => {
 
     header.appendChild(closeBtn);
 
-    console.log("TimerUI: Close button with icon added");
+    Logger.debug("TimerUI", "Close button with icon added");
     return header;
   };
 
@@ -411,7 +413,7 @@ const TimerUI = (() => {
    * @private
    */
   const createTimerModal = () => {
-    console.log("TimerUI: Creating timer modal structure");
+    Logger.debug("TimerUI", "Creating timer modal structure");
 
     // Create overlay with backdrop
     const overlay = document.createElement("div");
@@ -419,14 +421,14 @@ const TimerUI = (() => {
     overlay.style.display = "none";
     elements.overlay = overlay;
 
-    console.log("TimerUI: Modal overlay created with backdrop");
+    Logger.debug("TimerUI", "Modal overlay created with backdrop");
 
     // Create modal container with modern styling
     const modal = document.createElement("div");
     modal.className = "timer-modal";
     elements.modal = modal;
 
-    console.log("TimerUI: Modal container created with modern styling");
+    Logger.debug("TimerUI", "Modal container created with modern styling");
 
     // Build modal content
     const header = createTimerHeader();
@@ -455,7 +457,7 @@ const TimerUI = (() => {
       }
     });
 
-    console.log("TimerUI: Timer modal fully assembled and added to DOM");
+    Logger.debug("TimerUI", "Timer modal fully assembled and added to DOM");
   };
 
   /**
@@ -464,7 +466,7 @@ const TimerUI = (() => {
    * @returns {HTMLElement} Settings modal element
    */
   const createSettingsModal = () => {
-    console.log("TimerUI: Creating settings modal");
+    Logger.debug("TimerUI", "Creating settings modal");
 
     // Create modal overlay
     const overlay = document.createElement("div");
@@ -501,7 +503,7 @@ const TimerUI = (() => {
     // Prevent form submission (which would reload the page)
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      console.log("TimerUI: Form submit prevented");
+      Logger.debug("TimerUI", "Form submit prevented");
     });
 
     // Prepare time input
@@ -691,7 +693,7 @@ const TimerUI = (() => {
     elements.settingsCancelBtn = cancelBtn;
     elements.settingsSaveBtn = saveBtn;
 
-    console.log("TimerUI: Settings modal created successfully");
+    Logger.debug("TimerUI", "Settings modal created successfully");
 
     return overlay;
   };
@@ -768,16 +770,18 @@ const TimerUI = (() => {
       const changeEvent = new Event("change", { bubbles: true });
       input.dispatchEvent(changeEvent);
 
-      console.log(
-        `TimerUI: Checkbox "${name}" clicked, new value:`,
+      Logger.debug(
+        "TimerUI",
+        `Checkbox "${name}" clicked, new value:`,
         input.checked
       );
     });
 
     // Add change event listener to log checkbox state
     input.addEventListener("change", (e) => {
-      console.log(
-        `TimerUI: Checkbox "${name}" changed, new value:`,
+      Logger.debug(
+        "TimerUI",
+        `Checkbox "${name}" changed, new value:`,
         e.target.checked
       );
     });
@@ -796,12 +800,12 @@ const TimerUI = (() => {
    */
   const showSettingsModal = () => {
     if (!elements.settingsOverlay) {
-      console.error("TimerUI: Settings modal not created");
+      Logger.error("TimerUI", "Settings modal not created");
       return;
     }
 
     elements.settingsOverlay.style.display = "flex";
-    console.log("TimerUI: Settings modal shown");
+    Logger.debug("TimerUI", "Settings modal shown");
   };
 
   /**
@@ -810,12 +814,12 @@ const TimerUI = (() => {
    */
   const hideSettingsModal = () => {
     if (!elements.settingsOverlay) {
-      console.error("TimerUI: Settings modal not created");
+      Logger.error("TimerUI", "Settings modal not created");
       return;
     }
 
     elements.settingsOverlay.style.display = "none";
-    console.log("TimerUI: Settings modal hidden");
+    Logger.debug("TimerUI", "Settings modal hidden");
   };
 
   // Public API

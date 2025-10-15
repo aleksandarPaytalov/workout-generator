@@ -64,17 +64,17 @@ const WorkoutTimer = (() => {
    */
   const init = () => {
     try {
-      console.log("WorkoutTimer: Initializing module...");
+      Logger.info("WorkoutTimer", "Initializing module...");
 
       // Reset state
       isInitialized = true;
 
-      console.log("WorkoutTimer: Module initialized successfully");
-      console.log("WorkoutTimer: Default config:", timerConfig);
+      Logger.info("WorkoutTimer", "Module initialized successfully");
+      Logger.debug("WorkoutTimer", "Default config:", timerConfig);
 
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Initialization failed:", error.message);
+      Logger.error("WorkoutTimer", "Initialization failed:", error.message);
       throw error;
     }
   };
@@ -146,11 +146,12 @@ const WorkoutTimer = (() => {
       // Merge with existing config
       timerConfig = { ...timerConfig, ...config };
 
-      console.log("WorkoutTimer: Configuration updated:", timerConfig);
+      Logger.debug("WorkoutTimer", "Configuration updated:", timerConfig);
       return true;
     } catch (error) {
-      console.error(
-        "WorkoutTimer: Failed to set configuration:",
+      Logger.error(
+        "WorkoutTimer",
+        "Failed to set configuration:",
         error.message
       );
       return false;
@@ -254,7 +255,7 @@ const WorkoutTimer = (() => {
       pausedTime: 0,
       pauseStartTime: null,
     };
-    console.log("WorkoutTimer: State reset to idle");
+    Logger.debug("WorkoutTimer", "State reset to idle");
   };
 
   /**
@@ -264,7 +265,7 @@ const WorkoutTimer = (() => {
    */
   const updateTimerState = (updates) => {
     timerState = { ...timerState, ...updates };
-    console.log("WorkoutTimer: State updated:", updates);
+    Logger.debug("WorkoutTimer", "State updated:", updates);
   };
 
   /**
@@ -276,7 +277,7 @@ const WorkoutTimer = (() => {
    */
   const setCurrentExercise = (exercise, index = 0, totalExercises = 1) => {
     if (!exercise) {
-      console.error("WorkoutTimer: Invalid exercise object");
+      Logger.error("WorkoutTimer", "Invalid exercise object");
       return false;
     }
 
@@ -288,10 +289,9 @@ const WorkoutTimer = (() => {
       currentCycle: 1,
     });
 
-    console.log(
-      `WorkoutTimer: Exercise set - ${exercise.name} (${
-        index + 1
-      } of ${totalExercises})`
+    Logger.info(
+      "WorkoutTimer",
+      `Exercise set - ${exercise.name} (${index + 1} of ${totalExercises})`
     );
     return true;
   };
@@ -306,7 +306,10 @@ const WorkoutTimer = (() => {
       updateTimerState({
         currentCycle: timerState.currentCycle + 1,
       });
-      console.log(`WorkoutTimer: Advanced to cycle ${timerState.currentCycle}`);
+      Logger.debug(
+        "WorkoutTimer",
+        `Advanced to cycle ${timerState.currentCycle}`
+      );
       return true;
     }
     return false; // Set completed
@@ -323,7 +326,7 @@ const WorkoutTimer = (() => {
         currentSet: timerState.currentSet + 1,
         currentCycle: 1, // Reset cycle counter for new set
       });
-      console.log(`WorkoutTimer: Advanced to set ${timerState.currentSet}`);
+      Logger.debug("WorkoutTimer", `Advanced to set ${timerState.currentSet}`);
       return true;
     }
     return false; // Exercise completed
@@ -346,7 +349,7 @@ const WorkoutTimer = (() => {
     ];
 
     if (!validPhases.includes(phase)) {
-      console.error(`WorkoutTimer: Invalid phase "${phase}"`);
+      Logger.error("WorkoutTimer", `Invalid phase "${phase}"`);
       return false;
     }
 
@@ -358,7 +361,7 @@ const WorkoutTimer = (() => {
       pausedTime: 0, // Reset paused time when starting new phase
     });
 
-    console.log(`WorkoutTimer: Phase changed to "${phase}" (${duration}s)`);
+    Logger.info("WorkoutTimer", `Phase changed to "${phase}" (${duration}s)`);
     emitEvent(TIMER_EVENTS.PHASE_CHANGED, {
       phase: phase,
       duration: duration,
@@ -422,7 +425,7 @@ const WorkoutTimer = (() => {
   const handlePhaseComplete = () => {
     const currentPhase = timerState.phase;
 
-    console.log(`WorkoutTimer: Phase "${currentPhase}" completed`);
+    Logger.info("WorkoutTimer", `Phase "${currentPhase}" completed`);
 
     // Determine next phase based on current phase
     if (currentPhase === "preparing") {
@@ -470,8 +473,9 @@ const WorkoutTimer = (() => {
 
           if (isLastExercise) {
             // Workout completed!
-            console.log(
-              "WorkoutTimer: Workout completed! All exercises finished."
+            Logger.info(
+              "WorkoutTimer",
+              "Workout completed! All exercises finished."
             );
             emitEvent(TIMER_EVENTS.WORKOUT_COMPLETED, {
               exercise: completedExercise,
@@ -530,14 +534,15 @@ const WorkoutTimer = (() => {
       // Start countdown
       startCountdown();
 
-      console.log(
-        `WorkoutTimer: Timer started for "${exercise.name}" (${
+      Logger.info(
+        "WorkoutTimer",
+        `Timer started for "${exercise.name}" (${
           index + 1
         } of ${totalExercises})`
       );
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to start timer:", error.message);
+      Logger.error("WorkoutTimer", "Failed to start timer:", error.message);
       return false;
     }
   };
@@ -564,10 +569,10 @@ const WorkoutTimer = (() => {
       // Reset state
       resetTimerState();
 
-      console.log("WorkoutTimer: Timer stopped");
+      Logger.info("WorkoutTimer", "Timer stopped");
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to stop timer:", error.message);
+      Logger.error("WorkoutTimer", "Failed to stop timer:", error.message);
       return false;
     }
   };
@@ -580,12 +585,12 @@ const WorkoutTimer = (() => {
   const pauseTimer = () => {
     try {
       if (!isRunning()) {
-        console.warn("WorkoutTimer: Cannot pause - timer not running");
+        Logger.warn("WorkoutTimer", "Cannot pause - timer not running");
         return false;
       }
 
       if (timerState.isPaused) {
-        console.warn("WorkoutTimer: Timer already paused");
+        Logger.warn("WorkoutTimer", "Timer already paused");
         return false;
       }
 
@@ -602,10 +607,10 @@ const WorkoutTimer = (() => {
         remainingTime: timerState.remainingTime,
       });
 
-      console.log("WorkoutTimer: Timer paused");
+      Logger.info("WorkoutTimer", "Timer paused");
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to pause timer:", error.message);
+      Logger.error("WorkoutTimer", "Failed to pause timer:", error.message);
       return false;
     }
   };
@@ -618,7 +623,7 @@ const WorkoutTimer = (() => {
   const resumeTimer = () => {
     try {
       if (!timerState.isPaused) {
-        console.warn("WorkoutTimer: Cannot resume - timer not paused");
+        Logger.warn("WorkoutTimer", "Cannot resume - timer not paused");
         return false;
       }
 
@@ -641,14 +646,13 @@ const WorkoutTimer = (() => {
         pauseDuration: Math.floor(pauseDuration / 1000),
       });
 
-      console.log(
-        `WorkoutTimer: Timer resumed (paused for ${Math.floor(
-          pauseDuration / 1000
-        )}s)`
+      Logger.info(
+        "WorkoutTimer",
+        `Timer resumed (paused for ${Math.floor(pauseDuration / 1000)}s)`
       );
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to resume timer:", error.message);
+      Logger.error("WorkoutTimer", "Failed to resume timer:", error.message);
       return false;
     }
   };
@@ -661,20 +665,20 @@ const WorkoutTimer = (() => {
   const skipPhase = () => {
     try {
       if (!isRunning() && !timerState.isPaused) {
-        console.warn("WorkoutTimer: Cannot skip - timer not running");
+        Logger.warn("WorkoutTimer", "Cannot skip - timer not running");
         return false;
       }
 
       const currentPhase = timerState.phase;
-      console.log(`WorkoutTimer: Skipping phase "${currentPhase}"`);
+      Logger.info("WorkoutTimer", `Skipping phase "${currentPhase}"`);
 
       // Force phase completion
       handlePhaseComplete();
 
-      console.log("WorkoutTimer: Phase skipped successfully");
+      Logger.info("WorkoutTimer", "Phase skipped successfully");
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to skip phase:", error.message);
+      Logger.error("WorkoutTimer", "Failed to skip phase:", error.message);
       return false;
     }
   };
@@ -687,14 +691,14 @@ const WorkoutTimer = (() => {
   const resetExercise = () => {
     try {
       if (!timerState.exercise) {
-        console.warn("WorkoutTimer: No exercise to reset");
+        Logger.warn("WorkoutTimer", "No exercise to reset");
         return false;
       }
 
       const exercise = timerState.exercise;
       const index = timerState.exerciseIndex;
 
-      console.log(`WorkoutTimer: Resetting exercise "${exercise.name}"`);
+      Logger.info("WorkoutTimer", `Resetting exercise "${exercise.name}"`);
 
       // Stop current timer
       if (timerInterval) {
@@ -705,10 +709,10 @@ const WorkoutTimer = (() => {
       // Restart timer with same exercise
       startTimer(exercise, index);
 
-      console.log("WorkoutTimer: Exercise reset successfully");
+      Logger.info("WorkoutTimer", "Exercise reset successfully");
       return true;
     } catch (error) {
-      console.error("WorkoutTimer: Failed to reset exercise:", error.message);
+      Logger.error("WorkoutTimer", "Failed to reset exercise:", error.message);
       return false;
     }
   };
@@ -727,7 +731,7 @@ const WorkoutTimer = (() => {
       },
     });
     document.dispatchEvent(event);
-    console.log(`WorkoutTimer: Event emitted - ${eventName}`, detail);
+    Logger.debug("WorkoutTimer", `Event emitted - ${eventName}`, detail);
   };
 
   // Public API

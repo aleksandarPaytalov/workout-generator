@@ -17,7 +17,7 @@ const WorkoutApp = (() => {
    */
   const init = () => {
     if (isInitialized) {
-      console.warn("WorkoutApp: Application already initialized");
+      Logger.warn("WorkoutApp", "Application already initialized");
       return;
     }
 
@@ -60,14 +60,16 @@ const WorkoutApp = (() => {
       // Check optional modules and warn if missing
       for (const moduleName of optionalModules) {
         if (typeof window[moduleName] === "undefined") {
-          console.warn(
+          Logger.warn(
+            "WorkoutApp",
             `Optional module "${moduleName}" not found - some features may be limited`
           );
         } else if (
           typeof window[moduleName].isReady === "function" &&
           !window[moduleName].isReady()
         ) {
-          console.warn(
+          Logger.warn(
+            "WorkoutApp",
             `Optional module "${moduleName}" is not ready - some features may be limited`
           );
         }
@@ -77,7 +79,7 @@ const WorkoutApp = (() => {
       if (typeof ThemeController !== "undefined") {
         ThemeController.init();
         if (!ThemeController.isReady()) {
-          console.warn("ThemeController failed to initialize");
+          Logger.warn("WorkoutApp", "ThemeController failed to initialize");
         }
       }
 
@@ -85,9 +87,9 @@ const WorkoutApp = (() => {
       if (typeof StorageManager !== "undefined") {
         StorageManager.init();
         if (!StorageManager.isReady()) {
-          console.warn("StorageManager failed to initialize");
+          Logger.warn("WorkoutApp", "StorageManager failed to initialize");
         } else {
-          console.log("StorageManager: Ready for manual user operations");
+          Logger.debug("StorageManager", "Ready for manual user operations");
         }
       }
 
@@ -95,9 +97,9 @@ const WorkoutApp = (() => {
       if (typeof WorkoutHistory !== "undefined") {
         WorkoutHistory.init();
         if (!WorkoutHistory.isReady()) {
-          console.warn("WorkoutHistory failed to initialize");
+          Logger.warn("WorkoutApp", "WorkoutHistory failed to initialize");
         } else {
-          console.log("WorkoutHistory: Ready for manual user operations");
+          Logger.debug("WorkoutHistory", "Ready for manual user operations");
         }
       }
 
@@ -105,9 +107,9 @@ const WorkoutApp = (() => {
       if (typeof HistoryController !== "undefined") {
         HistoryController.init();
         if (!HistoryController.isReady()) {
-          console.warn("HistoryController failed to initialize");
+          Logger.warn("WorkoutApp", "HistoryController failed to initialize");
         } else {
-          console.log("HistoryController: Ready for manual user operations");
+          Logger.debug("HistoryController", "Ready for manual user operations");
         }
       }
 
@@ -126,7 +128,8 @@ const WorkoutApp = (() => {
       if (typeof FooterController !== "undefined") {
         FooterController.init();
         if (!FooterController.isReady()) {
-          console.warn(
+          Logger.warn(
+            "WorkoutApp",
             "FooterController failed to initialize - footer functionality will be limited"
           );
         }
@@ -136,9 +139,9 @@ const WorkoutApp = (() => {
       if (typeof TimerSettings !== "undefined") {
         TimerSettings.init();
         if (!TimerSettings.isReady()) {
-          console.warn("TimerSettings failed to initialize");
+          Logger.warn("WorkoutApp", "TimerSettings failed to initialize");
         } else {
-          console.log("TimerSettings: Ready for manual user operations");
+          Logger.debug("TimerSettings", "Ready for manual user operations");
         }
       }
 
@@ -146,17 +149,19 @@ const WorkoutApp = (() => {
       if (typeof AudioManager !== "undefined") {
         AudioManager.init();
         if (!AudioManager.isReady()) {
-          console.warn(
+          Logger.warn(
+            "WorkoutApp",
             "AudioManager failed to initialize - sound effects will be disabled"
           );
         } else {
-          console.log("AudioManager: Ready for manual user operations");
+          Logger.debug("AudioManager", "Ready for manual user operations");
           // Sync with TimerSettings if available
           if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
             const settings = TimerSettings.getSettings();
             AudioManager.setEnabled(settings.soundEnabled);
-            console.log(
-              `AudioManager: Sound ${
+            Logger.info(
+              "AudioManager",
+              `Sound ${
                 settings.soundEnabled ? "ENABLED" : "DISABLED"
               } (from TimerSettings)`
             );
@@ -167,27 +172,27 @@ const WorkoutApp = (() => {
       if (typeof WorkoutTimer !== "undefined") {
         WorkoutTimer.init();
         if (!WorkoutTimer.isReady()) {
-          console.warn("WorkoutTimer failed to initialize");
+          Logger.warn("WorkoutApp", "WorkoutTimer failed to initialize");
         } else {
-          console.log("WorkoutTimer: Ready for manual user operations");
+          Logger.debug("WorkoutTimer", "Ready for manual user operations");
         }
       }
 
       if (typeof TimerUI !== "undefined") {
         TimerUI.init();
         if (!TimerUI.isReady()) {
-          console.warn("TimerUI failed to initialize");
+          Logger.warn("WorkoutApp", "TimerUI failed to initialize");
         } else {
-          console.log("TimerUI: Ready for manual user operations");
+          Logger.debug("TimerUI", "Ready for manual user operations");
         }
       }
 
       if (typeof TimerController !== "undefined") {
         TimerController.init();
         if (!TimerController.isReady()) {
-          console.warn("TimerController failed to initialize");
+          Logger.warn("WorkoutApp", "TimerController failed to initialize");
         } else {
-          console.log("TimerController: Ready for manual user operations");
+          Logger.debug("TimerController", "Ready for manual user operations");
         }
       }
 
@@ -197,15 +202,15 @@ const WorkoutApp = (() => {
         themeToggleBtn.addEventListener("click", () => {
           ThemeController.toggleTheme();
         });
-        console.log("ThemeController: Toggle button connected");
+        Logger.debug("ThemeController", "Toggle button connected");
       }
 
-      console.log("WorkoutApp: All modules initialized successfully");
-      console.log("WorkoutApp: Application ready to use");
+      Logger.info("WorkoutApp", "All modules initialized successfully");
+      Logger.info("WorkoutApp", "Application ready to use");
 
       isInitialized = true;
     } catch (error) {
-      console.error("WorkoutApp: Initialization failed:", error);
+      Logger.error("WorkoutApp", "Initialization failed:", error);
       showInitializationError(error.message);
     }
   };
@@ -245,7 +250,7 @@ const WorkoutApp = (() => {
 
 // Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("WorkoutApp: DOM ready, initializing application...");
+  Logger.info("WorkoutApp", "DOM ready, initializing application...");
   WorkoutApp.init();
 });
 
@@ -254,6 +259,6 @@ if (document.readyState === "loading") {
   // DOM is still loading, event listener above will handle it
 } else {
   // DOM is already loaded
-  console.log("WorkoutApp: DOM already ready, initializing application...");
+  Logger.info("WorkoutApp", "DOM already ready, initializing application...");
   WorkoutApp.init();
 }

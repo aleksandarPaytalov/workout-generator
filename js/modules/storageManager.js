@@ -173,8 +173,9 @@ const StorageManager = (() => {
     // Check if approaching warning threshold
     const usagePercentage = sizeInBytes / MAX_STORAGE_SIZE;
     if (usagePercentage > WARNING_THRESHOLD) {
-      console.warn(
-        `StorageManager: Storage usage warning - ${Math.round(
+      Logger.warn(
+        "StorageManager",
+        `Storage usage warning - ${Math.round(
           usagePercentage * 100
         )}% of limit used (${Math.round(sizeInBytes / 1024)}KB / ${Math.round(
           MAX_STORAGE_SIZE / 1024
@@ -244,17 +245,17 @@ const StorageManager = (() => {
    */
   const init = () => {
     if (isInitialized) {
-      console.warn("StorageManager: Already initialized");
+      Logger.warn("StorageManager", "Already initialized");
       return;
     }
 
     if (!isStorageAvailable()) {
-      console.warn("StorageManager: localStorage not available");
+      Logger.warn("StorageManager", "localStorage not available");
       return;
     }
 
     isInitialized = true;
-    console.log("StorageManager: Initialized successfully");
+    Logger.info("StorageManager", "Initialized successfully");
   };
 
   /**
@@ -302,14 +303,15 @@ const StorageManager = (() => {
         );
       }
 
-      console.log(
-        "StorageManager: Workout saved successfully",
+      Logger.debug(
+        "StorageManager",
+        "Workout saved successfully",
         sanitizedWorkout.id,
         `(${dataSize} bytes)`
       );
       return true;
     } catch (error) {
-      console.error("StorageManager: Failed to save workout:", error.message);
+      Logger.error("StorageManager", "Failed to save workout:", error.message);
       throw error;
     }
   };
@@ -325,8 +327,9 @@ const StorageManager = (() => {
     }
 
     if (!isStorageAvailable()) {
-      console.warn(
-        "StorageManager: localStorage not available, returning empty array"
+      Logger.warn(
+        "StorageManager",
+        "localStorage not available, returning empty array"
       );
       return [];
     }
@@ -340,8 +343,9 @@ const StorageManager = (() => {
       const workouts = JSON.parse(stored);
       return Array.isArray(workouts) ? workouts : [];
     } catch (error) {
-      console.error(
-        "StorageManager: Failed to retrieve workouts:",
+      Logger.error(
+        "StorageManager",
+        "Failed to retrieve workouts:",
         error.message
       );
       return [];
@@ -363,10 +367,10 @@ const StorageManager = (() => {
 
     try {
       localStorage.removeItem(STORAGE_KEY);
-      console.log("StorageManager: History cleared successfully");
+      Logger.info("StorageManager", "History cleared successfully");
       return true;
     } catch (error) {
-      console.error("StorageManager: Failed to clear history:", error.message);
+      Logger.error("StorageManager", "Failed to clear history:", error.message);
       throw error;
     }
   };

@@ -8,17 +8,17 @@
  */
 
 const ThemeController = (() => {
-  'use strict';
+  "use strict";
 
   // Module state
   let isInitialized = false;
-  let currentTheme = 'light';
+  let currentTheme = "light";
 
   // Constants
-  const STORAGE_KEY = 'workout-app-theme';
+  const STORAGE_KEY = "workout-app-theme";
   const THEMES = {
-    LIGHT: 'light',
-    DARK: 'dark'
+    LIGHT: "light",
+    DARK: "dark",
   };
 
   /**
@@ -26,7 +26,10 @@ const ThemeController = (() => {
    * @private
    */
   const detectSystemTheme = () => {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
       return THEMES.DARK;
     }
     return THEMES.LIGHT;
@@ -43,7 +46,7 @@ const ThemeController = (() => {
         return saved;
       }
     } catch (e) {
-      console.warn('ThemeController: localStorage not available');
+      Logger.warn("ThemeController", "localStorage not available");
     }
     return null;
   };
@@ -54,26 +57,28 @@ const ThemeController = (() => {
    */
   const applyTheme = (theme) => {
     if (theme !== THEMES.LIGHT && theme !== THEMES.DARK) {
-      console.error('Invalid theme:', theme);
+      Logger.error("ThemeController", "Invalid theme:", theme);
       return;
     }
 
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
     currentTheme = theme;
 
     // Save to localStorage
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch (e) {
-      console.warn('ThemeController: Could not save theme preference');
+      Logger.warn("ThemeController", "Could not save theme preference");
     }
 
     // Dispatch event for other modules
-    window.dispatchEvent(new CustomEvent('themeChanged', {
-      detail: { theme }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("themeChanged", {
+        detail: { theme },
+      })
+    );
 
-    console.log('ThemeController: Theme applied:', theme);
+    Logger.debug("ThemeController", "Theme applied:", theme);
   };
 
   // Public API
@@ -84,7 +89,7 @@ const ThemeController = (() => {
      */
     init: () => {
       if (isInitialized) {
-        console.warn('ThemeController: Already initialized');
+        Logger.warn("ThemeController", "Already initialized");
         return;
       }
 
@@ -94,8 +99,9 @@ const ThemeController = (() => {
 
       // Listen for system theme changes
       if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)')
-          .addEventListener('change', (e) => {
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", (e) => {
             // Only auto-switch if user hasn't set a preference
             if (!getSavedTheme()) {
               applyTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
@@ -104,7 +110,7 @@ const ThemeController = (() => {
       }
 
       isInitialized = true;
-      console.log('ThemeController: Initialized with theme:', initialTheme);
+      Logger.info("ThemeController", "Initialized with theme:", initialTheme);
     },
 
     /**
@@ -112,7 +118,8 @@ const ThemeController = (() => {
      * @public
      */
     toggleTheme: () => {
-      const newTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+      const newTheme =
+        currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
       applyTheme(newTheme);
       return newTheme;
     },
@@ -141,10 +148,9 @@ const ThemeController = (() => {
      * Check if module is ready
      * @public
      */
-    isReady: () => isInitialized
+    isReady: () => isInitialized,
   };
 })();
 
 // Make module available globally
 window.ThemeController = ThemeController;
-

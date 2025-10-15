@@ -70,8 +70,9 @@ const TimerController = (() => {
     }
 
     const state = event.detail;
-    console.log(
-      "TimerController: Timer tick - Remaining time:",
+    Logger.debug(
+      "TimerController",
+      "Timer tick - Remaining time:",
       state.remainingTime
     );
 
@@ -91,13 +92,9 @@ const TimerController = (() => {
     }
 
     const state = event.detail;
-    console.log(
-      "TimerController: Phase changed to:",
-      state.phase,
-      "| Set:",
-      state.currentSet,
-      "| Cycle:",
-      state.currentCycle
+    Logger.info(
+      "TimerController",
+      `Phase changed to: ${state.phase} | Set: ${state.currentSet} | Cycle: ${state.currentCycle}`
     );
 
     // Play selected start sound when WORKING phase starts (each repetition)
@@ -115,8 +112,9 @@ const TimerController = (() => {
       }
 
       AudioManager.playStartSound(selectedSound);
-      console.log(
-        `TimerController: Playing start sound "${selectedSound}" for WORKING phase`
+      Logger.info(
+        "TimerController",
+        `Playing start sound "${selectedSound}" for WORKING phase`
       );
     }
 
@@ -156,39 +154,41 @@ const TimerController = (() => {
     }
 
     const state = event.detail;
-    console.log(
-      "TimerController: Exercise completed!",
-      "Exercise:",
-      state.exercise?.name || "Unknown",
-      `(${state.exerciseIndex + 1} of ${state.totalExercises})`
+    Logger.info(
+      "TimerController",
+      `Exercise completed! Exercise: ${state.exercise?.name || "Unknown"} (${
+        state.exerciseIndex + 1
+      } of ${state.totalExercises})`
     );
 
     // Check if we have workout data and can move to next exercise
     if (currentWorkout.length === 0) {
-      console.warn(
-        "TimerController: No workout data available for auto-advance"
+      Logger.warn(
+        "TimerController",
+        "No workout data available for auto-advance"
       );
       return;
     }
 
     // Check if we can move to next exercise
     if (currentExerciseIndex >= currentWorkout.length - 1) {
-      console.log(
-        "TimerController: Already at last exercise - no auto-advance"
+      Logger.info(
+        "TimerController",
+        "Already at last exercise - no auto-advance"
       );
       return;
     }
 
     // Auto-advance to next exercise
-    console.log("TimerController: Auto-advancing to next exercise...");
+    Logger.info("TimerController", "Auto-advancing to next exercise...");
 
     // Move to next exercise
     currentExerciseIndex++;
     const nextExercise = currentWorkout[currentExerciseIndex];
 
-    console.log(
-      `TimerController: Auto-starting exercise ${currentExerciseIndex + 1}:`,
-      nextExercise.name
+    Logger.info(
+      "TimerController",
+      `Auto-starting exercise ${currentExerciseIndex + 1}: ${nextExercise.name}`
     );
 
     // Start timer for next exercise automatically
@@ -226,10 +226,9 @@ const TimerController = (() => {
     }
 
     const state = event.detail;
-    console.log(
-      "TimerController: 🎉 WORKOUT COMPLETED! 🎉",
-      "Total exercises:",
-      state.totalExercises
+    Logger.info(
+      "TimerController",
+      `🎉 WORKOUT COMPLETED! 🎉 Total exercises: ${state.totalExercises}`
     );
 
     // Play end sound for workout completion
@@ -253,7 +252,7 @@ const TimerController = (() => {
       `🎉 Congratulations! 🎉\n\nYou've completed the entire workout!\n\nTotal exercises: ${state.totalExercises}\n\nGreat job! Keep up the excellent work!`
     );
 
-    console.log("TimerController: Workout completed successfully!");
+    Logger.info("TimerController", "Workout completed successfully!");
 
     // Update display with final state
     updateDisplay(state);
@@ -264,7 +263,7 @@ const TimerController = (() => {
    * @private
    */
   const setupEventListeners = () => {
-    console.log("TimerController: Setting up event listeners...");
+    Logger.debug("TimerController", "Setting up event listeners...");
 
     // Listen to timer:tick for display updates
     document.addEventListener(TIMER_EVENTS.TICK, handleTimerTick);
@@ -284,7 +283,7 @@ const TimerController = (() => {
       handleWorkoutCompleted
     );
 
-    console.log("TimerController: Event listeners set up successfully");
+    Logger.debug("TimerController", "Event listeners set up successfully");
   };
 
   /**
@@ -305,14 +304,14 @@ const TimerController = (() => {
     // Escape key - close timer
     if (event.key === "Escape") {
       event.preventDefault();
-      console.log("TimerController: Escape key pressed - closing timer");
+      Logger.debug("TimerController", "Escape key pressed - closing timer");
       hideTimer();
     }
 
     // Space key - pause/resume timer
     if (event.key === " " || event.code === "Space") {
       event.preventDefault();
-      console.log("TimerController: Space key pressed - toggling pause");
+      Logger.debug("TimerController", "Space key pressed - toggling pause");
       handlePause();
     }
   };
@@ -329,7 +328,7 @@ const TimerController = (() => {
 
     // Only close if clicking directly on the overlay (not on modal content)
     if (event.target === elements.overlay) {
-      console.log("TimerController: Backdrop clicked - closing timer");
+      Logger.debug("TimerController", "Backdrop clicked - closing timer");
       hideTimer();
     }
   };
@@ -343,7 +342,7 @@ const TimerController = (() => {
       return;
     }
 
-    console.log("TimerController: Close button clicked");
+    Logger.debug("TimerController", "Close button clicked");
     hideTimer();
   };
 
@@ -352,67 +351,67 @@ const TimerController = (() => {
    * @private
    */
   const setupButtonListeners = () => {
-    console.log("TimerController: Setting up button listeners...");
+    Logger.debug("TimerController", "Setting up button listeners...");
 
     // Start button
     if (elements.startBtn) {
       elements.startBtn.addEventListener("click", handleStart);
-      console.log("TimerController: Start button listener added");
+      Logger.debug("TimerController", "Start button listener added");
     }
 
     // Pause/Resume button
     if (elements.pauseBtn) {
       elements.pauseBtn.addEventListener("click", handlePause);
-      console.log("TimerController: Pause button listener added");
+      Logger.debug("TimerController", "Pause button listener added");
     }
 
     // Skip button
     if (elements.skipBtn) {
       elements.skipBtn.addEventListener("click", handleSkip);
-      console.log("TimerController: Skip button listener added");
+      Logger.debug("TimerController", "Skip button listener added");
     }
 
     // Reset button
     if (elements.resetBtn) {
       elements.resetBtn.addEventListener("click", handleReset);
-      console.log("TimerController: Reset button listener added");
+      Logger.debug("TimerController", "Reset button listener added");
     }
 
     // Next exercise button
     if (elements.nextBtn) {
       elements.nextBtn.addEventListener("click", handleNext);
-      console.log("TimerController: Next button listener added");
+      Logger.debug("TimerController", "Next button listener added");
     }
 
     // Previous exercise button
     if (elements.prevBtn) {
       elements.prevBtn.addEventListener("click", handlePrevious);
-      console.log("TimerController: Previous button listener added");
+      Logger.debug("TimerController", "Previous button listener added");
     }
 
     // Settings button
     if (elements.settingsBtn) {
       elements.settingsBtn.addEventListener("click", handleSettings);
-      console.log("TimerController: Settings button listener added");
+      Logger.debug("TimerController", "Settings button listener added");
     }
 
     // Keyboard shortcuts
     document.addEventListener("keydown", handleKeyboardShortcuts);
-    console.log("TimerController: Keyboard shortcuts listener added");
+    Logger.debug("TimerController", "Keyboard shortcuts listener added");
 
     // Modal backdrop click
     if (elements.overlay) {
       elements.overlay.addEventListener("click", handleBackdropClick);
-      console.log("TimerController: Backdrop click listener added");
+      Logger.debug("TimerController", "Backdrop click listener added");
     }
 
     // Close button
     if (elements.closeBtn) {
       elements.closeBtn.addEventListener("click", handleCloseButton);
-      console.log("TimerController: Close button listener added");
+      Logger.debug("TimerController", "Close button listener added");
     }
 
-    console.log("TimerController: Button listeners set up successfully");
+    Logger.debug("TimerController", "Button listeners set up successfully");
   };
 
   /**
@@ -422,12 +421,12 @@ const TimerController = (() => {
    */
   const init = () => {
     if (isInitialized) {
-      console.warn("TimerController: Already initialized");
+      Logger.warn("TimerController", "Already initialized");
       return false;
     }
 
     try {
-      console.log("TimerController: Initializing...");
+      Logger.info("TimerController", "Initializing...");
 
       // Check if required modules are available
       if (typeof WorkoutTimer === "undefined") {
@@ -450,7 +449,7 @@ const TimerController = (() => {
       // Store module references
       workoutTimerModule = WorkoutTimer;
       timerUIModule = TimerUI;
-      console.log("TimerController: Module references stored successfully");
+      Logger.debug("TimerController", "Module references stored successfully");
 
       // Get DOM element references from TimerUI
       const uiElements = TimerUI.getElements();
@@ -466,7 +465,7 @@ const TimerController = (() => {
         throw new Error("Critical UI elements missing");
       }
 
-      console.log("TimerController: DOM elements populated successfully");
+      Logger.debug("TimerController", "DOM elements populated successfully");
 
       // Set up event listeners for timer events
       setupEventListeners();
@@ -479,17 +478,18 @@ const TimerController = (() => {
         if (typeof TimerSettings !== "undefined" && TimerSettings.isReady()) {
           const settings = TimerSettings.getSettings();
           AudioManager.setEnabled(settings.soundEnabled);
-          console.log(
-            `TimerController: AudioManager initialized with soundEnabled: ${settings.soundEnabled}`
+          Logger.debug(
+            "TimerController",
+            `AudioManager initialized with soundEnabled: ${settings.soundEnabled}`
           );
         }
       }
 
       isInitialized = true;
-      console.log("TimerController: Initialized successfully");
+      Logger.info("TimerController", "Initialized successfully");
       return true;
     } catch (error) {
-      console.error("TimerController: Initialization failed", error);
+      Logger.error("TimerController", "Initialization failed", error);
       return false;
     }
   };
@@ -509,11 +509,11 @@ const TimerController = (() => {
    */
   const handleStart = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Start button clicked");
+    Logger.info("TimerController", "Start button clicked");
 
     // Use the current exercise that was set when showTimer was called
     const exercise = currentExercise || {
@@ -534,7 +534,7 @@ const TimerController = (() => {
     );
 
     if (started) {
-      console.log("TimerController: Timer started successfully");
+      Logger.info("TimerController", "Timer started successfully");
 
       // Note: Whistle sound will play automatically when WORKING phase starts
       // (handled in handlePhaseChanged function)
@@ -548,7 +548,7 @@ const TimerController = (() => {
         elements.pauseBtn.textContent = "Pause";
       }
     } else {
-      console.error("TimerController: Failed to start timer");
+      Logger.error("TimerController", "Failed to start timer");
     }
   };
 
@@ -558,11 +558,11 @@ const TimerController = (() => {
    */
   const handlePause = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Pause button clicked");
+    Logger.info("TimerController", "Pause button clicked");
 
     // Check if timer is currently paused
     const isPaused = workoutTimerModule.isPaused();
@@ -572,28 +572,28 @@ const TimerController = (() => {
       const resumed = workoutTimerModule.resumeTimer();
 
       if (resumed) {
-        console.log("TimerController: Timer resumed successfully");
+        Logger.info("TimerController", "Timer resumed successfully");
 
         // Update button text to "Pause"
         if (elements.pauseBtn) {
           elements.pauseBtn.textContent = "Pause";
         }
       } else {
-        console.error("TimerController: Failed to resume timer");
+        Logger.error("TimerController", "Failed to resume timer");
       }
     } else {
       // Pause the timer
       const paused = workoutTimerModule.pauseTimer();
 
       if (paused) {
-        console.log("TimerController: Timer paused successfully");
+        Logger.info("TimerController", "Timer paused successfully");
 
         // Update button text to "Resume"
         if (elements.pauseBtn) {
           elements.pauseBtn.textContent = "Resume";
         }
       } else {
-        console.error("TimerController: Failed to pause timer");
+        Logger.error("TimerController", "Failed to pause timer");
       }
     }
   };
@@ -604,19 +604,19 @@ const TimerController = (() => {
    */
   const handleSkip = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Skip button clicked");
+    Logger.info("TimerController", "Skip button clicked");
 
     // Skip to next phase
     const skipped = workoutTimerModule.skipPhase();
 
     if (skipped) {
-      console.log("TimerController: Phase skipped successfully");
+      Logger.info("TimerController", "Phase skipped successfully");
     } else {
-      console.error("TimerController: Failed to skip phase");
+      Logger.error("TimerController", "Failed to skip phase");
     }
   };
 
@@ -626,17 +626,17 @@ const TimerController = (() => {
    */
   const handleReset = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Reset button clicked");
+    Logger.info("TimerController", "Reset button clicked");
 
     // Reset the current exercise timer
     const reset = workoutTimerModule.resetExercise();
 
     if (reset) {
-      console.log("TimerController: Exercise timer reset successfully");
+      Logger.info("TimerController", "Exercise timer reset successfully");
 
       // Update button states back to initial
       if (elements.startBtn) {
@@ -653,7 +653,7 @@ const TimerController = (() => {
         elements.phaseIndicator.className = "timer-phase-indicator phase-idle";
       }
     } else {
-      console.error("TimerController: Failed to reset exercise timer");
+      Logger.error("TimerController", "Failed to reset exercise timer");
     }
   };
 
@@ -663,21 +663,21 @@ const TimerController = (() => {
    */
   const handleNext = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Next exercise button clicked");
+    Logger.info("TimerController", "Next exercise button clicked");
 
     // Check if we have workout data
     if (currentWorkout.length === 0) {
-      console.warn("TimerController: No workout data available");
+      Logger.warn("TimerController", "No workout data available");
       return;
     }
 
     // Check if we can move to next exercise
     if (currentExerciseIndex >= currentWorkout.length - 1) {
-      console.log("TimerController: Already at last exercise");
+      Logger.info("TimerController", "Already at last exercise");
       return;
     }
 
@@ -690,9 +690,9 @@ const TimerController = (() => {
     currentExerciseIndex++;
     const nextExercise = currentWorkout[currentExerciseIndex];
 
-    console.log(
-      `TimerController: Moving to exercise ${currentExerciseIndex + 1}:`,
-      nextExercise.name
+    Logger.info(
+      "TimerController",
+      `Moving to exercise ${currentExerciseIndex + 1}: ${nextExercise.name}`
     );
 
     // Show timer for next exercise
@@ -705,21 +705,21 @@ const TimerController = (() => {
    */
   const handlePrevious = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Previous exercise button clicked");
+    Logger.info("TimerController", "Previous exercise button clicked");
 
     // Check if we have workout data
     if (currentWorkout.length === 0) {
-      console.warn("TimerController: No workout data available");
+      Logger.warn("TimerController", "No workout data available");
       return;
     }
 
     // Check if we can move to previous exercise
     if (currentExerciseIndex === 0) {
-      console.log("TimerController: Already at first exercise");
+      Logger.info("TimerController", "Already at first exercise");
       return;
     }
 
@@ -732,9 +732,9 @@ const TimerController = (() => {
     currentExerciseIndex--;
     const prevExercise = currentWorkout[currentExerciseIndex];
 
-    console.log(
-      `TimerController: Moving to exercise ${currentExerciseIndex + 1}:`,
-      prevExercise.name
+    Logger.info(
+      "TimerController",
+      `Moving to exercise ${currentExerciseIndex + 1}: ${prevExercise.name}`
     );
 
     // Show timer for previous exercise
@@ -747,11 +747,11 @@ const TimerController = (() => {
    */
   const handleSettings = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
-    console.log("TimerController: Settings button clicked");
+    Logger.info("TimerController", "Settings button clicked");
 
     // Create settings modal if not already created
     if (!elements.settingsOverlay) {
@@ -764,7 +764,7 @@ const TimerController = (() => {
 
     // Show settings modal
     timerUIModule.showSettingsModal();
-    console.log("TimerController: Settings modal opened");
+    Logger.info("TimerController", "Settings modal opened");
   };
 
   /**
@@ -817,17 +817,18 @@ const TimerController = (() => {
         const selectedSound = soundSelect?.value || "whistle";
 
         if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
-          console.log(`TimerController: Previewing sound: ${selectedSound}`);
+          Logger.debug("TimerController", `Previewing sound: ${selectedSound}`);
           AudioManager.playStartSound(selectedSound);
         } else {
-          console.warn(
-            "TimerController: AudioManager not available for preview"
+          Logger.warn(
+            "TimerController",
+            "AudioManager not available for preview"
           );
         }
       });
     }
 
-    console.log("TimerController: Settings modal listeners setup");
+    Logger.debug("TimerController", "Settings modal listeners setup");
   };
 
   /**
@@ -835,29 +836,35 @@ const TimerController = (() => {
    * @private
    */
   const loadSettingsIntoForm = () => {
-    console.log("TimerController: loadSettingsIntoForm called");
-    console.log("TimerController: typeof TimerSettings:", typeof TimerSettings);
-    console.log(
-      "TimerController: TimerSettings.isReady():",
+    Logger.debug("TimerController", "loadSettingsIntoForm called");
+    Logger.debug(
+      "TimerController",
+      "typeof TimerSettings:",
+      typeof TimerSettings
+    );
+    Logger.debug(
+      "TimerController",
+      "TimerSettings.isReady():",
       typeof TimerSettings !== "undefined"
         ? TimerSettings.isReady()
         : "undefined"
     );
 
     if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
-      console.error("TimerController: TimerSettings module not ready");
+      Logger.error("TimerController", "TimerSettings module not ready");
       return;
     }
 
     const settings = TimerSettings.getSettings();
-    console.log(
-      "TimerController: Current settings from TimerSettings:",
+    Logger.debug(
+      "TimerController",
+      "Current settings from TimerSettings:",
       settings
     );
     const elements = timerUIModule.getElements();
 
     if (!elements.settingsForm) {
-      console.error("TimerController: Settings form not found");
+      Logger.error("TimerController", "Settings form not found");
       return;
     }
 
@@ -891,12 +898,14 @@ const TimerController = (() => {
         // Set the checked property
         input.checked = settings[field];
 
-        console.log(
-          `TimerController: Loaded checkbox "${field}" = ${settings[field]} (input.checked = ${input.checked})`
+        Logger.debug(
+          "TimerController",
+          `Loaded checkbox "${field}" = ${settings[field]} (input.checked = ${input.checked})`
         );
       } else {
-        console.warn(
-          `TimerController: Checkbox "${field}" not found or setting undefined`
+        Logger.warn(
+          "TimerController",
+          `Checkbox "${field}" not found or setting undefined`
         );
       }
     });
@@ -906,12 +915,13 @@ const TimerController = (() => {
       elements.settingsModal?.querySelector("#startSoundSelect");
     if (soundSelect && settings.startSound) {
       soundSelect.value = settings.startSound;
-      console.log(
-        `TimerController: Loaded start sound: ${settings.startSound}`
+      Logger.debug(
+        "TimerController",
+        `Loaded start sound: ${settings.startSound}`
       );
     }
 
-    console.log("TimerController: Settings loaded into form");
+    Logger.debug("TimerController", "Settings loaded into form");
   };
 
   /**
@@ -920,14 +930,14 @@ const TimerController = (() => {
    */
   const handleSaveSettings = () => {
     if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
-      console.error("TimerController: TimerSettings module not ready");
+      Logger.error("TimerController", "TimerSettings module not ready");
       return;
     }
 
     const elements = timerUIModule.getElements();
 
     if (!elements.settingsForm) {
-      console.error("TimerController: Settings form not found");
+      Logger.error("TimerController", "Settings form not found");
       return;
     }
 
@@ -968,8 +978,9 @@ const TimerController = (() => {
       ? voiceEnabledCheckbox.checked
       : false;
 
-    console.log(
-      `TimerController: Checkbox values - soundEnabled: ${newSettings.soundEnabled}, voiceEnabled: ${newSettings.voiceEnabled}`
+    Logger.debug(
+      "TimerController",
+      `Checkbox values - soundEnabled: ${newSettings.soundEnabled}, voiceEnabled: ${newSettings.voiceEnabled}`
     );
 
     // Get selected start sound
@@ -978,38 +989,42 @@ const TimerController = (() => {
     const startSound = soundSelect?.value || "whistle";
     newSettings.startSound = startSound;
 
-    console.log("TimerController: New settings collected:", newSettings);
+    Logger.debug("TimerController", "New settings collected:", newSettings);
 
     // Update settings
     const result = TimerSettings.updateSettings(newSettings);
 
     if (result.success) {
-      console.log("TimerController: Settings saved successfully");
+      Logger.info("TimerController", "Settings saved successfully");
 
       // Update timer configuration if timer module is ready
       if (workoutTimerModule && workoutTimerModule.isReady()) {
         const updatedSettings = TimerSettings.getSettings();
         workoutTimerModule.setTimerConfig(updatedSettings);
-        console.log("TimerController: Timer configuration updated");
+        Logger.debug("TimerController", "Timer configuration updated");
       }
 
       // Update AudioManager sound enabled state
       if (typeof AudioManager !== "undefined" && AudioManager.isReady()) {
-        console.log(
-          `TimerController: Updating AudioManager - soundEnabled: ${newSettings.soundEnabled}`
+        Logger.debug(
+          "TimerController",
+          `Updating AudioManager - soundEnabled: ${newSettings.soundEnabled}`
         );
         AudioManager.setEnabled(newSettings.soundEnabled);
-        console.log(
-          `TimerController: AudioManager sound ${
+        Logger.debug(
+          "TimerController",
+          `AudioManager sound ${
             newSettings.soundEnabled ? "ENABLED" : "DISABLED"
           }`
         );
-        console.log(
-          `TimerController: AudioManager.isEnabled() = ${AudioManager.isEnabled()}`
+        Logger.debug(
+          "TimerController",
+          `AudioManager.isEnabled() = ${AudioManager.isEnabled()}`
         );
       } else {
-        console.warn(
-          "TimerController: AudioManager not available or not ready"
+        Logger.warn(
+          "TimerController",
+          "AudioManager not available or not ready"
         );
       }
 
@@ -1023,9 +1038,13 @@ const TimerController = (() => {
         }`,
         "success"
       );
-      console.log("TimerController: Settings saved and applied");
+      Logger.info("TimerController", "Settings saved and applied");
     } else {
-      console.error("TimerController: Failed to save settings:", result.errors);
+      Logger.error(
+        "TimerController",
+        "Failed to save settings:",
+        result.errors
+      );
       showToast(
         "Failed to save settings: " + result.errors.join(", "),
         "error"
@@ -1083,7 +1102,7 @@ const TimerController = (() => {
    */
   const handleResetSettings = () => {
     if (typeof TimerSettings === "undefined" || !TimerSettings.isReady()) {
-      console.error("TimerController: TimerSettings module not ready");
+      Logger.error("TimerController", "TimerSettings module not ready");
       return;
     }
 
@@ -1098,12 +1117,12 @@ const TimerController = (() => {
 
     // Reset to defaults
     TimerSettings.resetToDefaults();
-    console.log("TimerController: Settings reset to defaults");
+    Logger.info("TimerController", "Settings reset to defaults");
 
     // Reload form with default values
     loadSettingsIntoForm();
 
-    console.log("TimerController: Settings form reloaded with defaults");
+    Logger.debug("TimerController", "Settings form reloaded with defaults");
   };
 
   /**
@@ -1113,13 +1132,14 @@ const TimerController = (() => {
    */
   const setWorkout = (workout) => {
     if (!Array.isArray(workout)) {
-      console.error("TimerController: Workout must be an array");
+      Logger.error("TimerController", "Workout must be an array");
       return;
     }
 
     currentWorkout = workout;
-    console.log(
-      `TimerController: Workout data set (${workout.length} exercises)`
+    Logger.debug(
+      "TimerController",
+      `Workout data set (${workout.length} exercises)`
     );
   };
 
@@ -1151,16 +1171,16 @@ const TimerController = (() => {
    */
   const showTimer = (exercise, exerciseIndex, totalExercises) => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return false;
     }
 
     if (!exercise) {
-      console.error("TimerController: No exercise provided");
+      Logger.error("TimerController", "No exercise provided");
       return false;
     }
 
-    console.log("TimerController: Showing timer for exercise:", exercise);
+    Logger.info("TimerController", "Showing timer for exercise:", exercise);
 
     // Store current exercise data
     currentExercise = exercise;
@@ -1203,7 +1223,7 @@ const TimerController = (() => {
 
     // Show the timer modal
     TimerUI.showTimer();
-    console.log("TimerController: Timer modal shown successfully");
+    Logger.info("TimerController", "Timer modal shown successfully");
 
     return true;
   };
@@ -1215,22 +1235,22 @@ const TimerController = (() => {
    */
   const hideTimer = () => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return false;
     }
 
-    console.log("TimerController: Hiding timer");
+    Logger.info("TimerController", "Hiding timer");
 
     // Stop the timer if it's running
     const isRunning = workoutTimerModule.isRunning();
     if (isRunning) {
-      console.log("TimerController: Stopping timer before hiding");
+      Logger.debug("TimerController", "Stopping timer before hiding");
       workoutTimerModule.stopTimer();
     }
 
     // Hide the timer modal
     TimerUI.hideTimer();
-    console.log("TimerController: Timer modal hidden successfully");
+    Logger.info("TimerController", "Timer modal hidden successfully");
     return true;
   };
 
@@ -1255,16 +1275,16 @@ const TimerController = (() => {
    */
   const updateDisplay = (state) => {
     if (!isInitialized) {
-      console.error("TimerController: Not initialized");
+      Logger.error("TimerController", "Not initialized");
       return;
     }
 
     if (!state) {
-      console.warn("TimerController: No state provided to updateDisplay");
+      Logger.warn("TimerController", "No state provided to updateDisplay");
       return;
     }
 
-    console.log("TimerController: Updating display with state:", state);
+    Logger.debug("TimerController", "Updating display with state:", state);
 
     // Update time display (MM:SS format)
     if (elements.timeDisplay) {
@@ -1332,8 +1352,9 @@ const TimerController = (() => {
 
       elements.progressCircle.style.strokeDashoffset = offset;
 
-      console.log(
-        `TimerController: Progress ring updated - ${progress.toFixed(1)}%`
+      Logger.debug(
+        "TimerController",
+        `Progress ring updated - ${progress.toFixed(1)}%`
       );
     }
 
@@ -1357,10 +1378,9 @@ const TimerController = (() => {
       // Update progress bar width
       elements.progressFill.style.width = `${overallProgress}%`;
 
-      console.log(
-        `TimerController: Overall progress bar updated - ${overallProgress.toFixed(
-          1
-        )}%`
+      Logger.debug(
+        "TimerController",
+        `Overall progress bar updated - ${overallProgress.toFixed(1)}%`
       );
     }
   };

@@ -82,17 +82,17 @@ const TimerSettings = (function () {
    */
   const init = () => {
     try {
-      console.log("TimerSettings: Initializing module...");
+      Logger.info("TimerSettings", "Initializing module...");
 
       // Load settings from localStorage
       loadSettings();
 
       isInitialized = true;
-      console.log("TimerSettings: Module initialized successfully");
-      console.log("TimerSettings: Current settings:", currentSettings);
+      Logger.info("TimerSettings", "Module initialized successfully");
+      Logger.debug("TimerSettings", "Current settings:", currentSettings);
       return true;
     } catch (error) {
-      console.error("TimerSettings: Initialization failed:", error.message);
+      Logger.error("TimerSettings", "Initialization failed:", error.message);
       return false;
     }
   };
@@ -176,8 +176,9 @@ const TimerSettings = (function () {
       // Validate configuration
       const validation = validateConfig(config);
       if (!validation.valid) {
-        console.error(
-          "TimerSettings: Validation failed:",
+        Logger.error(
+          "TimerSettings",
+          "Validation failed:",
           validation.errors.join(", ")
         );
         return {
@@ -187,16 +188,17 @@ const TimerSettings = (function () {
       }
 
       // Log what we're about to merge
-      console.log("TimerSettings: Merging config:", config);
-      console.log(
-        "TimerSettings: Current settings before merge:",
+      Logger.debug("TimerSettings", "Merging config:", config);
+      Logger.debug(
+        "TimerSettings",
+        "Current settings before merge:",
         currentSettings
       );
 
       // Merge with current settings
       currentSettings = { ...currentSettings, ...config };
 
-      console.log("TimerSettings: Settings after merge:", currentSettings);
+      Logger.debug("TimerSettings", "Settings after merge:", currentSettings);
 
       // Save to localStorage
       const saved = saveSettings();
@@ -207,8 +209,9 @@ const TimerSettings = (function () {
         };
       }
 
-      console.log(
-        "TimerSettings: Settings updated and saved:",
+      Logger.info(
+        "TimerSettings",
+        "Settings updated and saved:",
         currentSettings
       );
       return {
@@ -216,7 +219,11 @@ const TimerSettings = (function () {
         errors: [],
       };
     } catch (error) {
-      console.error("TimerSettings: Failed to update settings:", error.message);
+      Logger.error(
+        "TimerSettings",
+        "Failed to update settings:",
+        error.message
+      );
       return {
         success: false,
         errors: [error.message],
@@ -235,13 +242,14 @@ const TimerSettings = (function () {
       const saved = saveSettings();
 
       if (saved) {
-        console.log("TimerSettings: Settings reset to defaults");
+        Logger.info("TimerSettings", "Settings reset to defaults");
         return true;
       }
       return false;
     } catch (error) {
-      console.error(
-        "TimerSettings: Failed to reset to defaults:",
+      Logger.error(
+        "TimerSettings",
+        "Failed to reset to defaults:",
         error.message
       );
       return false;
@@ -257,13 +265,17 @@ const TimerSettings = (function () {
     try {
       const settingsJson = JSON.stringify(currentSettings);
       localStorage.setItem(STORAGE_KEY, settingsJson);
-      console.log("TimerSettings: Settings saved to localStorage");
+      Logger.debug("TimerSettings", "Settings saved to localStorage");
       return true;
     } catch (error) {
       if (error.name === "QuotaExceededError") {
-        console.error("TimerSettings: localStorage quota exceeded");
+        Logger.error("TimerSettings", "localStorage quota exceeded");
       } else {
-        console.error("TimerSettings: Failed to save settings:", error.message);
+        Logger.error(
+          "TimerSettings",
+          "Failed to save settings:",
+          error.message
+        );
       }
       return false;
     }
@@ -279,7 +291,10 @@ const TimerSettings = (function () {
       const settingsJson = localStorage.getItem(STORAGE_KEY);
 
       if (!settingsJson) {
-        console.log("TimerSettings: No saved settings found, using defaults");
+        Logger.debug(
+          "TimerSettings",
+          "No saved settings found, using defaults"
+        );
         currentSettings = { ...defaultSettings };
         return true;
       }
@@ -289,8 +304,9 @@ const TimerSettings = (function () {
       // Validate loaded settings
       const validation = validateConfig(loadedSettings);
       if (!validation.valid) {
-        console.warn(
-          "TimerSettings: Loaded settings invalid, using defaults:",
+        Logger.warn(
+          "TimerSettings",
+          "Loaded settings invalid, using defaults:",
           validation.errors.join(", ")
         );
         currentSettings = { ...defaultSettings };
@@ -299,10 +315,10 @@ const TimerSettings = (function () {
 
       // Merge with defaults to ensure all properties exist
       currentSettings = { ...defaultSettings, ...loadedSettings };
-      console.log("TimerSettings: Settings loaded from localStorage");
+      Logger.debug("TimerSettings", "Settings loaded from localStorage");
       return true;
     } catch (error) {
-      console.error("TimerSettings: Failed to load settings:", error.message);
+      Logger.error("TimerSettings", "Failed to load settings:", error.message);
       currentSettings = { ...defaultSettings };
       return false;
     }

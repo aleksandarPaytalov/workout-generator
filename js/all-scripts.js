@@ -1,7 +1,7 @@
 /*
  * Consolidated JavaScript Module Loader
  * This file loads all JavaScript modules in the correct dependency order
- * Load order: Theme Controller → Storage → Database → Validators → Generator → UI → Features → App
+ * Load order: Logger → Logger Config → Theme Controller → Storage → Database → Validators → Generator → UI → Features → App
  */
 
 // Function to dynamically load scripts in sequence
@@ -21,7 +21,13 @@ function loadScript(src) {
 // Load all scripts in the correct order
 async function loadAllScripts() {
   try {
-    // Theme Controller - Load first to prevent flash
+    // Logger utility - Load first for debugging support
+    await loadScript("./js/utils/logger.js");
+
+    // Logger configuration - Load immediately after logger
+    await loadScript("./js/config/loggerConfig.js");
+
+    // Theme Controller - Load third to prevent flash
     await loadScript("./js/modules/themeController.js");
 
     // Core modules

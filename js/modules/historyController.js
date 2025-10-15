@@ -23,16 +23,16 @@ const HistoryController = (() => {
    */
   const init = () => {
     try {
-      console.log("HistoryController: Initialization attempt 1");
+      Logger.debug("HistoryController", "Initialization attempt 1");
 
       if (isInitialized) {
-        console.log("HistoryController: Already initialized");
+        Logger.debug("HistoryController", "Already initialized");
         return true;
       }
 
       // Cache DOM elements
       if (!cacheElements()) {
-        console.error("HistoryController: Failed to cache DOM elements");
+        Logger.error("HistoryController", "Failed to cache DOM elements");
         return false;
       }
 
@@ -40,10 +40,14 @@ const HistoryController = (() => {
       setupEventListeners();
 
       isInitialized = true;
-      console.log("HistoryController: Module initialized successfully");
+      Logger.info("HistoryController", "Module initialized successfully");
       return true;
     } catch (error) {
-      console.error("HistoryController: Initialization failed:", error.message);
+      Logger.error(
+        "HistoryController",
+        "Initialization failed:",
+        error.message
+      );
       return false;
     }
   };
@@ -99,18 +103,20 @@ const HistoryController = (() => {
         .map(([key]) => key);
 
       if (missingElements.length > 0) {
-        console.warn(
-          "HistoryController: Missing DOM elements:",
+        Logger.warn(
+          "HistoryController",
+          "Missing DOM elements:",
           missingElements
         );
         return false;
       }
 
-      console.log("HistoryController: DOM elements cached successfully");
+      Logger.debug("HistoryController", "DOM elements cached successfully");
       return true;
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to cache elements:",
+      Logger.error(
+        "HistoryController",
+        "Failed to cache elements:",
         error.message
       );
       return false;
@@ -171,10 +177,11 @@ const HistoryController = (() => {
         elements.clearFiltersBtn.addEventListener("click", handleClearFilters);
       }
 
-      console.log("HistoryController: Event listeners setup successfully");
+      Logger.debug("HistoryController", "Event listeners setup successfully");
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to setup event listeners:",
+      Logger.error(
+        "HistoryController",
+        "Failed to setup event listeners:",
         error.message
       );
     }
@@ -201,8 +208,9 @@ const HistoryController = (() => {
           elements.workoutDisplay.hidden = false;
         }
 
-        console.log(
-          "HistoryController: History section hidden, main sections shown"
+        Logger.debug(
+          "HistoryController",
+          "History section hidden, main sections shown"
         );
       } else {
         // Hide main sections and show history section
@@ -218,13 +226,15 @@ const HistoryController = (() => {
         elements.historyToggleBtn.classList.add("active");
         loadWorkoutHistory();
 
-        console.log(
-          "HistoryController: Main sections hidden, history section shown"
+        Logger.debug(
+          "HistoryController",
+          "Main sections hidden, history section shown"
         );
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to toggle history:",
+      Logger.error(
+        "HistoryController",
+        "Failed to toggle history:",
         error.message
       );
     }
@@ -262,15 +272,16 @@ const HistoryController = (() => {
           showSearchFilter();
         }
 
-        console.log(`HistoryController: Loaded ${workouts.length} workouts`);
+        Logger.debug("HistoryController", `Loaded ${workouts.length} workouts`);
       } else {
-        console.warn("HistoryController: WorkoutHistory module not available");
+        Logger.warn("HistoryController", "WorkoutHistory module not available");
         showHistoryEmptyState();
         hidePagination();
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to load workout history:",
+      Logger.error(
+        "HistoryController",
+        "Failed to load workout history:",
         error.message
       );
       showHistoryEmptyState();
@@ -304,12 +315,13 @@ const HistoryController = (() => {
           hidePagination();
           showClearHistoryFeedback();
 
-          console.log("HistoryController: History cleared successfully");
+          Logger.info("HistoryController", "History cleared successfully");
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to clear history:",
+      Logger.error(
+        "HistoryController",
+        "Failed to clear history:",
         error.message
       );
     }
@@ -370,12 +382,17 @@ const HistoryController = (() => {
         // Show success feedback
         showExportDataFeedback(workoutsToExport.length);
 
-        console.log(
-          `HistoryController: Exported ${workoutsToExport.length} workouts`
+        Logger.info(
+          "HistoryController",
+          `Exported ${workoutsToExport.length} workouts`
         );
       }
     } catch (error) {
-      console.error("HistoryController: Failed to export data:", error.message);
+      Logger.error(
+        "HistoryController",
+        "Failed to export data:",
+        error.message
+      );
       showFeedback("❌", "Export failed", "#ef4444", "#dc2626");
     }
   };
@@ -394,7 +411,7 @@ const HistoryController = (() => {
         elements.statsSection.hidden = true;
         elements.historyContent.hidden = false;
         elements.viewStatsBtn.classList.remove("active");
-        console.log("HistoryController: Stats hidden, history shown");
+        Logger.debug("HistoryController", "Stats hidden, history shown");
       } else {
         // Show stats, hide history
         elements.historyContent.hidden = true;
@@ -403,11 +420,12 @@ const HistoryController = (() => {
 
         // Render stats
         renderStats();
-        console.log("HistoryController: Stats shown, history hidden");
+        Logger.debug("HistoryController", "Stats shown, history hidden");
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to toggle stats:",
+      Logger.error(
+        "HistoryController",
+        "Failed to toggle stats:",
         error.message
       );
     }
@@ -526,8 +544,9 @@ const HistoryController = (() => {
         elements.statsContent.innerHTML = html;
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to render stats:",
+      Logger.error(
+        "HistoryController",
+        "Failed to render stats:",
         error.message
       );
       elements.statsContent.innerHTML = `
@@ -640,7 +659,7 @@ const HistoryController = (() => {
       const workout = workoutsToShow[currentPage];
 
       if (!workout) {
-        console.error("HistoryController: Invalid page index");
+        Logger.error("HistoryController", "Invalid page index");
         return;
       }
 
@@ -653,8 +672,9 @@ const HistoryController = (() => {
       // Show pagination
       showPagination();
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to display current page:",
+      Logger.error(
+        "HistoryController",
+        "Failed to display current page:",
         error.message
       );
     }
@@ -763,12 +783,14 @@ const HistoryController = (() => {
       // Display filtered results
       displayCurrentPage();
 
-      console.log(
-        `HistoryController: Filters applied - ${displayedWorkouts.length} workouts found`
+      Logger.debug(
+        "HistoryController",
+        `Filters applied - ${displayedWorkouts.length} workouts found`
       );
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to apply filters:",
+      Logger.error(
+        "HistoryController",
+        "Failed to apply filters:",
         error.message
       );
     }
@@ -837,12 +859,14 @@ const HistoryController = (() => {
         elements.workoutCardsContainer.appendChild(card);
       });
 
-      console.log(
-        `HistoryController: Displayed ${workouts.length} workout cards`
+      Logger.debug(
+        "HistoryController",
+        `Displayed ${workouts.length} workout cards`
       );
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to display workout cards:",
+      Logger.error(
+        "HistoryController",
+        "Failed to display workout cards:",
         error.message
       );
       showHistoryEmptyState();
@@ -1063,16 +1087,17 @@ const HistoryController = (() => {
           });
           document.dispatchEvent(event);
 
-          console.log(`HistoryController: Repeated workout ${workoutId}`);
+          Logger.debug("HistoryController", `Repeated workout ${workoutId}`);
           showRepeatWorkoutFeedback();
         } else {
-          console.error("HistoryController: Workout not found:", workoutId);
+          Logger.error("HistoryController", "Workout not found:", workoutId);
           showErrorFeedback("Workout not found");
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to repeat workout:",
+      Logger.error(
+        "HistoryController",
+        "Failed to repeat workout:",
         error.message
       );
       showErrorFeedback("Failed to repeat workout");
@@ -1115,18 +1140,20 @@ const HistoryController = (() => {
           });
           document.dispatchEvent(event);
 
-          console.log(
-            `HistoryController: Generating similar workout based on ${workoutId}`
+          Logger.debug(
+            "HistoryController",
+            `Generating similar workout based on ${workoutId}`
           );
           showGenerateSimilarFeedback();
         } else {
-          console.error("HistoryController: Workout not found:", workoutId);
+          Logger.error("HistoryController", "Workout not found:", workoutId);
           showErrorFeedback("Workout not found");
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to generate similar workout:",
+      Logger.error(
+        "HistoryController",
+        "Failed to generate similar workout:",
         error.message
       );
       showErrorFeedback("Failed to generate similar workout");
@@ -1151,23 +1178,25 @@ const HistoryController = (() => {
           copyToClipboard(workoutText)
             .then(() => {
               showShareSuccessFeedback();
-              console.log("HistoryController: Workout copied to clipboard");
+              Logger.debug("HistoryController", "Workout copied to clipboard");
             })
             .catch((error) => {
-              console.error(
-                "HistoryController: Failed to copy to clipboard:",
+              Logger.error(
+                "HistoryController",
+                "Failed to copy to clipboard:",
                 error.message
               );
               showErrorFeedback("Failed to copy to clipboard");
             });
         } else {
-          console.error("HistoryController: Workout not found:", workoutId);
+          Logger.error("HistoryController", "Workout not found:", workoutId);
           showErrorFeedback("Workout not found");
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to share workout:",
+      Logger.error(
+        "HistoryController",
+        "Failed to share workout:",
         error.message
       );
       showErrorFeedback("Failed to share workout");
@@ -1201,17 +1230,19 @@ const HistoryController = (() => {
           // Show success feedback
           showFeedback("⭐", `Rated ${rating} stars!`, "#f59e0b", "#d97706");
 
-          console.log(
-            `HistoryController: Updated rating for workout ${workoutId} to ${rating}`
+          Logger.debug(
+            "HistoryController",
+            `Updated rating for workout ${workoutId} to ${rating}`
           );
         } else {
-          console.error("HistoryController: Workout not found:", workoutId);
+          Logger.error("HistoryController", "Workout not found:", workoutId);
           showErrorFeedback("Workout not found");
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to update rating:",
+      Logger.error(
+        "HistoryController",
+        "Failed to update rating:",
         error.message
       );
       showErrorFeedback("Failed to update rating");
@@ -1242,16 +1273,17 @@ const HistoryController = (() => {
           // Show success feedback
           showFeedback("💾", "Notes saved!", "#10b981", "#059669");
 
-          console.log(
-            `HistoryController: Saved notes for workout ${workoutId}`
+          Logger.debug(
+            "HistoryController",
+            `Saved notes for workout ${workoutId}`
           );
         } else {
-          console.error("HistoryController: Workout not found:", workoutId);
+          Logger.error("HistoryController", "Workout not found:", workoutId);
           showErrorFeedback("Workout not found");
         }
       }
     } catch (error) {
-      console.error("HistoryController: Failed to save notes:", error.message);
+      Logger.error("HistoryController", "Failed to save notes:", error.message);
       showErrorFeedback("Failed to save notes");
     }
   };
@@ -1278,8 +1310,9 @@ const HistoryController = (() => {
         });
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to update rating display:",
+      Logger.error(
+        "HistoryController",
+        "Failed to update rating display:",
         error.message
       );
     }
@@ -1312,14 +1345,16 @@ const HistoryController = (() => {
             displayedWorkouts[displayedIndex] = updatedWorkout;
           }
 
-          console.log(
-            `HistoryController: Refreshed workout ${workoutId} in memory`
+          Logger.debug(
+            "HistoryController",
+            `Refreshed workout ${workoutId} in memory`
           );
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to refresh workout in memory:",
+      Logger.error(
+        "HistoryController",
+        "Failed to refresh workout in memory:",
         error.message
       );
     }
@@ -1363,13 +1398,14 @@ const HistoryController = (() => {
             displayCurrentPage();
           }
 
-          console.log(`HistoryController: Deleted workout ${workoutId}`);
+          Logger.info("HistoryController", `Deleted workout ${workoutId}`);
           showDeleteWorkoutFeedback();
         }
       }
     } catch (error) {
-      console.error(
-        "HistoryController: Failed to delete workout:",
+      Logger.error(
+        "HistoryController",
+        "Failed to delete workout:",
         error.message
       );
       showErrorFeedback("Failed to delete workout");

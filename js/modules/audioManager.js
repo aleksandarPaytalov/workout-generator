@@ -27,12 +27,12 @@ const AudioManager = (() => {
       // Create AudioContext (with vendor prefix support)
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       isInitialized = true;
-      console.log("AudioManager: Initialized successfully");
-      console.log("AudioManager: AudioContext state:", audioContext.state);
+      Logger.info("AudioManager", "Initialized successfully");
+      Logger.debug("AudioManager", "AudioContext state:", audioContext.state);
       return true;
     } catch (error) {
-      console.error("AudioManager: Failed to initialize", error);
-      console.warn("AudioManager: Audio features will be disabled");
+      Logger.error("AudioManager", "Failed to initialize", error);
+      Logger.warn("AudioManager", "Audio features will be disabled");
       return false;
     }
   };
@@ -55,8 +55,9 @@ const AudioManager = (() => {
   const playBeep = (frequency, duration, volume = 0.3) => {
     // Check if audio is enabled and initialized
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -64,9 +65,9 @@ const AudioManager = (() => {
     try {
       // Resume context if suspended (browser autoplay policy)
       if (audioContext.state === "suspended") {
-        console.log("AudioManager: Resuming suspended AudioContext");
+        Logger.debug("AudioManager", "Resuming suspended AudioContext");
         audioContext.resume().then(() => {
-          console.log("AudioManager: AudioContext resumed successfully");
+          Logger.debug("AudioManager", "AudioContext resumed successfully");
         });
       }
 
@@ -93,11 +94,12 @@ const AudioManager = (() => {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
 
-      console.log(
-        `AudioManager: Playing beep - ${frequency}Hz, ${duration}s, volume ${volume}`
+      Logger.debug(
+        "AudioManager",
+        `Playing beep - ${frequency}Hz, ${duration}s, volume ${volume}`
       );
     } catch (error) {
-      console.error("AudioManager: Error playing beep", error);
+      Logger.error("AudioManager", "Error playing beep", error);
     }
   };
 
@@ -109,17 +111,18 @@ const AudioManager = (() => {
    */
   const playStartSound = (soundId = "whistle") => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Start sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Start sound playback skipped (disabled or not initialized)"
       );
       return;
     }
 
     // Resume context if suspended
     if (audioContext.state === "suspended") {
-      console.log("AudioManager: Resuming suspended AudioContext");
+      Logger.debug("AudioManager", "Resuming suspended AudioContext");
       audioContext.resume().then(() => {
-        console.log("AudioManager: AudioContext resumed successfully");
+        Logger.debug("AudioManager", "AudioContext resumed successfully");
       });
     }
 
@@ -156,8 +159,9 @@ const AudioManager = (() => {
         playElectronicBeep();
         break;
       default:
-        console.warn(
-          `AudioManager: Unknown sound ID "${soundId}", using default whistle`
+        Logger.warn(
+          "AudioManager",
+          `Unknown sound ID "${soundId}", using default whistle`
         );
         playRefereeWhistle();
     }
@@ -170,7 +174,7 @@ const AudioManager = (() => {
    * @public
    */
   const playEndSound = () => {
-    console.log("AudioManager: Playing END sound");
+    Logger.debug("AudioManager", "Playing END sound");
     playBeep(600, 0.3, 0.4); // 600Hz, 300ms, slightly louder
   };
 
@@ -181,7 +185,7 @@ const AudioManager = (() => {
    * @public
    */
   const playCountdownBeep = () => {
-    console.log("AudioManager: Playing COUNTDOWN beep");
+    Logger.debug("AudioManager", "Playing COUNTDOWN beep");
     playBeep(1000, 0.15, 0.35); // 1000Hz, 150ms, high pitch
   };
 
@@ -193,8 +197,9 @@ const AudioManager = (() => {
    */
   const playRefereeWhistle = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Whistle sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Whistle sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -202,9 +207,9 @@ const AudioManager = (() => {
     try {
       // Resume context if suspended (browser autoplay policy)
       if (audioContext.state === "suspended") {
-        console.log("AudioManager: Resuming suspended AudioContext");
+        Logger.debug("AudioManager", "Resuming suspended AudioContext");
         audioContext.resume().then(() => {
-          console.log("AudioManager: AudioContext resumed successfully");
+          Logger.debug("AudioManager", "AudioContext resumed successfully");
         });
       }
 
@@ -284,11 +289,12 @@ const AudioManager = (() => {
       osc3.start(currentTime);
       osc3.stop(currentTime + duration);
 
-      console.log(
-        "AudioManager: Playing WARM REFEREE WHISTLE sound (2200Hz + harmonics, 1.5s)"
+      Logger.debug(
+        "AudioManager",
+        "Playing WARM REFEREE WHISTLE sound (2200Hz + harmonics, 1.5s)"
       );
     } catch (error) {
-      console.error("AudioManager: Error playing whistle sound", error);
+      Logger.error("AudioManager", "Error playing whistle sound", error);
     }
   };
 
@@ -300,8 +306,9 @@ const AudioManager = (() => {
    */
   const playBoxingBell = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Boxing bell sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Boxing bell sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -342,9 +349,12 @@ const AudioManager = (() => {
         oscillator.stop(startTime + strikeDuration);
       }
 
-      console.log("AudioManager: Playing BOXING BELL sound (DING DING DING)");
+      Logger.debug(
+        "AudioManager",
+        "Playing BOXING BELL sound (DING DING DING)"
+      );
     } catch (error) {
-      console.error("AudioManager: Error playing boxing bell sound", error);
+      Logger.error("AudioManager", "Error playing boxing bell sound", error);
     }
   };
 
@@ -356,8 +366,9 @@ const AudioManager = (() => {
    */
   const playAirHorn = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Air horn sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Air horn sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -400,9 +411,9 @@ const AudioManager = (() => {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
 
-      console.log("AudioManager: Playing AIR HORN sound (400Hz, 800ms)");
+      Logger.debug("AudioManager", "Playing AIR HORN sound (400Hz, 800ms)");
     } catch (error) {
-      console.error("AudioManager: Error playing air horn sound", error);
+      Logger.error("AudioManager", "Error playing air horn sound", error);
     }
   };
 
@@ -414,8 +425,9 @@ const AudioManager = (() => {
    */
   const playBeepSequence = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Beep sequence sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Beep sequence sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -453,11 +465,12 @@ const AudioManager = (() => {
         oscillator.stop(startTime + beepDuration);
       });
 
-      console.log(
-        "AudioManager: Playing BEEP SEQUENCE sound (800Hz → 1000Hz → 1200Hz)"
+      Logger.debug(
+        "AudioManager",
+        "Playing BEEP SEQUENCE sound (800Hz → 1000Hz → 1200Hz)"
       );
     } catch (error) {
-      console.error("AudioManager: Error playing beep sequence sound", error);
+      Logger.error("AudioManager", "Error playing beep sequence sound", error);
     }
   };
 
@@ -469,8 +482,9 @@ const AudioManager = (() => {
    */
   const playCountdownVoice = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Countdown voice sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Countdown voice sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -535,9 +549,16 @@ const AudioManager = (() => {
       osc4.start(currentTime + 1.2);
       osc4.stop(currentTime + 1.7);
 
-      console.log("AudioManager: Playing COUNTDOWN VOICE sound (3, 2, 1, GO!)");
+      Logger.debug(
+        "AudioManager",
+        "Playing COUNTDOWN VOICE sound (3, 2, 1, GO!)"
+      );
     } catch (error) {
-      console.error("AudioManager: Error playing countdown voice sound", error);
+      Logger.error(
+        "AudioManager",
+        "Error playing countdown voice sound",
+        error
+      );
     }
   };
 
@@ -549,8 +570,9 @@ const AudioManager = (() => {
    */
   const playSiren = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Siren sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Siren sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -588,9 +610,9 @@ const AudioManager = (() => {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
 
-      console.log("AudioManager: Playing SIREN sound (600Hz → 1200Hz, 1s)");
+      Logger.debug("AudioManager", "Playing SIREN sound (600Hz → 1200Hz, 1s)");
     } catch (error) {
-      console.error("AudioManager: Error playing siren sound", error);
+      Logger.error("AudioManager", "Error playing siren sound", error);
     }
   };
 
@@ -602,8 +624,9 @@ const AudioManager = (() => {
    */
   const playChime = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Chime sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Chime sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -654,9 +677,12 @@ const AudioManager = (() => {
       osc3.start(currentTime);
       osc3.stop(currentTime + duration);
 
-      console.log("AudioManager: Playing CHIME sound (800Hz + harmonics, 2s)");
+      Logger.debug(
+        "AudioManager",
+        "Playing CHIME sound (800Hz + harmonics, 2s)"
+      );
     } catch (error) {
-      console.error("AudioManager: Error playing chime sound", error);
+      Logger.error("AudioManager", "Error playing chime sound", error);
     }
   };
 
@@ -668,8 +694,9 @@ const AudioManager = (() => {
    */
   const playBuzzer = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Buzzer sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Buzzer sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -702,9 +729,9 @@ const AudioManager = (() => {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
 
-      console.log("AudioManager: Playing BUZZER sound (200Hz, 600ms)");
+      Logger.debug("AudioManager", "Playing BUZZER sound (200Hz, 600ms)");
     } catch (error) {
-      console.error("AudioManager: Error playing buzzer sound", error);
+      Logger.error("AudioManager", "Error playing buzzer sound", error);
     }
   };
 
@@ -716,8 +743,9 @@ const AudioManager = (() => {
    */
   const playGong = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Gong sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Gong sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -770,9 +798,12 @@ const AudioManager = (() => {
         osc.stop(currentTime + duration);
       });
 
-      console.log("AudioManager: Playing GONG sound (150Hz + harmonics, 3s)");
+      Logger.debug(
+        "AudioManager",
+        "Playing GONG sound (150Hz + harmonics, 3s)"
+      );
     } catch (error) {
-      console.error("AudioManager: Error playing gong sound", error);
+      Logger.error("AudioManager", "Error playing gong sound", error);
     }
   };
 
@@ -784,8 +815,9 @@ const AudioManager = (() => {
    */
   const playElectronicBeep = () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
-      console.log(
-        "AudioManager: Electronic beep sound playback skipped (disabled or not initialized)"
+      Logger.debug(
+        "AudioManager",
+        "Electronic beep sound playback skipped (disabled or not initialized)"
       );
       return;
     }
@@ -823,11 +855,16 @@ const AudioManager = (() => {
       oscillator.start(currentTime);
       oscillator.stop(currentTime + duration);
 
-      console.log(
-        "AudioManager: Playing ELECTRONIC BEEP sound (1500Hz → 1200Hz, 400ms)"
+      Logger.debug(
+        "AudioManager",
+        "Playing ELECTRONIC BEEP sound (1500Hz → 1200Hz, 400ms)"
       );
     } catch (error) {
-      console.error("AudioManager: Error playing electronic beep sound", error);
+      Logger.error(
+        "AudioManager",
+        "Error playing electronic beep sound",
+        error
+      );
     }
   };
 
@@ -837,13 +874,14 @@ const AudioManager = (() => {
    * @public
    */
   const setEnabled = (enabled) => {
-    console.log(
-      `AudioManager: setEnabled called with: ${enabled} (type: ${typeof enabled})`
+    Logger.debug(
+      "AudioManager",
+      `setEnabled called with: ${enabled} (type: ${typeof enabled})`
     );
-    console.log(`AudioManager: soundEnabled BEFORE: ${soundEnabled}`);
+    Logger.debug("AudioManager", `soundEnabled BEFORE: ${soundEnabled}`);
     soundEnabled = enabled;
-    console.log(`AudioManager: soundEnabled AFTER: ${soundEnabled}`);
-    console.log(`AudioManager: Sound ${enabled ? "ENABLED" : "DISABLED"}`);
+    Logger.debug("AudioManager", `soundEnabled AFTER: ${soundEnabled}`);
+    Logger.info("AudioManager", `Sound ${enabled ? "ENABLED" : "DISABLED"}`);
   };
 
   /**
@@ -852,8 +890,9 @@ const AudioManager = (() => {
    * @public
    */
   const isEnabled = () => {
-    console.log(
-      `AudioManager: isEnabled() called - returning: ${soundEnabled}`
+    Logger.debug(
+      "AudioManager",
+      `isEnabled() called - returning: ${soundEnabled}`
     );
     return soundEnabled;
   };

@@ -24,7 +24,7 @@ const WorkoutHistory = (() => {
    */
   const init = () => {
     try {
-      console.log("WorkoutHistory: Initialization attempt 1");
+      Logger.debug("WorkoutHistory", "Initialization attempt 1");
 
       // Check if StorageManager is available
       if (typeof StorageManager === "undefined") {
@@ -39,9 +39,9 @@ const WorkoutHistory = (() => {
       storageManager = StorageManager;
       isInitialized = true;
 
-      console.log("WorkoutHistory: Module initialized successfully");
+      Logger.info("WorkoutHistory", "Module initialized successfully");
     } catch (error) {
-      console.error("WorkoutHistory: Initialization failed:", error.message);
+      Logger.error("WorkoutHistory", "Initialization failed:", error.message);
       throw error;
     }
   };
@@ -375,8 +375,9 @@ const WorkoutHistory = (() => {
       // Save to storage using StorageManager
       storageManager.saveWorkout(workoutSession);
 
-      console.log(
-        `WorkoutHistory: Workout added to history - ${workoutSession.id}`
+      Logger.debug(
+        "WorkoutHistory",
+        `Workout added to history - ${workoutSession.id}`
       );
 
       // Dispatch event for UI updates (if needed)
@@ -390,7 +391,7 @@ const WorkoutHistory = (() => {
 
       return workoutSession;
     } catch (error) {
-      console.error("WorkoutHistory: Failed to add workout:", error.message);
+      Logger.error("WorkoutHistory", "Failed to add workout:", error.message);
       throw error;
     }
   };
@@ -413,7 +414,7 @@ const WorkoutHistory = (() => {
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
     } catch (error) {
-      console.error("WorkoutHistory: Failed to get history:", error.message);
+      Logger.error("WorkoutHistory", "Failed to get history:", error.message);
       throw error;
     }
   };
@@ -437,8 +438,9 @@ const WorkoutHistory = (() => {
       const workouts = getHistory();
       return workouts.find((workout) => workout.id === workoutId) || null;
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to get workout by ID:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to get workout by ID:",
         error.message
       );
       throw error;
@@ -470,7 +472,7 @@ const WorkoutHistory = (() => {
       const index = workouts.findIndex((workout) => workout.id === workoutId);
 
       if (index === -1) {
-        console.error("WorkoutHistory: Workout not found:", workoutId);
+        Logger.error("WorkoutHistory", "Workout not found:", workoutId);
         return false;
       }
 
@@ -482,10 +484,18 @@ const WorkoutHistory = (() => {
       storageManager.clearHistory();
       workouts.forEach((workout) => storageManager.saveWorkout(workout));
 
-      console.log("WorkoutHistory: Workout updated successfully:", workoutId);
+      Logger.debug(
+        "WorkoutHistory",
+        "Workout updated successfully:",
+        workoutId
+      );
       return true;
     } catch (error) {
-      console.error("WorkoutHistory: Failed to update workout:", error.message);
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to update workout:",
+        error.message
+      );
       throw error;
     }
   };
@@ -512,7 +522,7 @@ const WorkoutHistory = (() => {
       );
 
       if (workoutIndex === -1) {
-        console.warn(`WorkoutHistory: Workout ${workoutId} not found`);
+        Logger.warn("WorkoutHistory", `Workout ${workoutId} not found`);
         return false;
       }
 
@@ -523,8 +533,9 @@ const WorkoutHistory = (() => {
       storageManager.clearHistory();
       workouts.forEach((workout) => storageManager.saveWorkout(workout));
 
-      console.log(
-        `WorkoutHistory: Workout removed from history - ${workoutId}`
+      Logger.debug(
+        "WorkoutHistory",
+        `Workout removed from history - ${workoutId}`
       );
 
       // Dispatch event for UI updates
@@ -538,7 +549,11 @@ const WorkoutHistory = (() => {
 
       return true;
     } catch (error) {
-      console.error("WorkoutHistory: Failed to remove workout:", error.message);
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to remove workout:",
+        error.message
+      );
       throw error;
     }
   };
@@ -556,7 +571,7 @@ const WorkoutHistory = (() => {
     try {
       storageManager.clearHistory();
 
-      console.log("WorkoutHistory: All history cleared");
+      Logger.info("WorkoutHistory", "All history cleared");
 
       // Dispatch event for UI updates
       if (typeof window !== "undefined" && window.dispatchEvent) {
@@ -565,7 +580,7 @@ const WorkoutHistory = (() => {
 
       return true;
     } catch (error) {
-      console.error("WorkoutHistory: Failed to clear history:", error.message);
+      Logger.error("WorkoutHistory", "Failed to clear history:", error.message);
       throw error;
     }
   };
@@ -638,8 +653,9 @@ const WorkoutHistory = (() => {
         completionRate: Math.round((completedCount / workouts.length) * 100),
       };
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to get history stats:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to get history stats:",
         error.message
       );
       throw error;
@@ -694,8 +710,9 @@ const WorkoutHistory = (() => {
 
       return status;
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to check workout limit:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to check workout limit:",
         error.message
       );
       throw error;
@@ -741,8 +758,9 @@ const WorkoutHistory = (() => {
         reason: "oldest",
       }));
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to get suggested removals:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to get suggested removals:",
         error.message
       );
       throw error;
@@ -788,8 +806,9 @@ const WorkoutHistory = (() => {
             successCount++;
           }
         } catch (error) {
-          console.warn(
-            `WorkoutHistory: Failed to remove workout ${workout.id}:`,
+          Logger.warn(
+            "WorkoutHistory",
+            `Failed to remove workout ${workout.id}:`,
             error.message
           );
         }
@@ -803,11 +822,12 @@ const WorkoutHistory = (() => {
         }`,
       };
 
-      console.log(`WorkoutHistory: ${result.message}`);
+      Logger.info("WorkoutHistory", result.message);
       return result;
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to remove oldest workouts:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to remove oldest workouts:",
         error.message
       );
       throw error;
@@ -848,8 +868,9 @@ const WorkoutHistory = (() => {
         removed: removalResult.removed,
       };
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to make space for new workout:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to make space for new workout:",
         error.message
       );
       throw error;
@@ -932,8 +953,9 @@ const WorkoutHistory = (() => {
           .filter((v, i, a) => a.indexOf(v) === i),
       };
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to get storage recommendations:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to get storage recommendations:",
         error.message
       );
       throw error;
@@ -1076,8 +1098,9 @@ const WorkoutHistory = (() => {
             : "Different workout styles",
       };
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to compare workouts:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to compare workouts:",
         error.message
       );
       throw error;
@@ -1150,8 +1173,9 @@ const WorkoutHistory = (() => {
         .sort((a, b) => b.similarity - a.similarity)
         .slice(0, maxResults);
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to find similar workouts:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to find similar workouts:",
         error.message
       );
       throw error;
@@ -1301,8 +1325,9 @@ const WorkoutHistory = (() => {
             : "Consistent workouts. Try varying intensity or exercises.",
       };
     } catch (error) {
-      console.error(
-        "WorkoutHistory: Failed to analyze progression:",
+      Logger.error(
+        "WorkoutHistory",
+        "Failed to analyze progression:",
         error.message
       );
       throw error;
