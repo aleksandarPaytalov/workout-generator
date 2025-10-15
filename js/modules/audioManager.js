@@ -46,13 +46,38 @@ const AudioManager = (() => {
   };
 
   /**
+   * Ensure AudioContext is running (resume if suspended)
+   * This is critical for iOS Safari which starts AudioContext in suspended state
+   * @private
+   * @returns {Promise<void>}
+   */
+  const ensureAudioContextRunning = async () => {
+    if (!audioContext) {
+      return;
+    }
+
+    if (audioContext.state === "suspended") {
+      Logger.debug("AudioManager", "Resuming suspended AudioContext...");
+      try {
+        await audioContext.resume();
+        Logger.debug(
+          "AudioManager",
+          `AudioContext resumed successfully. State: ${audioContext.state}`
+        );
+      } catch (error) {
+        Logger.error("AudioManager", "Failed to resume AudioContext", error);
+      }
+    }
+  };
+
+  /**
    * Play a beep sound with specified characteristics
    * @private
    * @param {number} frequency - Frequency in Hz
    * @param {number} duration - Duration in seconds
    * @param {number} volume - Volume (0.0 to 1.0)
    */
-  const playBeep = (frequency, duration, volume = 0.3) => {
+  const playBeep = async (frequency, duration, volume = 0.3) => {
     // Check if audio is enabled and initialized
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
@@ -63,13 +88,9 @@ const AudioManager = (() => {
     }
 
     try {
-      // Resume context if suspended (browser autoplay policy)
-      if (audioContext.state === "suspended") {
-        Logger.debug("AudioManager", "Resuming suspended AudioContext");
-        audioContext.resume().then(() => {
-          Logger.debug("AudioManager", "AudioContext resumed successfully");
-        });
-      }
+      // CRITICAL: Ensure AudioContext is running before playing sound
+      // This fixes iOS Safari issue where sounds don't play on first timer start
+      await ensureAudioContextRunning();
 
       // Create oscillator (generates the tone)
       const oscillator = audioContext.createOscillator();
@@ -109,7 +130,7 @@ const AudioManager = (() => {
    * @param {string} soundId - ID of the sound to play (default: "whistle")
    * @public
    */
-  const playStartSound = (soundId = "whistle") => {
+  const playStartSound = async (soundId = "whistle") => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -118,13 +139,9 @@ const AudioManager = (() => {
       return;
     }
 
-    // Resume context if suspended
-    if (audioContext.state === "suspended") {
-      Logger.debug("AudioManager", "Resuming suspended AudioContext");
-      audioContext.resume().then(() => {
-        Logger.debug("AudioManager", "AudioContext resumed successfully");
-      });
-    }
+    // CRITICAL: Ensure AudioContext is running before playing sound
+    // This fixes iOS Safari issue where sounds don't play on first timer start
+    await ensureAudioContextRunning();
 
     // Call appropriate sound function based on soundId
     switch (soundId) {
@@ -173,9 +190,9 @@ const AudioManager = (() => {
    * Sound: 600Hz, 300ms, slightly louder
    * @public
    */
-  const playEndSound = () => {
+  const playEndSound = async () => {
     Logger.debug("AudioManager", "Playing END sound");
-    playBeep(600, 0.3, 0.4); // 600Hz, 300ms, slightly louder
+    await playBeep(600, 0.3, 0.4); // 600Hz, 300ms, slightly louder
   };
 
   /**
@@ -184,9 +201,9 @@ const AudioManager = (() => {
    * Sound: 1000Hz, 150ms, high pitch for urgency
    * @public
    */
-  const playCountdownBeep = () => {
+  const playCountdownBeep = async () => {
     Logger.debug("AudioManager", "Playing COUNTDOWN beep");
-    playBeep(1000, 0.15, 0.35); // 1000Hz, 150ms, high pitch
+    await playBeep(1000, 0.15, 0.35); // 1000Hz, 150ms, high pitch
   };
 
   /**
@@ -195,7 +212,7 @@ const AudioManager = (() => {
    * Sound: Multi-layered whistle with harmonics and vibrato for realistic, warm tone
    * @public
    */
-  const playRefereeWhistle = () => {
+  const playRefereeWhistle = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -205,13 +222,8 @@ const AudioManager = (() => {
     }
 
     try {
-      // Resume context if suspended (browser autoplay policy)
-      if (audioContext.state === "suspended") {
-        Logger.debug("AudioManager", "Resuming suspended AudioContext");
-        audioContext.resume().then(() => {
-          Logger.debug("AudioManager", "AudioContext resumed successfully");
-        });
-      }
+      // CRITICAL: Ensure AudioContext is running before playing sound
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const baseFrequency = 2200; // Lower frequency for warmer, less sharp sound
@@ -304,7 +316,7 @@ const AudioManager = (() => {
    * Sound: 1200Hz sine wave, 3 strikes × 150ms each with 100ms gaps
    * @public
    */
-  const playBoxingBell = () => {
+  const playBoxingBell = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -314,9 +326,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const frequency = 1200; // Bell frequency
@@ -364,7 +374,7 @@ const AudioManager = (() => {
    * Sound: 400Hz square wave, 800ms duration with slight frequency wobble
    * @public
    */
-  const playAirHorn = () => {
+  const playAirHorn = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -374,9 +384,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const baseFrequency = 400;
@@ -423,7 +431,7 @@ const AudioManager = (() => {
    * Sound: 800Hz → 1000Hz → 1200Hz, 200ms each with 150ms gaps
    * @public
    */
-  const playBeepSequence = () => {
+  const playBeepSequence = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -433,9 +441,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const frequencies = [800, 1000, 1200]; // Ascending frequencies
@@ -480,7 +486,7 @@ const AudioManager = (() => {
    * Sound: Four segments with varying frequencies to simulate speech
    * @public
    */
-  const playCountdownVoice = () => {
+  const playCountdownVoice = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -490,9 +496,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const volume = 0.3;
@@ -568,7 +572,7 @@ const AudioManager = (() => {
    * Sound: Frequency sweep 600Hz → 1200Hz over 1 second, sawtooth wave
    * @public
    */
-  const playSiren = () => {
+  const playSiren = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -578,9 +582,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const duration = 1.0; // 1 second
@@ -622,7 +624,7 @@ const AudioManager = (() => {
    * Sound: 800Hz with harmonics, triangle wave, long decay (2 seconds)
    * @public
    */
-  const playChime = () => {
+  const playChime = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -632,9 +634,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const baseFrequency = 800;
@@ -692,7 +692,7 @@ const AudioManager = (() => {
    * Sound: 200Hz square wave, 600ms, sharp attack, no fade
    * @public
    */
-  const playBuzzer = () => {
+  const playBuzzer = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -702,9 +702,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const frequency = 200; // Low, harsh frequency
@@ -741,7 +739,7 @@ const AudioManager = (() => {
    * Sound: 150Hz with rich harmonics, multiple oscillators, long decay (3 seconds) with vibrato
    * @public
    */
-  const playGong = () => {
+  const playGong = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -751,9 +749,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const baseFrequency = 150; // Deep, low frequency
@@ -813,7 +809,7 @@ const AudioManager = (() => {
    * Sound: 1500Hz sine wave, 400ms, frequency sweep at end (1500Hz → 1200Hz)
    * @public
    */
-  const playElectronicBeep = () => {
+  const playElectronicBeep = async () => {
     if (!isInitialized || !soundEnabled || !audioContext) {
       Logger.debug(
         "AudioManager",
@@ -823,9 +819,7 @@ const AudioManager = (() => {
     }
 
     try {
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
+      await ensureAudioContextRunning();
 
       const currentTime = audioContext.currentTime;
       const startFrequency = 1500;
