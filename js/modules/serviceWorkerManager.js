@@ -284,15 +284,15 @@ const ServiceWorkerManager = (() => {
 
     // Add to header (next to History and Theme buttons)
     const header = document.querySelector("header");
-    const headerButtons = header.querySelector(".header-buttons");
+    const headerControls = header.querySelector(".header-controls");
 
-    if (headerButtons) {
+    if (headerControls) {
       // Insert before theme toggle button
-      const themeBtn = document.getElementById("theme-toggle");
+      const themeBtn = document.getElementById("themeToggleBtn");
       if (themeBtn) {
-        headerButtons.insertBefore(installBtn, themeBtn);
+        headerControls.insertBefore(installBtn, themeBtn);
       } else {
-        headerButtons.appendChild(installBtn);
+        headerControls.appendChild(installBtn);
       }
     }
 
