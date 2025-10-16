@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Test - Workout Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .check {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .cross {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section h2 {
+            color: #0f172a;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        #logs {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+        .log-success { color: #10b981; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #3b82f6; }
+        .log-warning { color: #f59e0b; }
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Service Worker Test</h1>
+        <p>Testing service worker registration and functionality</p>
+
+        <div id="supportStatus" class="status"></div>
+
+        <div class="section">
+            <h2>📋 Registration Status</h2>
+            <div id="registrationStatus"></div>
+            <table id="statusTable">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>💾 Cache Status</h2>
+            <div id="cacheStatus"></div>
+            <button id="checkCacheBtn">Check Cache</button>
+            <button id="clearCacheBtn">Clear Cache</button>
+        </div>
+
+        <div class="section">
+            <h2>📝 Console Logs</h2>
+            <div id="logs"></div>
+        </div>
+
+        <div class="section">
+            <h2>🎮 Actions</h2>
+            <button id="registerBtn">Register Service Worker</button>
+            <button id="unregisterBtn">Unregister Service Worker</button>
+            <button id="updateBtn">Update Service Worker</button>
+            <button id="reloadBtn">Reload Page</button>
+        </div>
+    </div>
+
+    <script>
+        const logs = [];
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ timestamp, message, type });
+            updateLogsDisplay();
+        }
+        
+        function updateLogsDisplay() {
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.map(log => 
+                `<div class="log-entry log-${log.type}">[${log.timestamp}] ${log.message}</div>`
+            ).join('');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        async function checkServiceWorkerSupport() {
+            const supportDiv = document.getElementById('supportStatus');
+            
+            if ('serviceWorker' in navigator) {
+                supportDiv.className = 'status success';
+                supportDiv.innerHTML = '<strong>✓ Service Worker Supported</strong> Your browser supports service workers!';
+                addLog('Service Worker API is supported', 'success');
+                return true;
+            } else {
+                supportDiv.className = 'status error';
+                supportDiv.innerHTML = '<strong>✗ Service Worker Not Supported</strong> Your browser does not support service workers.';
+                addLog('Service Worker API is NOT supported', 'error');
+                return false;
+            }
+        }
+        
+        async function registerServiceWorker() {
+            addLog('Attempting to register service worker...', 'info');
+            
+            try {
+                const registration = await navigator.serviceWorker.register('/service-worker.js', {
+                    scope: '/'
+                });
+                
+                addLog('Service worker registered successfully!', 'success');
+                addLog(`Scope: ${registration.scope}`, 'info');
+                
+                // Listen for updates
+                registration.addEventListener('updatefound', () => {
+                    addLog('Service worker update found!', 'warning');
+                    const newWorker = registration.installing;
+                    
+                    newWorker.addEventListener('statechange', () => {
+                        addLog(`Service worker state: ${newWorker.state}`, 'info');
+                    });
+                });
+                
+                updateRegistrationStatus(registration);
+                return registration;
+            } catch (error) {
+                addLog(`Failed to register service worker: ${error.message}`, 'error');
+                console.error('Service worker registration failed:', error);
+                throw error;
+            }
+        }
+        
+        function updateRegistrationStatus(registration) {
+            const statusDiv = document.getElementById('registrationStatus');
+            const tbody = document.querySelector('#statusTable tbody');
+            
+            if (!registration) {
+                statusDiv.className = 'status warning';
+                statusDiv.innerHTML = '<strong>⚠ No Active Registration</strong>';
+                tbody.innerHTML = '<tr><td colspan="2">No service worker registered</td></tr>';
+                return;
+            }
+            
+            statusDiv.className = 'status success';
+            statusDiv.innerHTML = '<strong>✓ Service Worker Registered</strong>';
+            
+            const data = [
+                { property: 'Scope', value: registration.scope },
+                { property: 'Installing', value: registration.installing ? '✓ Yes' : '✗ No' },
+                { property: 'Waiting', value: registration.waiting ? '✓ Yes' : '✗ No' },
+                { property: 'Active', value: registration.active ? '✓ Yes' : '✗ No' },
+                { property: 'State', value: registration.active ? registration.active.state : 'N/A' }
+            ];
+            
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><code>${item.property}</code></td>
+                    <td>${item.value}</td>
+                </tr>
+            `).join('');
+        }
+        
+        async function checkCache() {
+            addLog('Checking cache...', 'info');
+            
+            try {
+                const cacheNames = await caches.keys();
+                addLog(`Found ${cacheNames.length} cache(s)`, 'success');
+                
+                const cacheDiv = document.getElementById('cacheStatus');
+                
+                if (cacheNames.length === 0) {
+                    cacheDiv.className = 'status warning';
+                    cacheDiv.innerHTML = '<strong>⚠ No Caches Found</strong>';
+                    return;
+                }
+                
+                let html = '<div class="status success"><strong>✓ Caches Found</strong></div>';
+                
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const keys = await cache.keys();
+                    addLog(`Cache "${cacheName}": ${keys.length} items`, 'info');
+                    html += `<p><strong>${cacheName}</strong>: ${keys.length} cached items</p>`;
+                }
+                
+                cacheDiv.innerHTML = html;
+            } catch (error) {
+                addLog(`Failed to check cache: ${error.message}`, 'error');
+            }
+        }
+        
+        async function clearCache() {
+            addLog('Clearing all caches...', 'warning');
+            
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                addLog(`Cleared ${cacheNames.length} cache(s)`, 'success');
+                
+                const cacheDiv = document.getElementById('cacheStatus');
+                cacheDiv.className = 'status info';
+                cacheDiv.innerHTML = '<strong>✓ All Caches Cleared</strong>';
+            } catch (error) {
+                addLog(`Failed to clear cache: ${error.message}`, 'error');
+            }
+        }
+        
+        async function unregisterServiceWorker() {
+            addLog('Unregistering service worker...', 'warning');
+            
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.unregister();
+                    addLog('Service worker unregistered successfully', 'success');
+                    updateRegistrationStatus(null);
+                } else {
+                    addLog('No service worker to unregister', 'warning');
+                }
+            } catch (error) {
+                addLog(`Failed to unregister: ${error.message}`, 'error');
+            }
+        }
+        
+        async function updateServiceWorker() {
+            addLog('Checking for service worker updates...', 'info');
+            
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.update();
+                    addLog('Update check complete', 'success');
+                } else {
+                    addLog('No service worker registered', 'warning');
+                }
+            } catch (error) {
+                addLog(`Failed to update: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            addLog('Page loaded', 'info');
+            
+            const supported = await checkServiceWorkerSupport();
+            
+            if (supported) {
+                // Check if already registered
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    addLog('Service worker already registered', 'info');
+                    updateRegistrationStatus(registration);
+                } else {
+                    addLog('No service worker registered yet', 'warning');
+                    updateRegistrationStatus(null);
+                }
+            }
+            
+            // Button event listeners
+            document.getElementById('registerBtn').addEventListener('click', registerServiceWorker);
+            document.getElementById('unregisterBtn').addEventListener('click', unregisterServiceWorker);
+            document.getElementById('updateBtn').addEventListener('click', updateServiceWorker);
+            document.getElementById('checkCacheBtn').addEventListener('click', checkCache);
+            document.getElementById('clearCacheBtn').addEventListener('click', clearCache);
+            document.getElementById('reloadBtn').addEventListener('click', () => location.reload());
+        });
+    </script>
+</body>
+</html>
+

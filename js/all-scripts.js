@@ -27,6 +27,9 @@ async function loadAllScripts() {
     // Logger configuration - Load immediately after logger
     await loadScript("./js/config/loggerConfig.js");
 
+    // Service Worker Manager - Load early for PWA functionality
+    await loadScript("./js/modules/serviceWorkerManager.js");
+
     // Theme Controller - Load third to prevent flash
     await loadScript("./js/modules/themeController.js");
 

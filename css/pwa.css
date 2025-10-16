@@ -1,0 +1,301 @@
+/**
+ * PWA Styles
+ * Styles for service worker update notifications and install prompts
+ */
+
+/* ============================================
+   Install Button
+   ============================================ */
+
+.pwa-install-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.pwa-install-btn:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.pwa-install-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+.pwa-install-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pwa-install-text {
+  font-weight: 600;
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 12px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .pwa-install-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .pwa-install-text {
+    display: none;
+  }
+
+  .pwa-install-icon {
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   Update Notification Banner
+   ============================================ */
+
+.sw-update-banner {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 500px;
+  transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.sw-update-banner.show {
+  top: 20px;
+}
+
+.sw-update-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sw-update-icon {
+  font-size: 28px;
+  line-height: 1;
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sw-update-text {
+  flex: 1;
+}
+
+.sw-update-text strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.sw-update-text p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.sw-update-btn {
+  padding: 8px 16px;
+  background: white;
+  color: #8b5cf6;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sw-update-btn:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.sw-update-btn:active {
+  transform: scale(0.98);
+}
+
+.sw-update-dismiss {
+  padding: 4px 8px;
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  line-height: 1;
+}
+
+.sw-update-dismiss:hover {
+  opacity: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .sw-update-banner {
+    min-width: auto;
+    max-width: calc(100% - 40px);
+    padding: 12px 16px;
+  }
+
+  .sw-update-content {
+    gap: 8px;
+  }
+
+  .sw-update-icon {
+    font-size: 24px;
+  }
+
+  .sw-update-text strong {
+    font-size: 14px;
+  }
+
+  .sw-update-text p {
+    font-size: 12px;
+  }
+
+  .sw-update-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================
+   Install Success Notification
+   ============================================ */
+
+.pwa-install-success {
+  position: fixed;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 16px 24px;
+  transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pwa-install-success.show {
+  bottom: 20px;
+}
+
+.pwa-install-success-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-install-success-icon {
+  font-size: 24px;
+  line-height: 1;
+  background: white;
+  color: #10b981;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.pwa-install-success-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .pwa-install-success {
+    padding: 12px 20px;
+  }
+
+  .pwa-install-success-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+  }
+
+  .pwa-install-success-text {
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+   Dark Theme Support
+   ============================================ */
+
+[data-theme="dark"] .pwa-install-btn {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.3);
+}
+
+[data-theme="dark"] .pwa-install-btn:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.4);
+}
+
+[data-theme="dark"] .sw-update-banner {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+}
+
+[data-theme="dark"] .sw-update-btn {
+  background: #1f2937;
+  color: #a78bfa;
+}
+
+[data-theme="dark"] .sw-update-btn:hover {
+  background: #374151;
+}
+
+[data-theme="dark"] .pwa-install-success {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+[data-theme="dark"] .pwa-install-success-icon {
+  background: #1f2937;
+  color: #34d399;
+}
+

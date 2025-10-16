@@ -43,3 +43,6 @@
 /* 9. Theme System - Dark Mode Support */
 @import url("./theme.css?v=9");
 @import url("./theme-toggle.css?v=9");
+
+/* 10. PWA Styles - Service Worker & Install Prompt */
+@import url("./pwa.css?v=1");
