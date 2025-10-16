@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.0.1";
+const CACHE_VERSION = "v1.0.2";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration
@@ -327,5 +327,61 @@ self.addEventListener("message", (event) => {
     );
   }
 });
+
+/**
+ * Background Sync Event
+ * Handles background sync when connection is restored
+ * Simple implementation - ready for future backend integration
+ */
+self.addEventListener("sync", (event) => {
+  console.log("[Service Worker] Background sync event:", event.tag);
+
+  if (event.tag === "sync-workout-data") {
+    event.waitUntil(syncWorkoutData());
+  }
+});
+
+/**
+ * Sync workout data (placeholder for future backend integration)
+ * Currently just logs the sync event
+ * @returns {Promise}
+ */
+async function syncWorkoutData() {
+  console.log("[Service Worker] Syncing workout data...");
+
+  try {
+    // In the future, this would:
+    // 1. Get pending sync data from IndexedDB
+    // 2. Send to backend API
+    // 3. Clear sync queue on success
+
+    // For now, just notify the app that sync completed
+    const clients = await self.clients.matchAll();
+    clients.forEach((client) => {
+      client.postMessage({
+        type: "SYNC_COMPLETE",
+        success: true,
+        message: "Workout data synced successfully",
+      });
+    });
+
+    console.log("[Service Worker] Sync completed successfully");
+    return Promise.resolve();
+  } catch (error) {
+    console.error("[Service Worker] Sync failed:", error);
+
+    // Notify app of sync failure
+    const clients = await self.clients.matchAll();
+    clients.forEach((client) => {
+      client.postMessage({
+        type: "SYNC_COMPLETE",
+        success: false,
+        message: "Sync failed - will retry later",
+      });
+    });
+
+    return Promise.reject(error);
+  }
+}
 
 console.log("[Service Worker] Service worker script loaded");

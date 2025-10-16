@@ -526,6 +526,82 @@ const ServiceWorkerManager = (() => {
   }
 
   /**
+   * Check if Background Sync API is supported
+   * @returns {boolean} True if supported
+   */
+  function isBackgroundSyncSupported() {
+    return (
+      "sync" in registration || "sync" in ServiceWorkerRegistration.prototype
+    );
+  }
+
+  /**
+   * Register a background sync
+   * @param {string} tag - Sync tag name
+   * @returns {Promise<void>}
+   */
+  async function registerBackgroundSync(tag = "sync-workout-data") {
+    if (!registration) {
+      console.warn(
+        "[ServiceWorkerManager] No service worker registration available"
+      );
+      return;
+    }
+
+    if (!isBackgroundSyncSupported()) {
+      console.log("[ServiceWorkerManager] Background Sync not supported");
+      return;
+    }
+
+    try {
+      await registration.sync.register(tag);
+      console.log(`[ServiceWorkerManager] Background sync registered: ${tag}`);
+    } catch (error) {
+      console.error(
+        "[ServiceWorkerManager] Background sync registration failed:",
+        error
+      );
+    }
+  }
+
+  /**
+   * Listen for sync messages from service worker
+   */
+  function setupSyncListener() {
+    if (!navigator.serviceWorker) return;
+
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "SYNC_COMPLETE") {
+        console.log("[ServiceWorkerManager] Sync completed:", event.data);
+
+        // Show notification to user
+        if (event.data.success) {
+          showSyncNotification("✓ Data synced successfully", "success");
+        } else {
+          showSyncNotification("⚠ Sync failed - will retry later", "warning");
+        }
+      }
+    });
+  }
+
+  /**
+   * Show sync notification
+   * @param {string} message - Notification message
+   * @param {string} type - Notification type (success, warning, error)
+   */
+  function showSyncNotification(message, type = "info") {
+    // Simple console log for now - can be enhanced with UI notification
+    console.log(`[ServiceWorkerManager] Sync notification (${type}):`, message);
+
+    // Dispatch custom event for other modules to listen to
+    window.dispatchEvent(
+      new CustomEvent("syncStatusChanged", {
+        detail: { message, type },
+      })
+    );
+  }
+
+  /**
    * Initialize the service worker manager
    */
   async function init() {
@@ -548,6 +624,16 @@ const ServiceWorkerManager = (() => {
       // Track visit for banner logic
       trackVisit();
 
+      // Set up background sync listener
+      setupSyncListener();
+
+      // Check if Background Sync is supported
+      if (isBackgroundSyncSupported()) {
+        console.log("[ServiceWorkerManager] Background Sync API is supported");
+      } else {
+        console.log("[ServiceWorkerManager] Background Sync API not supported");
+      }
+
       console.log("[ServiceWorkerManager] Initialized successfully");
     } catch (error) {
       console.error("[ServiceWorkerManager] Initialization failed:", error);
@@ -563,6 +649,8 @@ const ServiceWorkerManager = (() => {
     promptInstall,
     getRegistration: () => registration,
     hasUpdate: () => updateAvailable,
+    registerBackgroundSync,
+    isBackgroundSyncSupported,
   };
 })();
 

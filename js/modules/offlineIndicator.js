@@ -62,7 +62,10 @@ const OfflineIndicator = (() => {
     } else {
       indicatorElement.classList.remove("online");
       indicatorElement.classList.add("offline");
-      indicatorElement.setAttribute("data-tooltip", "You're offline - All features still work!");
+      indicatorElement.setAttribute(
+        "data-tooltip",
+        "You're offline - All features still work!"
+      );
       if (text) text.textContent = "Offline";
     }
 
@@ -88,6 +91,18 @@ const OfflineIndicator = (() => {
         detail: { online: true },
       })
     );
+
+    // Trigger background sync if available
+    if (
+      typeof ServiceWorkerManager !== "undefined" &&
+      ServiceWorkerManager.isBackgroundSyncSupported &&
+      ServiceWorkerManager.isBackgroundSyncSupported()
+    ) {
+      console.log(
+        "[OfflineIndicator] Triggering background sync after reconnection"
+      );
+      ServiceWorkerManager.registerBackgroundSync("sync-workout-data");
+    }
   };
 
   /**
@@ -173,7 +188,10 @@ const OfflineIndicator = (() => {
 
       // Check initial online status
       isOnline = checkOnlineStatus();
-      console.log("[OfflineIndicator] Initial status:", isOnline ? "online" : "offline");
+      console.log(
+        "[OfflineIndicator] Initial status:",
+        isOnline ? "online" : "offline"
+      );
 
       // Add indicator to header
       if (!addToHeader()) {
@@ -253,4 +271,3 @@ const OfflineIndicator = (() => {
 
 // Make available globally
 window.OfflineIndicator = OfflineIndicator;
-
