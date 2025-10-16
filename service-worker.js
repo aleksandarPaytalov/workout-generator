@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.0.0";
+const CACHE_VERSION = "v1.0.1";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration
@@ -19,6 +19,7 @@ const ASSETS_TO_CACHE = [
   // Core HTML
   "/",
   "/index.html",
+  "/offline.html",
 
   // Manifest
   "/manifest.json",
@@ -283,9 +284,19 @@ self.addEventListener("fetch", (event) => {
 
           return networkResponse;
         })
-        .catch((error) => {
+        .catch(async (error) => {
           console.error("[Service Worker] Fetch failed:", error);
-          // Could return offline fallback page here
+
+          // Return offline page for navigation requests
+          if (event.request.mode === "navigate") {
+            const offlineResponse = await caches.match("/offline.html");
+            if (offlineResponse) {
+              console.log("[Service Worker] Serving offline page");
+              return offlineResponse;
+            }
+          }
+
+          // For other requests, throw the error
           throw error;
         });
     })
