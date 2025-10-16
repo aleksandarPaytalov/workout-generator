@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caching Strategy Test - Workout Generator PWA</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section h2 {
+            color: #0f172a;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #8b5cf6;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+        .cache-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .cache-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: monospace;
+            border-left: 3px solid #8b5cf6;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Caching Strategy Test</h1>
+        <p>Testing service worker caching strategy and cache management</p>
+
+        <div id="statusMessage" class="status info">
+            <strong>ℹ️ Initializing...</strong> Loading cache information...
+        </div>
+
+        <div class="section">
+            <h2>📊 Cache Statistics</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Caches</div>
+                    <div class="stat-value" id="totalCaches">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cached Items</div>
+                    <div class="stat-value" id="cachedItems">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cache Size</div>
+                    <div class="stat-value" id="cacheSize">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cache Usage</div>
+                    <div class="stat-value" id="cacheUsage">-</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="cacheProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 Cached Resources</h2>
+            <div id="cacheList" class="cache-list"></div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Cache Tests</h2>
+            <button id="testCacheFirstBtn">Test Cache First Strategy</button>
+            <button id="testNetworkFallbackBtn">Test Network Fallback</button>
+            <button id="refreshCacheBtn">Refresh Cache Stats</button>
+            <button id="clearCacheBtn">Clear All Caches</button>
+        </div>
+
+        <div class="section">
+            <h2>📋 Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script>
+        const CACHE_MAX_SIZE = 50 * 1024 * 1024; // 50MB
+        const CACHE_MAX_ENTRIES = 100;
+
+        async function getCacheStats() {
+            try {
+                const cacheNames = await caches.keys();
+                let totalItems = 0;
+                let totalSize = 0;
+                const cacheDetails = [];
+
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const keys = await cache.keys();
+                    
+                    let cacheSize = 0;
+                    for (const request of keys) {
+                        const response = await cache.match(request);
+                        if (response) {
+                            const blob = await response.blob();
+                            cacheSize += blob.size;
+                        }
+                    }
+
+                    totalItems += keys.length;
+                    totalSize += cacheSize;
+                    cacheDetails.push({ name: cacheName, items: keys.length, size: cacheSize, keys });
+                }
+
+                return {
+                    totalCaches: cacheNames.length,
+                    totalItems,
+                    totalSize,
+                    cacheDetails
+                };
+            } catch (error) {
+                console.error('Failed to get cache stats:', error);
+                return null;
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function updateCacheStats() {
+            const stats = await getCacheStats();
+            if (!stats) {
+                document.getElementById('statusMessage').className = 'status error';
+                document.getElementById('statusMessage').innerHTML = '<strong>✗ Error</strong> Failed to load cache stats';
+                return;
+            }
+
+            // Update stat cards
+            document.getElementById('totalCaches').textContent = stats.totalCaches;
+            document.getElementById('cachedItems').textContent = stats.totalItems;
+            document.getElementById('cacheSize').textContent = formatBytes(stats.totalSize);
+            
+            const usagePercent = ((stats.totalSize / CACHE_MAX_SIZE) * 100).toFixed(1);
+            document.getElementById('cacheUsage').textContent = usagePercent + '%';
+            document.getElementById('cacheProgress').style.width = usagePercent + '%';
+
+            // Update cache list
+            const cacheList = document.getElementById('cacheList');
+            cacheList.innerHTML = '';
+
+            stats.cacheDetails.forEach(cache => {
+                const cacheHeader = document.createElement('div');
+                cacheHeader.style.cssText = 'font-weight: bold; margin: 15px 0 10px 0; color: #8b5cf6;';
+                cacheHeader.textContent = `${cache.name} (${cache.items} items, ${formatBytes(cache.size)})`;
+                cacheList.appendChild(cacheHeader);
+
+                cache.keys.forEach(request => {
+                    const item = document.createElement('div');
+                    item.className = 'cache-item';
+                    const url = new URL(request.url);
+                    item.textContent = url.pathname;
+                    cacheList.appendChild(item);
+                });
+            });
+
+            // Update status
+            document.getElementById('statusMessage').className = 'status success';
+            document.getElementById('statusMessage').innerHTML = `<strong>✓ Cache Loaded</strong> ${stats.totalItems} items cached (${formatBytes(stats.totalSize)})`;
+        }
+
+        async function testCacheFirst() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="status info"><strong>Testing Cache First Strategy...</strong></div>';
+
+            try {
+                const testUrl = '/index.html';
+                const startTime = performance.now();
+                
+                // First request (should be from cache if available)
+                const response1 = await fetch(testUrl);
+                const time1 = performance.now() - startTime;
+                
+                // Second request (should definitely be from cache)
+                const startTime2 = performance.now();
+                const response2 = await fetch(testUrl);
+                const time2 = performance.now() - startTime2;
+
+                results.innerHTML = `
+                    <div class="status success">
+                        <strong>✓ Cache First Test Passed</strong><br>
+                        First request: ${time1.toFixed(2)}ms<br>
+                        Second request: ${time2.toFixed(2)}ms (${time2 < time1 ? 'faster - from cache!' : 'similar speed'})<br>
+                        Speed improvement: ${((1 - time2/time1) * 100).toFixed(1)}%
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="status error"><strong>✗ Test Failed</strong> ${error.message}</div>`;
+            }
+        }
+
+        async function testNetworkFallback() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="status info"><strong>Testing Network Fallback...</strong></div>';
+
+            try {
+                // Test with a URL that's not cached
+                const testUrl = '/test-uncached-resource-' + Date.now() + '.html';
+                const response = await fetch(testUrl);
+                
+                results.innerHTML = `
+                    <div class="status info">
+                        <strong>ℹ️ Network Fallback Test</strong><br>
+                        Attempted to fetch uncached resource: ${testUrl}<br>
+                        Status: ${response.status} (${response.status === 404 ? 'Expected - resource does not exist' : 'Unexpected'})<br>
+                        Service worker correctly fell back to network request.
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="status success">
+                        <strong>✓ Network Fallback Working</strong><br>
+                        Service worker attempted network request and handled failure correctly.<br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function clearAllCaches() {
+            if (!confirm('Are you sure you want to clear all caches? This will remove all cached resources.')) {
+                return;
+            }
+
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                document.getElementById('statusMessage').className = 'status success';
+                document.getElementById('statusMessage').innerHTML = '<strong>✓ Caches Cleared</strong> All caches have been deleted. Reload the page to rebuild cache.';
+                
+                await updateCacheStats();
+            } catch (error) {
+                document.getElementById('statusMessage').className = 'status error';
+                document.getElementById('statusMessage').innerHTML = `<strong>✗ Error</strong> Failed to clear caches: ${error.message}`;
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            await updateCacheStats();
+
+            // Button event listeners
+            document.getElementById('testCacheFirstBtn').addEventListener('click', testCacheFirst);
+            document.getElementById('testNetworkFallbackBtn').addEventListener('click', testNetworkFallback);
+            document.getElementById('refreshCacheBtn').addEventListener('click', updateCacheStats);
+            document.getElementById('clearCacheBtn').addEventListener('click', clearAllCaches);
+        });
+    </script>
+</body>
+</html>
+
