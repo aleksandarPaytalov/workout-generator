@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.0.2";
+const CACHE_VERSION = "v1.0.3";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration
@@ -157,6 +157,55 @@ async function getCacheSize(cache) {
 }
 
 /**
+ * Verify cache integrity
+ * Checks if cache is healthy and contains expected assets
+ * @param {Cache} cache - The cache to verify
+ * @returns {Promise<boolean>} True if cache is healthy
+ */
+async function verifyCacheIntegrity(cache) {
+  try {
+    // Check if critical assets are cached
+    const criticalAssets = ["/", "/index.html", "/offline.html"];
+
+    for (const asset of criticalAssets) {
+      const response = await cache.match(asset);
+      if (!response) {
+        console.warn(`[Service Worker] Cache missing critical asset: ${asset}`);
+        return false;
+      }
+    }
+
+    console.log("[Service Worker] Cache integrity verified");
+    return true;
+  } catch (error) {
+    console.error("[Service Worker] Cache integrity check failed:", error);
+    return false;
+  }
+}
+
+/**
+ * Rebuild cache if corrupted
+ * Clears and rebuilds the cache with fresh assets
+ * @returns {Promise<void>}
+ */
+async function rebuildCache() {
+  try {
+    console.log("[Service Worker] Rebuilding cache...");
+
+    // Delete corrupted cache
+    await caches.delete(CACHE_NAME);
+
+    // Create fresh cache
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(ASSETS_TO_CACHE);
+
+    console.log("[Service Worker] Cache rebuilt successfully");
+  } catch (error) {
+    console.error("[Service Worker] Cache rebuild failed:", error);
+  }
+}
+
+/**
  * Install Event
  * Fired when the service worker is first installed
  * Caches all necessary assets for offline use
@@ -207,8 +256,17 @@ self.addEventListener("activate", (event) => {
       .then(async () => {
         console.log("[Service Worker] Old caches cleaned up");
 
-        // Clean up old entries in current cache
+        // Open current cache
         const cache = await caches.open(CACHE_NAME);
+
+        // Verify cache integrity
+        const isHealthy = await verifyCacheIntegrity(cache);
+        if (!isHealthy) {
+          console.warn("[Service Worker] Cache corrupted, rebuilding...");
+          await rebuildCache();
+        }
+
+        // Clean up old entries in current cache
         await cleanupOldEntries(cache);
 
         // Limit cache size
@@ -229,14 +287,128 @@ self.addEventListener("activate", (event) => {
 });
 
 /**
+ * Check if request should use Stale While Revalidate strategy
+ * @param {Request} request - The request to check
+ * @returns {boolean} True if should use SWR
+ */
+function shouldUseStaleWhileRevalidate(request) {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  // Use SWR for HTML, CSS, and JS files (dynamic content)
+  return (
+    pathname.endsWith(".html") ||
+    pathname.endsWith(".css") ||
+    pathname.endsWith(".js") ||
+    pathname === "/" ||
+    pathname === "/index.html"
+  );
+}
+
+/**
+ * Stale While Revalidate Strategy
+ * Serves cached content immediately, then updates cache in background
+ * @param {Request} request - The request to handle
+ * @returns {Promise<Response>}
+ */
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+
+  // Fetch from network in background
+  const fetchPromise = fetch(request)
+    .then((networkResponse) => {
+      // Check if valid response
+      if (
+        networkResponse &&
+        networkResponse.status === 200 &&
+        networkResponse.type !== "error"
+      ) {
+        // Update cache with fresh content
+        cache.put(request, networkResponse.clone());
+        console.log("[Service Worker] Cache updated (SWR):", request.url);
+      }
+      return networkResponse;
+    })
+    .catch((error) => {
+      console.log(
+        "[Service Worker] Network fetch failed (SWR):",
+        error.message
+      );
+      return null;
+    });
+
+  // Return cached response immediately if available
+  if (cachedResponse) {
+    console.log("[Service Worker] Serving from cache (SWR):", request.url);
+    return cachedResponse;
+  }
+
+  // If no cache, wait for network
+  console.log(
+    "[Service Worker] No cache, waiting for network (SWR):",
+    request.url
+  );
+  return fetchPromise;
+}
+
+/**
+ * Cache First Strategy
+ * Tries cache first, falls back to network
+ * @param {Request} request - The request to handle
+ * @returns {Promise<Response>}
+ */
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+
+  // Return cached response if found
+  if (cachedResponse) {
+    console.log("[Service Worker] Serving from cache:", request.url);
+    return cachedResponse;
+  }
+
+  // Not in cache, fetch from network
+  console.log("[Service Worker] Fetching from network:", request.url);
+  try {
+    const networkResponse = await fetch(request);
+
+    // Check if valid response
+    if (
+      networkResponse &&
+      networkResponse.status === 200 &&
+      networkResponse.type !== "error"
+    ) {
+      // Cache the fetched response for future use
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+      console.log("[Service Worker] Cached new resource:", request.url);
+    }
+
+    return networkResponse;
+  } catch (error) {
+    console.error("[Service Worker] Fetch failed:", error);
+
+    // Return offline page for navigation requests
+    if (request.mode === "navigate") {
+      const offlineResponse = await caches.match("/offline.html");
+      if (offlineResponse) {
+        console.log("[Service Worker] Serving offline page");
+        return offlineResponse;
+      }
+    }
+
+    throw error;
+  }
+}
+
+/**
  * Fetch Event
  * Intercepts all network requests
  * Implements caching strategy for offline functionality
  *
- * Strategy: Cache First (with Network Fallback)
- * - Try to serve from cache first
- * - If not in cache, fetch from network
- * - Cache the network response for future use
+ * Strategy:
+ * - Stale While Revalidate for HTML/CSS/JS (dynamic content)
+ * - Cache First for images/fonts/other assets (static content)
  */
 self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
@@ -249,58 +421,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Return cached response if found
-      if (cachedResponse) {
-        console.log("[Service Worker] Serving from cache:", event.request.url);
-        return cachedResponse;
-      }
-
-      // Not in cache, fetch from network
-      console.log("[Service Worker] Fetching from network:", event.request.url);
-      return fetch(event.request)
-        .then((networkResponse) => {
-          // Check if valid response
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type === "error"
-          ) {
-            return networkResponse;
-          }
-
-          // Clone the response (can only be consumed once)
-          const responseToCache = networkResponse.clone();
-
-          // Cache the fetched response for future use
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-            console.log(
-              "[Service Worker] Cached new resource:",
-              event.request.url
-            );
-          });
-
-          return networkResponse;
-        })
-        .catch(async (error) => {
-          console.error("[Service Worker] Fetch failed:", error);
-
-          // Return offline page for navigation requests
-          if (event.request.mode === "navigate") {
-            const offlineResponse = await caches.match("/offline.html");
-            if (offlineResponse) {
-              console.log("[Service Worker] Serving offline page");
-              return offlineResponse;
-            }
-          }
-
-          // For other requests, throw the error
-          throw error;
-        });
-    })
-  );
+  // Choose strategy based on request type
+  if (shouldUseStaleWhileRevalidate(event.request)) {
+    event.respondWith(staleWhileRevalidate(event.request));
+  } else {
+    event.respondWith(cacheFirst(event.request));
+  }
 });
 
 /**
