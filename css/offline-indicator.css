@@ -1,0 +1,250 @@
+/**
+ * Offline Indicator Styles
+ * Shows online/offline status in the app header
+ */
+
+/* ============================================
+   Offline Indicator Badge
+   ============================================ */
+
+.offline-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: help;
+  user-select: none;
+  position: relative;
+}
+
+/* Online state - Green */
+.offline-indicator.online {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Offline state - Gray */
+.offline-indicator.offline {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+/* Status dot */
+.offline-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Online dot - solid pulse */
+.offline-indicator.online .offline-indicator-dot {
+  animation: pulse-dot-online 2s ease-in-out infinite;
+}
+
+/* Offline dot - no animation */
+.offline-indicator.offline .offline-indicator-dot {
+  animation: none;
+  opacity: 0.7;
+}
+
+/* Status text */
+.offline-indicator-text {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Tooltip */
+.offline-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.offline-indicator::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.offline-indicator:hover::after,
+.offline-indicator:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Pulse animation for online dot */
+@keyframes pulse-dot-online {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* Pulse animation for indicator */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   Offline Mode Badge (for History Section)
+   ============================================ */
+
+.offline-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  animation: fade-in 0.3s ease;
+}
+
+.offline-mode-badge-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Dark Theme Support
+   ============================================ */
+
+[data-theme="dark"] .offline-indicator.online {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+}
+
+[data-theme="dark"] .offline-indicator.offline {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 2px 8px rgba(75, 85, 99, 0.4);
+}
+
+[data-theme="dark"] .offline-mode-badge {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.4);
+}
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  .offline-indicator {
+    padding: 5px 10px;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .offline-indicator-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .offline-indicator-text {
+    display: none; /* Hide text on mobile, show only dot */
+  }
+
+  /* Show full text on hover/active */
+  .offline-indicator:active .offline-indicator-text {
+    display: inline;
+  }
+
+  .offline-mode-badge {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  /* Adjust tooltip for mobile */
+  .offline-indicator::after {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+/* ============================================
+   Positioning in Header
+   ============================================ */
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Ensure offline indicator fits nicely in header */
+.header-controls .offline-indicator {
+  margin-left: auto; /* Push to the right if needed */
+}
+
+/* ============================================
+   Connection Status Change Animation
+   ============================================ */
+
+.offline-indicator.status-changed {
+  animation: status-change-pulse 0.6s ease;
+}
+
+@keyframes status-change-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+

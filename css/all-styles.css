@@ -47,3 +47,4 @@
 /* 10. PWA Styles - Service Worker & Install Prompt */
 @import url("./pwa.css?v=1");
 @import url("./install-banner.css?v=1");
+@import url("./offline-indicator.css?v=1");

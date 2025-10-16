@@ -4,7 +4,7 @@
  * Format: MAJOR.MINOR.PATCH (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)
  */
 
-const APP_VERSION = "1.4.1"; // Fixed iOS Safari audio not playing on first timer start
+const APP_VERSION = "1.5.0"; // Added offline indicator for PWA functionality
 
 // Make available globally
 window.APP_VERSION = APP_VERSION;

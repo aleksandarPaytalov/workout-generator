@@ -30,6 +30,9 @@ async function loadAllScripts() {
     // Service Worker Manager - Load early for PWA functionality
     await loadScript("./js/modules/serviceWorkerManager.js");
 
+    // Offline Indicator - Load after service worker
+    await loadScript("./js/modules/offlineIndicator.js");
+
     // Theme Controller - Load third to prevent flash
     await loadScript("./js/modules/themeController.js");
 

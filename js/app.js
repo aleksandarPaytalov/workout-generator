@@ -83,6 +83,14 @@ const WorkoutApp = (() => {
         }
       }
 
+      // Initialize OfflineIndicator early to show connection status
+      if (typeof OfflineIndicator !== "undefined") {
+        OfflineIndicator.init();
+        if (!OfflineIndicator.isReady()) {
+          Logger.warn("WorkoutApp", "OfflineIndicator failed to initialize");
+        }
+      }
+
       // Initialize StorageManager for workout history (manual operations only)
       if (typeof StorageManager !== "undefined") {
         StorageManager.init();
