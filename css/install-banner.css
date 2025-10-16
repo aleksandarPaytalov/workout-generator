@@ -1,0 +1,282 @@
+/**
+ * PWA Install Banner Styles
+ * Promotional banner encouraging users to install the app
+ */
+
+/* ============================================
+   Install Banner Container
+   ============================================ */
+
+.pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  padding: 16px 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  display: none;
+}
+
+.pwa-install-banner.show {
+  display: block;
+  transform: translateY(0);
+}
+
+/* ============================================
+   Banner Content Layout
+   ============================================ */
+
+.pwa-install-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pwa-install-banner-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.pwa-install-banner-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.pwa-install-banner-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  display: block;
+}
+
+.pwa-install-banner-description {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+/* ============================================
+   Benefits List
+   ============================================ */
+
+.pwa-install-banner-benefits {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.pwa-install-banner-benefit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.pwa-install-banner-benefit::before {
+  content: "✓";
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* ============================================
+   Banner Actions
+   ============================================ */
+
+.pwa-install-banner-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pwa-install-banner-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #7c3aed;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.pwa-install-banner-btn:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwa-install-banner-btn:active {
+  transform: translateY(0);
+}
+
+.pwa-install-banner-dismiss {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.pwa-install-banner-dismiss:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .pwa-install-banner {
+    padding: 14px 16px;
+  }
+
+  .pwa-install-banner-content {
+    gap: 12px;
+  }
+
+  .pwa-install-banner-icon {
+    font-size: 28px;
+  }
+
+  .pwa-install-banner-text {
+    min-width: 150px;
+  }
+
+  .pwa-install-banner-title {
+    font-size: 15px;
+  }
+
+  .pwa-install-banner-description {
+    font-size: 13px;
+  }
+
+  .pwa-install-banner-benefits {
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .pwa-install-banner-benefit {
+    font-size: 12px;
+  }
+
+  .pwa-install-banner-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .pwa-install-banner-dismiss {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pwa-install-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .pwa-install-banner-icon {
+    display: none;
+  }
+
+  .pwa-install-banner-benefits {
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .pwa-install-banner-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .pwa-install-banner-btn {
+    flex: 1;
+  }
+}
+
+/* ============================================
+   Dark Theme Support
+   ============================================ */
+
+[data-theme="dark"] .pwa-install-banner {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+}
+
+[data-theme="dark"] .pwa-install-banner-btn {
+  background: #1f2937;
+  color: #a78bfa;
+}
+
+[data-theme="dark"] .pwa-install-banner-btn:hover {
+  background: #111827;
+}
+
+/* ============================================
+   Animation Variants
+   ============================================ */
+
+/* Slide in from bottom */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slide out to bottom */
+@keyframes slideOutToBottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.pwa-install-banner.show {
+  animation: slideInFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.pwa-install-banner.hide {
+  animation: slideOutToBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
