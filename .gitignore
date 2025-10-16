@@ -1,3 +1,16 @@
 # Augment rules (do not commit)
 .augment/rules/
 
+# Build output (generated files)
+dist/
+
+# Test reports (temporary files)
+lighthouse-*.report.html
+lighthouse-*.report.json
+
+# Node modules (if using npm)
+node_modules/
+
+# Playwright test results
+test-results/
+playwright-report/

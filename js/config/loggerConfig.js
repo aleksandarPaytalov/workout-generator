@@ -1,11 +1,11 @@
 /**
  * Logger Configuration
  * Customize logger behavior for the application
- * 
+ *
  * This file configures the Logger utility with application-specific settings.
  * The Logger automatically detects development vs production environments and
  * adjusts logging behavior accordingly.
- * 
+ *
  * @module LoggerConfig
  */
 
@@ -63,8 +63,12 @@
     console.log(`Environment: ${isDev ? "🛠️  Development" : "🚀 Production"}`);
     console.log(`Enabled: ${config.enabled ? "✅ Yes" : "❌ No"}`);
     console.log(`Log Level: ${config.level.toUpperCase()}`);
-    console.log(`Show Timestamps: ${config.showTimestamp ? "✅ Yes" : "❌ No"}`);
-    console.log(`Show Module Names: ${config.showModuleName ? "✅ Yes" : "❌ No"}`);
+    console.log(
+      `Show Timestamps: ${config.showTimestamp ? "✅ Yes" : "❌ No"}`
+    );
+    console.log(
+      `Show Module Names: ${config.showModuleName ? "✅ Yes" : "❌ No"}`
+    );
     console.log(`Colorize Output: ${config.colorize ? "✅ Yes" : "❌ No"}`);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
@@ -91,14 +95,15 @@
     }
 
     // Test logger with sample messages (development only)
-    if (isDev) {
-      console.log("\n📝 Logger Test Messages:");
-      Logger.debug("LoggerConfig", "This is a DEBUG message (hidden in production)");
-      Logger.info("LoggerConfig", "This is an INFO message (hidden in production)");
-      Logger.warn("LoggerConfig", "This is a WARNING message (always visible)");
-      Logger.error("LoggerConfig", "This is an ERROR message (always visible)");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-    }
+    // Commented out to avoid console errors in Lighthouse audit
+    // if (isDev) {
+    //   console.log("\n📝 Logger Test Messages:");
+    //   Logger.debug("LoggerConfig", "This is a DEBUG message (hidden in production)");
+    //   Logger.info("LoggerConfig", "This is an INFO message (hidden in production)");
+    //   Logger.warn("LoggerConfig", "This is a WARNING message (always visible)");
+    //   Logger.error("LoggerConfig", "This is an ERROR message (always visible)");
+    //   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+    // }
   };
 
   // Initialize configuration when DOM is ready
@@ -173,4 +178,3 @@
     };
   }
 })();
-
