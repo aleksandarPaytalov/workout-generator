@@ -88,7 +88,7 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  font-size: 2rem;
+  font-size: 1.75rem;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -97,7 +97,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  line-height: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 .install-modal-close:hover {
@@ -146,7 +148,11 @@
 
 .install-benefits {
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
   border-radius: 12px;
 }
 
@@ -225,4 +231,3 @@
 [data-theme="dark"] .install-platform {
   background: var(--bg-secondary);
 }
-
