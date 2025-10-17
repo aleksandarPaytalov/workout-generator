@@ -97,6 +97,13 @@ const WorkoutApp = (() => {
         installGuide.init();
       }
 
+      // Initialize DropdownMenu
+      if (typeof DropdownMenu !== "undefined") {
+        DropdownMenu.init();
+        // Hide original buttons after dropdown is created
+        DropdownMenu.hideOriginalButtons();
+      }
+
       // Initialize StorageManager for workout history (manual operations only)
       if (typeof StorageManager !== "undefined") {
         StorageManager.init();

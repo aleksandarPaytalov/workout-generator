@@ -36,6 +36,9 @@ async function loadAllScripts() {
     // Install Guide - Load after offline indicator
     await loadScript("./js/modules/installGuide.js");
 
+    // Dropdown Menu - Load after install guide
+    await loadScript("./js/modules/dropdownMenu.js");
+
     // Theme Controller - Load third to prevent flash
     await loadScript("./js/modules/themeController.js");
 

@@ -1,0 +1,392 @@
+/**
+ * Dropdown Menu Component Styles
+ * Modern dropdown menu for header navigation
+ */
+
+/* ============================================
+   Dropdown Container
+   ============================================ */
+
+.dropdown-container {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 2000; /* Higher z-index to appear above header and other elements */
+}
+
+/* ============================================
+   Dropdown Toggle Button
+   ============================================ */
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4),
+    0 2px 8px rgba(139, 92, 246, 0.2);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.dropdown-toggle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dropdown-toggle:hover::before {
+  opacity: 1;
+}
+
+.dropdown-toggle:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5),
+    0 4px 12px rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-toggle:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Dropdown toggle icon */
+.dropdown-toggle-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Dropdown toggle text */
+.dropdown-toggle-text {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Dropdown arrow indicator */
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  margin-left: var(--space-1);
+}
+
+.dropdown-toggle.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   Dropdown Menu
+   ============================================ */
+
+.dropdown-menu {
+  position: fixed; /* Use fixed to escape header overflow */
+  top: auto; /* Will be set dynamically by JS */
+  left: auto; /* Will be set dynamically by JS */
+  min-width: 220px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10000; /* Very high z-index to ensure menu is above backdrop and all other elements */
+  overflow: visible;
+  border: 1px solid var(--border-color);
+  padding: 4px 0;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ============================================
+   Dropdown Menu Items
+   ============================================ */
+
+.dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px 16px;
+  margin: 8px;
+  color: #1e293b;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  background: linear-gradient(135deg, #e0d7ff 0%, #d0c7ff 100%);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+.dropdown-menu-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dropdown-menu-item:hover::before {
+  opacity: 0.15;
+}
+
+.dropdown-menu-item:hover {
+  background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  color: #1e293b;
+}
+
+.dropdown-menu-item:active {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  transform: translateX(2px) scale(0.98);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+  color: #ffffff;
+}
+
+/* Dropdown menu item icon */
+.dropdown-menu-item-icon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Dropdown menu item text */
+.dropdown-menu-item-text {
+  font-size: 15px;
+  line-height: 1.4;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   Dark Mode Support
+   ============================================ */
+
+[data-theme="dark"] .dropdown-toggle {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .dropdown-toggle:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .dropdown-menu {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme - Keep white backgrounds for menu items */
+[data-theme="dark"] .dropdown-menu-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .dropdown-menu-item:hover {
+  background: linear-gradient(135deg, #f0e7ff 0%, #e0d7ff 100%);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  color: #1e293b;
+}
+
+[data-theme="dark"] .dropdown-menu-item:active {
+  background: linear-gradient(135deg, #e0d7ff 0%, #d0c7ff 100%);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.2);
+  color: #1e293b;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .dropdown-container {
+    top: -8px; /* Match history button position */
+    left: var(--space-3);
+  }
+
+  .dropdown-toggle {
+    padding: var(--space-2) var(--space-3);
+    font-size: 14px;
+  }
+
+  .dropdown-toggle-icon {
+    font-size: 18px;
+  }
+
+  .dropdown-toggle-text {
+    font-size: 14px;
+  }
+
+  .dropdown-arrow {
+    font-size: 10px;
+  }
+
+  .dropdown-menu {
+    min-width: 180px;
+  }
+
+  .dropdown-menu-item {
+    padding: var(--space-2) var(--space-3);
+    font-size: 14px;
+  }
+
+  .dropdown-menu-item-icon {
+    font-size: 16px;
+  }
+
+  .dropdown-menu-item-text {
+    font-size: 14px;
+  }
+
+  .dropdown-menu-item:hover {
+    padding-left: calc(var(--space-3) + 4px);
+  }
+}
+
+/* Small mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .dropdown-container {
+    top: -12px; /* Match history button position */
+  }
+
+  .dropdown-toggle {
+    padding: var(--space-2) var(--space-3);
+    font-size: 13px;
+  }
+
+  .dropdown-toggle-icon {
+    font-size: 16px;
+  }
+
+  .dropdown-toggle-text {
+    display: none; /* Hide text on very small screens */
+  }
+
+  .dropdown-arrow {
+    margin-left: 0;
+  }
+
+  .dropdown-menu {
+    min-width: 160px;
+    left: auto;
+    right: 0; /* Align to right on small screens */
+  }
+
+  .dropdown-menu-item {
+    padding: var(--space-2) var(--space-3);
+    font-size: 13px;
+  }
+
+  .dropdown-menu-item-icon {
+    font-size: 15px;
+  }
+
+  .dropdown-menu-item-text {
+    font-size: 13px;
+  }
+}
+
+/* iPhone 14 Pro Max specific (430px width) */
+@media (max-width: 430px) {
+  .dropdown-container {
+    top: -16px; /* Match history button position */
+    left: var(--space-2);
+  }
+
+  .dropdown-toggle {
+    padding: 8px 12px;
+  }
+
+  .dropdown-menu {
+    min-width: 150px;
+  }
+}
+
+/* ============================================
+   Animation Enhancements
+   ============================================ */
+
+/* Stagger animation for menu items */
+.dropdown-menu.show .dropdown-menu-item {
+  animation: slideInFromLeft 0.3s ease forwards;
+  opacity: 0;
+}
+
+.dropdown-menu.show .dropdown-menu-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.dropdown-menu.show .dropdown-menu-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.dropdown-menu.show .dropdown-menu-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Backdrop for mobile (optional) */
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 9999; /* Below dropdown menu (10000) but above other content */
+  display: none;
+  pointer-events: none; /* Don't block clicks - menu items need to be clickable */
+}
+
+.dropdown-backdrop.show {
+  display: block;
+  pointer-events: none; /* Keep pointer events disabled to allow menu items to be clicked */
+}

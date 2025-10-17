@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.0.5";
+const CACHE_VERSION = "v1.1.3";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration

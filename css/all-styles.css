@@ -49,3 +49,6 @@
 @import url("./install-banner.css?v=1");
 @import url("./offline-indicator.css?v=1");
 @import url("./install-guide.css?v=1");
+
+/* 11. Dropdown Menu Component */
+@import url("./dropdown-menu.css?v=2");
