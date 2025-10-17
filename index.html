@@ -77,6 +77,17 @@
 
           <button
             type="button"
+            class="install-guide-btn"
+            id="installGuideBtn"
+            aria-label="How to install"
+            title="Installation guide"
+          >
+            <span class="install-guide-icon" aria-hidden="true">❓</span>
+            <span class="install-guide-text">How to Install</span>
+          </button>
+
+          <button
+            type="button"
             class="theme-toggle-btn"
             id="themeToggleBtn"
             aria-label="Toggle dark mode"
@@ -606,6 +617,57 @@
           </div>
         </div>
       </footer>
+
+      <!-- Installation Guide Modal -->
+      <div
+        class="install-modal"
+        id="installModal"
+        role="dialog"
+        aria-labelledby="installModalTitle"
+        aria-hidden="true"
+      >
+        <div class="install-modal-overlay" id="installModalOverlay"></div>
+        <div class="install-modal-content">
+          <div class="install-modal-header">
+            <h2 id="installModalTitle">📱 How to Install</h2>
+            <button
+              class="install-modal-close"
+              id="installModalClose"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
+          <div class="install-modal-body">
+            <div class="install-platform" id="platformAndroid">
+              <h3>📱 Android / Desktop (Chrome/Edge)</h3>
+              <ol>
+                <li>Click "Install App" button in header</li>
+                <li>Confirm installation</li>
+                <li>Launch from home screen/desktop</li>
+              </ol>
+            </div>
+            <div class="install-platform" id="platformIOS">
+              <h3>🍎 iOS (Safari only)</h3>
+              <ol>
+                <li>Tap Share button (□↑)</li>
+                <li>Select "Add to Home Screen"</li>
+                <li>Tap "Add"</li>
+              </ol>
+              <p class="install-note">⚠️ Must use Safari browser on iOS</p>
+            </div>
+            <div class="install-benefits">
+              <h3>✨ Benefits</h3>
+              <ul>
+                <li>✅ Works offline</li>
+                <li>✅ Faster loading</li>
+                <li>✅ Home screen access</li>
+                <li>✅ Auto-updates</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

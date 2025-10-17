@@ -91,6 +91,12 @@ const WorkoutApp = (() => {
         }
       }
 
+      // Initialize InstallGuide
+      if (typeof InstallGuide !== "undefined") {
+        const installGuide = new InstallGuide();
+        installGuide.init();
+      }
+
       // Initialize StorageManager for workout history (manual operations only)
       if (typeof StorageManager !== "undefined") {
         StorageManager.init();

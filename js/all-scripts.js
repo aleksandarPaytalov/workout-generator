@@ -33,6 +33,9 @@ async function loadAllScripts() {
     // Offline Indicator - Load after service worker
     await loadScript("./js/modules/offlineIndicator.js");
 
+    // Install Guide - Load after offline indicator
+    await loadScript("./js/modules/installGuide.js");
+
     // Theme Controller - Load third to prevent flash
     await loadScript("./js/modules/themeController.js");
 

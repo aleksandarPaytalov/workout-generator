@@ -1,0 +1,228 @@
+/* Installation Guide Modal Styles */
+
+/* Install Guide Button */
+.install-guide-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.install-guide-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.install-guide-btn:active {
+  transform: translateY(0);
+}
+
+.install-guide-icon {
+  font-size: 1.2rem;
+}
+
+/* Modal */
+.install-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.install-modal.active {
+  display: block;
+}
+
+.install-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.install-modal-content {
+  position: relative;
+  max-width: 600px;
+  margin: 5% auto;
+  background: var(--bg-primary);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s ease;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.install-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 2px solid var(--border-color);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.install-modal-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: white;
+}
+
+.install-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.install-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.install-modal-body {
+  padding: 2rem;
+}
+
+.install-platform {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.install-platform h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.install-platform ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.install-platform li {
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.install-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.install-benefits {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 12px;
+}
+
+.install-benefits h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.install-benefits ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-benefits li {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .install-guide-text {
+    display: none;
+  }
+
+  .install-modal-content {
+    margin: 2rem 1rem;
+    max-height: 90vh;
+  }
+
+  .install-modal-header {
+    padding: 1.5rem;
+  }
+
+  .install-modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .install-modal-body {
+    padding: 1.5rem;
+  }
+
+  .install-platform {
+    padding: 1rem;
+  }
+}
+
+/* Dark mode support */
+[data-theme="dark"] .install-modal-content {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .install-platform {
+  background: var(--bg-secondary);
+}
+
