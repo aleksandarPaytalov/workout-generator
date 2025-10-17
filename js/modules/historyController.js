@@ -962,15 +962,19 @@ const HistoryController = (() => {
           </div>
         </div>
         <div class="notes-section">
-          <label class="notes-label" for="notes-${workout.id}">Notes:</label>
+          <label class="notes-label" for="notes-${Sanitizer.sanitizeID(
+            workout.id
+          )}">Notes:</label>
           <textarea
             class="notes-input"
-            id="notes-${workout.id}"
-            data-workout-id="${workout.id}"
+            id="notes-${Sanitizer.sanitizeID(workout.id)}"
+            data-workout-id="${Sanitizer.sanitizeID(workout.id)}"
             placeholder="Add your notes about this workout..."
             rows="2"
-          >${workout.metadata?.notes || ""}</textarea>
-          <button class="btn-save-notes" data-workout-id="${workout.id}">
+          >${Sanitizer.escapeHTML(workout.metadata?.notes || "")}</textarea>
+          <button class="btn-save-notes" data-workout-id="${Sanitizer.sanitizeID(
+            workout.id
+          )}">
             <span class="btn-icon">💾</span>
             <span class="btn-text">Save Notes</span>
           </button>
@@ -1261,8 +1265,11 @@ const HistoryController = (() => {
         const workout = WorkoutHistory.getWorkoutById(workoutId);
 
         if (workout) {
+          // Sanitize notes before saving to prevent XSS
+          const sanitizedNotes = Sanitizer.sanitizeNotes(notes);
+
           // Update notes in metadata
-          workout.metadata.notes = notes.trim();
+          workout.metadata.notes = sanitizedNotes;
 
           // Save updated workout
           WorkoutHistory.updateWorkout(workoutId, workout);

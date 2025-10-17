@@ -24,6 +24,9 @@ async function loadAllScripts() {
     // Logger utility - Load first for debugging support
     await loadScript("./js/utils/logger.js");
 
+    // Sanitizer utility - Load early for security
+    await loadScript("./js/utils/sanitizer.js");
+
     // Logger configuration - Load immediately after logger
     await loadScript("./js/config/loggerConfig.js");
 

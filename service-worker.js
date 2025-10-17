@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.1.3";
+const CACHE_VERSION = "v1.2.0";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration
@@ -75,7 +75,15 @@ const ASSETS_TO_CACHE = [
   "/js/modules/validators.js",
   "/js/modules/workoutHistory.js",
   "/js/modules/workoutTimer.js",
+  "/js/modules/serviceWorkerManager.js",
+  "/js/modules/offlineIndicator.js",
+  "/js/modules/installGuide.js",
+  "/js/modules/dropdownMenu.js",
   "/js/utils/logger.js",
+  "/js/utils/sanitizer.js",
+
+  // CSS for PWA features
+  "/css/install-guide.css",
 
   // PWA Icons
   "/assets/icons/icon-72x72.png",
