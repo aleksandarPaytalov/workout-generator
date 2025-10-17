@@ -311,9 +311,68 @@ const ServiceWorkerManager = (() => {
   }
 
   /**
+   * Detect if user is on iOS/Safari
+   */
+  function isIOSorSafari() {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+    return isIOS || isSafari;
+  }
+
+  /**
+   * Show iOS installation instructions
+   */
+  function showIOSInstallMessage() {
+    const message = `
+      <div class="ios-install-message">
+        <h3>📱 Installation Not Available on iOS/Safari</h3>
+        <p>This PWA is currently optimized for installation on:</p>
+        <ul>
+          <li>✅ Windows PC (Chrome, Edge)</li>
+          <li>✅ Mac (Chrome, Edge)</li>
+          <li>✅ Android (Chrome)</li>
+        </ul>
+        <p><strong>iOS/Safari installation is not supported in this version.</strong></p>
+        <p>Please use the app in your browser, or access it from a PC for the full installable experience.</p>
+        <button id="ios-message-close" class="ios-message-close-btn">Got it</button>
+      </div>
+    `;
+
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.id = "ios-install-overlay";
+    overlay.className = "ios-install-overlay";
+    overlay.innerHTML = message;
+    document.body.appendChild(overlay);
+
+    // Add close handler
+    const closeBtn = document.getElementById("ios-message-close");
+    closeBtn.addEventListener("click", () => {
+      overlay.remove();
+    });
+
+    // Close on overlay click
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        overlay.remove();
+      }
+    });
+  }
+
+  /**
    * Prompt user to install the app
    */
   async function promptInstall() {
+    // Check if user is on iOS/Safari
+    if (isIOSorSafari()) {
+      console.log(
+        "[ServiceWorkerManager] iOS/Safari detected - showing message"
+      );
+      showIOSInstallMessage();
+      return;
+    }
+
     if (!deferredPrompt) {
       console.warn("[ServiceWorkerManager] No install prompt available");
       return;

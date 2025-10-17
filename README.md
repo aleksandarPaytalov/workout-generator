@@ -16,23 +16,39 @@ Smart constraint-based workout generator with PWA support, offline functionality
 
 ### Option 1: Install as PWA (Recommended)
 
-**Android/Desktop:** Click "Install App" button or browser install prompt  
-**iOS:** Safari → Share (□↑) → "Add to Home Screen"
+**Supported Platforms:**
+
+- ✅ Windows PC (Chrome, Edge)
+- ✅ Mac (Chrome, Edge)
+- ✅ Android (Chrome)
+- ❌ iOS/Safari (not supported in current version - use in browser instead)
+
+**Desktop/Android:** Click "Install App" button in header or use browser install prompt
 
 ### Option 2: Use in Browser
 
-Just open `index.html` in any modern browser.
+Just open `index.html` in any modern browser. Works on all platforms including iOS/Safari.
 
 ## 📱 Installation
 
-**Android/Desktop (Chrome/Edge):**
-1. Click "Install" button in header
-2. Confirm installation
-3. Launch from home screen/desktop
+**Desktop (Windows/Mac - Chrome/Edge):**
 
-**iOS (Safari only):**
-1. Tap Share (□↑) → "Add to Home Screen"
-2. Tap "Add"
+1. Click "Install App" button in header
+2. Confirm installation
+3. Launch from desktop/start menu
+
+**Android (Chrome):**
+
+1. Click "Install App" button in header
+2. Confirm installation
+3. Launch from home screen
+
+**iOS/Safari:**
+
+- ⚠️ **PWA installation not supported in this version**
+- Use the app directly in Safari browser
+- All features work in browser mode
+- For installable version, access from a PC
 
 **Updates:** Automatic with notification. Click "Reload to Update" when prompted.
 
@@ -64,6 +80,7 @@ Just open `index.html` in any modern browser.
 ## 🔌 Offline Mode
 
 **Works Offline:**
+
 - Generate workouts
 - View history
 - Export data
@@ -71,6 +88,7 @@ Just open `index.html` in any modern browser.
 - All features
 
 **Requires Internet:**
+
 - Initial installation
 - App updates
 
@@ -92,24 +110,33 @@ Just open `index.html` in any modern browser.
 
 ### Browser Support
 
-- Chrome 60+ ✅
-- Edge 79+ ✅
-- Safari 12+ ✅ (limited PWA)
-- Firefox 55+ ✅ (limited PWA)
+**PWA Installation:**
+
+- Chrome 60+ ✅ (Full support)
+- Edge 79+ ✅ (Full support)
+- Safari 12+ ❌ (Not supported - use in browser)
+- Firefox 55+ ⚠️ (Limited support)
+
+**Browser Usage (All Features):**
+
+- All modern browsers including iOS Safari ✅
 
 ## 🐛 Troubleshooting
 
 **App won't install:**
+
 - Use HTTPS or localhost
 - Try Chrome/Edge for best support
 - Check browser supports PWA
 
 **Offline mode not working:**
+
 - Visit app while online first
 - Check service worker is registered (DevTools → Application)
 - Clear cache and reload
 
 **Service worker issues:**
+
 - DevTools → Application → Service Workers → Unregister
 - Hard refresh (Ctrl+Shift+R)
 - Clear cache and reload
@@ -153,6 +180,7 @@ MIT License - Open source and free to use.
 ## 🆕 What's New
 
 ### v1.2.0 - PWA Features
+
 - Installable on all devices
 - Full offline functionality
 - Service worker caching
@@ -160,6 +188,7 @@ MIT License - Open source and free to use.
 - Offline indicator
 
 ### v1.1.0 - Workout History
+
 - Track last 5 workouts
 - Rating system
 - Personal notes
@@ -169,4 +198,3 @@ MIT License - Open source and free to use.
 ---
 
 **Made with ❤️ for fitness enthusiasts**
-
