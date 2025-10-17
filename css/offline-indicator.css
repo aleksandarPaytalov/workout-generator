@@ -179,6 +179,21 @@
 }
 
 /* ============================================
+   Positioning in Header (Desktop)
+   ============================================ */
+
+/* Position offline indicator to the left of theme toggle button - vertically centered */
+.offline-indicator {
+  position: absolute;
+  top: calc(
+    var(--space-4) + 24px
+  ); /* Center of theme toggle button (space-4 + half of 48px button height) */
+  transform: translateY(-50%); /* Center the indicator itself */
+  right: 68px; /* To the left of theme toggle button (48px button + 20px gap) */
+  z-index: 100;
+}
+
+/* ============================================
    Mobile Responsive
    ============================================ */
 
@@ -187,6 +202,9 @@
     padding: 5px 10px;
     font-size: 12px;
     gap: 5px;
+    top: 6px; /* Vertically center with theme toggle button on mobile */
+    transform: none; /* Remove translateY on mobile */
+    right: 60px; /* To the left of theme button (44px button + 16px gap) */
   }
 
   .offline-indicator-dot {
@@ -215,19 +233,22 @@
   }
 }
 
-/* ============================================
-   Positioning in Header
-   ============================================ */
-
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Small mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .offline-indicator {
+    top: 0px; /* Vertically center with theme toggle button on small mobile */
+    transform: none; /* Remove translateY on mobile */
+    right: 56px; /* To the left of theme button (40px button + 16px gap) */
+  }
 }
 
-/* Ensure offline indicator fits nicely in header */
-.header-controls .offline-indicator {
-  margin-left: auto; /* Push to the right if needed */
+/* iPhone 14 Pro Max specific (430px width) */
+@media (max-width: 430px) {
+  .offline-indicator {
+    top: -5px; /* Vertically center with theme toggle button on iPhone 14 Pro Max */
+    transform: none; /* Remove translateY on mobile */
+    right: 52px; /* To the left of theme button (38px button + 14px gap) */
+  }
 }
 
 /* ============================================
@@ -247,4 +268,3 @@
     transform: scale(1.1);
   }
 }
-

@@ -1,7 +1,10 @@
 /* Installation Guide Modal Styles */
 
-/* Install Guide Button */
+/* Install Guide Button - Positioned under History button */
 .install-guide-btn {
+  position: absolute;
+  top: 64px; /* Below history button */
+  left: var(--space-4);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -15,6 +18,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  z-index: 100;
 }
 
 .install-guide-btn:hover {
@@ -197,6 +201,13 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .install-guide-btn {
+    top: 48px; /* Adjust for smaller history button on mobile */
+    left: var(--space-3);
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+
   .install-guide-text {
     display: none;
   }
@@ -220,6 +231,24 @@
 
   .install-platform {
     padding: 1rem;
+  }
+}
+
+/* Small mobile screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .install-guide-btn {
+    top: 42px; /* Adjust for even smaller history button */
+    left: var(--space-3);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* iPhone 14 Pro Max specific (430px width) */
+@media (max-width: 430px) {
+  .install-guide-btn {
+    top: 36px; /* Adjust for smallest history button */
+    left: var(--space-2);
   }
 }
 
