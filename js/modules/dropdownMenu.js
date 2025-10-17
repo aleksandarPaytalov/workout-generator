@@ -271,6 +271,14 @@ const DropdownMenu = (() => {
    */
   const handleInstallAppClick = () => {
     console.log("[DropdownMenu] Install App clicked");
+
+    // Check if user is on iOS/Safari and show message
+    if (isIOSorSafari()) {
+      console.log("[DropdownMenu] iOS/Safari detected - showing message");
+      showIOSInstallMessage();
+      return;
+    }
+
     // Trigger the existing install app button click (dynamically created by service worker)
     const installAppButton = document.querySelector(".pwa-install-btn");
     if (installAppButton) {
@@ -280,6 +288,60 @@ const DropdownMenu = (() => {
         "[DropdownMenu] Install App button not found - may not be available yet"
       );
     }
+  };
+
+  /**
+   * Detect if user is on iOS/Safari
+   */
+  const isIOSorSafari = () => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+    return isIOS || isSafari;
+  };
+
+  /**
+   * Show iOS installation message
+   */
+  const showIOSInstallMessage = () => {
+    const message = `
+      <div class="ios-install-message">
+        <h3>📱 Installation Not Available on iOS/Safari</h3>
+        <p>This PWA is currently optimized for installation on:</p>
+        <ul>
+          <li>✅ Windows PC (Chrome, Edge)</li>
+          <li>✅ Mac (Chrome, Edge)</li>
+          <li>✅ Android (Chrome)</li>
+        </ul>
+        <p><strong>iOS/Safari installation is not supported in this version.</strong></p>
+        <p>Please use the app in your browser, or access it from a PC for the full installable experience.</p>
+        <button id="ios-message-close" class="ios-message-close-btn">Got it</button>
+      </div>
+    `;
+
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.className = "ios-install-overlay";
+    overlay.innerHTML = message;
+    document.body.appendChild(overlay);
+
+    // Add event listeners
+    const closeBtn = overlay.querySelector("#ios-message-close");
+    closeBtn.addEventListener("click", () => {
+      overlay.remove();
+    });
+
+    // Close on overlay click
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        overlay.remove();
+      }
+    });
+
+    // Show overlay with animation
+    setTimeout(() => {
+      overlay.classList.add("show");
+    }, 10);
   };
 
   /**
