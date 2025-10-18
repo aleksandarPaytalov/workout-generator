@@ -24,20 +24,20 @@ const DropdownMenu = (() => {
       return;
     }
 
-    console.log("[DropdownMenu] Initializing...");
+    Logger.devLog("[DropdownMenu] Initializing...");
 
     createDropdown();
     setupEventListeners();
 
     initialized = true;
-    console.log("[DropdownMenu] Initialized successfully");
+    Logger.devLog("[DropdownMenu] Initialized successfully");
   };
 
   /**
    * Create the dropdown menu structure
    */
   const createDropdown = () => {
-    console.log("[DropdownMenu] Creating dropdown structure...");
+    Logger.devLog("[DropdownMenu] Creating dropdown structure...");
 
     // Create dropdown container
     dropdown = document.createElement("div");
@@ -116,7 +116,7 @@ const DropdownMenu = (() => {
     // Add backdrop to body
     document.body.appendChild(backdrop);
 
-    console.log("[DropdownMenu] Dropdown structure created");
+    Logger.devLog("[DropdownMenu] Dropdown structure created");
   };
 
   /**
@@ -158,7 +158,7 @@ const DropdownMenu = (() => {
     if (headerControls) {
       // Insert at the beginning of header controls
       headerControls.insertBefore(dropdown, headerControls.firstChild);
-      console.log("[DropdownMenu] Dropdown inserted into header");
+      Logger.devLog("[DropdownMenu] Dropdown inserted into header");
     } else {
       console.error("[DropdownMenu] Header controls not found");
     }
@@ -194,7 +194,7 @@ const DropdownMenu = (() => {
       }
     });
 
-    console.log("[DropdownMenu] Event listeners setup");
+    Logger.devLog("[DropdownMenu] Event listeners setup");
   };
 
   /**
@@ -227,7 +227,7 @@ const DropdownMenu = (() => {
     toggleButton.classList.add("active");
     toggleButton.setAttribute("aria-expanded", "true");
     backdrop.classList.add("show");
-    console.log("[DropdownMenu] Menu opened");
+    Logger.devLog("[DropdownMenu] Menu opened");
   };
 
   /**
@@ -239,14 +239,14 @@ const DropdownMenu = (() => {
     toggleButton.classList.remove("active");
     toggleButton.setAttribute("aria-expanded", "false");
     backdrop.classList.remove("show");
-    console.log("[DropdownMenu] Menu closed");
+    Logger.devLog("[DropdownMenu] Menu closed");
   };
 
   /**
    * Handle History menu item click
    */
   const handleHistoryClick = () => {
-    console.log("[DropdownMenu] History clicked");
+    Logger.devLog("[DropdownMenu] History clicked");
     // Trigger the existing history button click
     const historyButton = document.querySelector(".history-toggle-btn");
     if (historyButton) {
@@ -258,7 +258,7 @@ const DropdownMenu = (() => {
    * Handle Install Guide menu item click
    */
   const handleInstallGuideClick = () => {
-    console.log("[DropdownMenu] Install Guide clicked");
+    Logger.devLog("[DropdownMenu] Install Guide clicked");
     // Trigger the existing install guide button click
     const installGuideButton = document.querySelector(".install-guide-btn");
     if (installGuideButton) {
@@ -270,11 +270,11 @@ const DropdownMenu = (() => {
    * Handle Install App menu item click
    */
   const handleInstallAppClick = () => {
-    console.log("[DropdownMenu] Install App clicked");
+    Logger.devLog("[DropdownMenu] Install App clicked");
 
     // Check if user is on iOS/Safari and show message
     if (isIOSorSafari()) {
-      console.log("[DropdownMenu] iOS/Safari detected - showing message");
+      Logger.devLog("[DropdownMenu] iOS/Safari detected - showing message");
       showIOSInstallMessage();
       return;
     }
@@ -354,7 +354,7 @@ const DropdownMenu = (() => {
       const button = document.querySelector(selector);
       if (button) {
         button.style.display = "none";
-        console.log(`[DropdownMenu] Hidden button: ${selector}`);
+        Logger.devLog(`[DropdownMenu] Hidden button: ${selector}`);
       }
     });
 
@@ -367,7 +367,7 @@ const DropdownMenu = (() => {
           mutation.addedNodes.forEach((node) => {
             if (node.classList && node.classList.contains("pwa-install-btn")) {
               node.style.display = "none";
-              console.log(
+              Logger.devLog(
                 "[DropdownMenu] Hidden dynamically added Install App button"
               );
             }
@@ -380,7 +380,7 @@ const DropdownMenu = (() => {
         subtree: false,
       });
 
-      console.log(
+      Logger.devLog(
         "[DropdownMenu] MutationObserver set up to hide Install App button"
       );
     }
@@ -390,7 +390,7 @@ const DropdownMenu = (() => {
       const installBtn = document.querySelector(".pwa-install-btn");
       if (installBtn) {
         installBtn.style.display = "none";
-        console.log("[DropdownMenu] Hidden existing Install App button");
+        Logger.devLog("[DropdownMenu] Hidden existing Install App button");
       }
     }, 100);
   };
@@ -409,7 +409,7 @@ const DropdownMenu = (() => {
       const button = document.querySelector(selector);
       if (button) {
         button.style.display = "";
-        console.log(`[DropdownMenu] Shown button: ${selector}`);
+        Logger.devLog(`[DropdownMenu] Shown button: ${selector}`);
       }
     });
   };
@@ -424,3 +424,4 @@ const DropdownMenu = (() => {
 
 // Make available globally
 window.DropdownMenu = DropdownMenu;
+

@@ -71,7 +71,7 @@ async function loadAllScripts() {
     // Main Application - Load last to initialize everything
     await loadScript("./js/app.js");
 
-    console.log("All scripts loaded successfully");
+    Logger.devLog("All scripts loaded successfully");
   } catch (error) {
     console.error("Error loading scripts:", error);
   }
@@ -83,3 +83,4 @@ if (document.readyState === "loading") {
 } else {
   loadAllScripts();
 }
+

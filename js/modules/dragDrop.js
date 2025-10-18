@@ -37,7 +37,7 @@ const DragDrop = (() => {
                       (navigator.maxTouchPoints > 0) || 
                       (navigator.msMaxTouchPoints > 0);
         
-        console.log(`DragDrop: Module initialized successfully. Touch enabled: ${touchEnabled}`);
+        Logger.devLog(`DragDrop: Module initialized successfully. Touch enabled: ${touchEnabled}`);
         isInitialized = true;
     };
     
@@ -361,3 +361,4 @@ if (typeof DragDrop === 'undefined') {
 if (typeof window !== 'undefined') {
     window.DragDrop = DragDrop;
 }
+

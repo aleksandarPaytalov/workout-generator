@@ -81,7 +81,7 @@ const OfflineIndicator = (() => {
    * @private
    */
   const handleOnline = () => {
-    console.log("[OfflineIndicator] Connection restored - now online");
+    Logger.devLog("[OfflineIndicator] Connection restored - now online");
     isOnline = true;
     updateIndicatorUI(true);
 
@@ -98,7 +98,7 @@ const OfflineIndicator = (() => {
       ServiceWorkerManager.isBackgroundSyncSupported &&
       ServiceWorkerManager.isBackgroundSyncSupported()
     ) {
-      console.log(
+      Logger.devLog(
         "[OfflineIndicator] Triggering background sync after reconnection"
       );
       ServiceWorkerManager.registerBackgroundSync("sync-workout-data");
@@ -110,7 +110,7 @@ const OfflineIndicator = (() => {
    * @private
    */
   const handleOffline = () => {
-    console.log("[OfflineIndicator] Connection lost - now offline");
+    Logger.devLog("[OfflineIndicator] Connection lost - now offline");
     isOnline = false;
     updateIndicatorUI(false);
 
@@ -149,7 +149,7 @@ const OfflineIndicator = (() => {
     // Set initial state
     updateIndicatorUI(isOnline);
 
-    console.log("[OfflineIndicator] Indicator added to header");
+    Logger.devLog("[OfflineIndicator] Indicator added to header");
     return true;
   };
 
@@ -161,7 +161,7 @@ const OfflineIndicator = (() => {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    console.log("[OfflineIndicator] Event listeners registered");
+    Logger.devLog("[OfflineIndicator] Event listeners registered");
   };
 
   /**
@@ -184,11 +184,11 @@ const OfflineIndicator = (() => {
     }
 
     try {
-      console.log("[OfflineIndicator] Initializing...");
+      Logger.devLog("[OfflineIndicator] Initializing...");
 
       // Check initial online status
       isOnline = checkOnlineStatus();
-      console.log(
+      Logger.devLog(
         "[OfflineIndicator] Initial status:",
         isOnline ? "online" : "offline"
       );
@@ -203,7 +203,7 @@ const OfflineIndicator = (() => {
       setupEventListeners();
 
       isInitialized = true;
-      console.log("[OfflineIndicator] Initialized successfully");
+      Logger.devLog("[OfflineIndicator] Initialized successfully");
     } catch (error) {
       console.error("[OfflineIndicator] Initialization failed:", error);
     }
@@ -243,7 +243,7 @@ const OfflineIndicator = (() => {
     indicatorElement = null;
     isInitialized = false;
 
-    console.log("[OfflineIndicator] Module destroyed");
+    Logger.devLog("[OfflineIndicator] Module destroyed");
   };
 
   /**
@@ -271,3 +271,4 @@ const OfflineIndicator = (() => {
 
 // Make available globally
 window.OfflineIndicator = OfflineIndicator;
+

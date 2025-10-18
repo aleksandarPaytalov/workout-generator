@@ -26,7 +26,7 @@ class InstallGuide {
     }
 
     this.attachEventListeners();
-    console.log("[InstallGuide] Initialized");
+    Logger.devLog("[InstallGuide] Initialized");
   }
 
   /**
@@ -55,7 +55,7 @@ class InstallGuide {
     this.modal.classList.add("active");
     this.modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
-    console.log("[InstallGuide] Modal opened");
+    Logger.devLog("[InstallGuide] Modal opened");
   }
 
   /**
@@ -65,6 +65,7 @@ class InstallGuide {
     this.modal.classList.remove("active");
     this.modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
-    console.log("[InstallGuide] Modal closed");
+    Logger.devLog("[InstallGuide] Modal closed");
   }
 }
+

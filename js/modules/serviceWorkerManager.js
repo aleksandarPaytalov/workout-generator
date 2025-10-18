@@ -19,6 +19,44 @@ const ServiceWorkerManager = (() => {
   const MIN_VISITS_FOR_BANNER = 3;
 
   /**
+   * Check if we're in development mode
+   * @returns {boolean}
+   */
+  function isDevMode() {
+    return (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname === "" ||
+      window.location.port !== ""
+    );
+  }
+
+  /**
+   * Development-only console.log
+   */
+  function devLog(...args) {
+    if (isDevMode()) {
+      console.log(...args);
+    }
+  }
+
+  /**
+   * Development-only console.warn
+   */
+  function devWarn(...args) {
+    if (isDevMode()) {
+      console.warn(...args);
+    }
+  }
+
+  /**
+   * Always log errors (even in production)
+   */
+  function logError(...args) {
+    console.error(...args);
+  }
+
+  /**
    * Check if service workers are supported
    * @returns {boolean} True if supported
    */
@@ -62,27 +100,25 @@ const ServiceWorkerManager = (() => {
    */
   async function register() {
     if (!isSupported()) {
-      console.warn("[ServiceWorkerManager] Service workers are not supported");
+      devWarn("[ServiceWorkerManager] Service workers are not supported");
       return null;
     }
 
     try {
-      console.log("[ServiceWorkerManager] Registering service worker...");
+      devLog("[ServiceWorkerManager] Registering service worker...");
 
       const basePath = getBasePath();
       const swPath = `${basePath}service-worker.js`;
 
-      console.log("[ServiceWorkerManager] Base path:", basePath);
-      console.log("[ServiceWorkerManager] Service worker path:", swPath);
+      devLog("[ServiceWorkerManager] Base path:", basePath);
+      devLog("[ServiceWorkerManager] Service worker path:", swPath);
 
       registration = await navigator.serviceWorker.register(swPath, {
         scope: basePath,
       });
 
-      console.log(
-        "[ServiceWorkerManager] Service worker registered successfully"
-      );
-      console.log("[ServiceWorkerManager] Scope:", registration.scope);
+      devLog("[ServiceWorkerManager] Service worker registered successfully");
+      devLog("[ServiceWorkerManager] Scope:", registration.scope);
 
       // Set up update listeners
       setupUpdateListeners(registration);
@@ -92,7 +128,7 @@ const ServiceWorkerManager = (() => {
 
       return registration;
     } catch (error) {
-      console.error("[ServiceWorkerManager] Registration failed:", error);
+      logError("[ServiceWorkerManager] Registration failed:", error);
       throw error;
     }
   }
@@ -104,14 +140,11 @@ const ServiceWorkerManager = (() => {
   function setupUpdateListeners(reg) {
     // Listen for new service worker installing
     reg.addEventListener("updatefound", () => {
-      console.log("[ServiceWorkerManager] Update found!");
+      devLog("[ServiceWorkerManager] Update found!");
       const newWorker = reg.installing;
 
       newWorker.addEventListener("statechange", () => {
-        console.log(
-          "[ServiceWorkerManager] Service worker state:",
-          newWorker.state
-        );
+        devLog("[ServiceWorkerManager] Service worker state:", newWorker.state);
 
         if (
           newWorker.state === "installed" &&
@@ -119,21 +152,19 @@ const ServiceWorkerManager = (() => {
         ) {
           // New service worker available
           updateAvailable = true;
-          console.log("[ServiceWorkerManager] New version available!");
+          devLog("[ServiceWorkerManager] New version available!");
           showUpdateNotification();
         }
 
         if (newWorker.state === "activated") {
-          console.log("[ServiceWorkerManager] Service worker activated");
+          devLog("[ServiceWorkerManager] Service worker activated");
         }
       });
     });
 
     // Listen for controller change (new service worker took over)
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-      console.log(
-        "[ServiceWorkerManager] Controller changed, reloading page..."
-      );
+      devLog("[ServiceWorkerManager] Controller changed, reloading page...");
       window.location.reload();
     });
   }
@@ -147,20 +178,18 @@ const ServiceWorkerManager = (() => {
 
     // Check for updates every hour
     setInterval(() => {
-      console.log("[ServiceWorkerManager] Checking for updates...");
+      devLog("[ServiceWorkerManager] Checking for updates...");
       reg.update().catch((error) => {
-        console.error("[ServiceWorkerManager] Update check failed:", error);
+        logError("[ServiceWorkerManager] Update check failed:", error);
       });
     }, 60 * 60 * 1000); // 1 hour
 
     // Also check on page visibility change
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
-        console.log(
-          "[ServiceWorkerManager] Page visible, checking for updates..."
-        );
+        devLog("[ServiceWorkerManager] Page visible, checking for updates...");
         reg.update().catch((error) => {
-          console.error("[ServiceWorkerManager] Update check failed:", error);
+          logError("[ServiceWorkerManager] Update check failed:", error);
         });
       }
     });
@@ -217,13 +246,11 @@ const ServiceWorkerManager = (() => {
    */
   function activateUpdate() {
     if (!registration || !registration.waiting) {
-      console.warn(
-        "[ServiceWorkerManager] No waiting service worker to activate"
-      );
+      devWarn("[ServiceWorkerManager] No waiting service worker to activate");
       return;
     }
 
-    console.log("[ServiceWorkerManager] Activating new service worker...");
+    devLog("[ServiceWorkerManager] Activating new service worker...");
 
     // Send message to waiting service worker to skip waiting
     registration.waiting.postMessage({ type: "SKIP_WAITING" });
@@ -234,7 +261,7 @@ const ServiceWorkerManager = (() => {
    */
   function setupInstallPrompt() {
     window.addEventListener("beforeinstallprompt", (e) => {
-      console.log("[ServiceWorkerManager] Install prompt available");
+      devLog("[ServiceWorkerManager] Install prompt available");
 
       // Prevent the default prompt
       e.preventDefault();
@@ -262,7 +289,7 @@ const ServiceWorkerManager = (() => {
 
     // Listen for app installed event
     window.addEventListener("appinstalled", () => {
-      console.log("[ServiceWorkerManager] App installed successfully!");
+      devLog("[ServiceWorkerManager] App installed successfully!");
       isInstalled = true;
       deferredPrompt = null;
 
@@ -279,7 +306,7 @@ const ServiceWorkerManager = (() => {
     // Check if already installed
     if (isRunningStandalone()) {
       isInstalled = true;
-      console.log("[ServiceWorkerManager] App is running in standalone mode");
+      devLog("[ServiceWorkerManager] App is running in standalone mode");
     }
   }
 
@@ -318,7 +345,7 @@ const ServiceWorkerManager = (() => {
       }
     }
 
-    console.log("[ServiceWorkerManager] Install button added to header");
+    devLog("[ServiceWorkerManager] Install button added to header");
   }
 
   /**
@@ -328,7 +355,7 @@ const ServiceWorkerManager = (() => {
     const installBtn = document.getElementById("pwa-install-btn");
     if (installBtn) {
       installBtn.remove();
-      console.log("[ServiceWorkerManager] Install button removed");
+      devLog("[ServiceWorkerManager] Install button removed");
     }
   }
 
@@ -388,31 +415,29 @@ const ServiceWorkerManager = (() => {
   async function promptInstall() {
     // Check if user is on iOS/Safari
     if (isIOSorSafari()) {
-      console.log(
-        "[ServiceWorkerManager] iOS/Safari detected - showing message"
-      );
+      devLog("[ServiceWorkerManager] iOS/Safari detected - showing message");
       showIOSInstallMessage();
       return;
     }
 
     if (!deferredPrompt) {
-      console.warn("[ServiceWorkerManager] No install prompt available");
+      devWarn("[ServiceWorkerManager] No install prompt available");
       return;
     }
 
-    console.log("[ServiceWorkerManager] Showing install prompt...");
+    devLog("[ServiceWorkerManager] Showing install prompt...");
 
     // Show the install prompt
     deferredPrompt.prompt();
 
     // Wait for user response
     const { outcome } = await deferredPrompt.userChoice;
-    console.log("[ServiceWorkerManager] User choice:", outcome);
+    devLog("[ServiceWorkerManager] User choice:", outcome);
 
     if (outcome === "accepted") {
-      console.log("[ServiceWorkerManager] User accepted the install prompt");
+      devLog("[ServiceWorkerManager] User accepted the install prompt");
     } else {
-      console.log("[ServiceWorkerManager] User dismissed the install prompt");
+      devLog("[ServiceWorkerManager] User dismissed the install prompt");
     }
 
     // Clear the deferred prompt
@@ -460,10 +485,10 @@ const ServiceWorkerManager = (() => {
       );
       const newCount = visitCount + 1;
       localStorage.setItem(VISIT_COUNT_KEY, newCount.toString());
-      console.log("[ServiceWorkerManager] Visit count:", newCount);
+      devLog("[ServiceWorkerManager] Visit count:", newCount);
       return newCount;
     } catch (error) {
-      console.error("[ServiceWorkerManager] Failed to track visit:", error);
+      logError("[ServiceWorkerManager] Failed to track visit:", error);
       return 0;
     }
   }
@@ -475,7 +500,7 @@ const ServiceWorkerManager = (() => {
     try {
       return localStorage.getItem(BANNER_DISMISSED_KEY) === "true";
     } catch (error) {
-      console.error(
+      logError(
         "[ServiceWorkerManager] Failed to check banner dismissal:",
         error
       );
@@ -489,9 +514,9 @@ const ServiceWorkerManager = (() => {
   function dismissBanner() {
     try {
       localStorage.setItem(BANNER_DISMISSED_KEY, "true");
-      console.log("[ServiceWorkerManager] Banner dismissed permanently");
+      devLog("[ServiceWorkerManager] Banner dismissed permanently");
     } catch (error) {
-      console.error(
+      logError(
         "[ServiceWorkerManager] Failed to save banner dismissal:",
         error
       );
@@ -509,7 +534,7 @@ const ServiceWorkerManager = (() => {
 
     // Don't show if already installed
     if (isRunningStandalone() || isInstalled) {
-      console.log(
+      devLog(
         "[ServiceWorkerManager] App already installed, not showing banner"
       );
       return;
@@ -517,19 +542,19 @@ const ServiceWorkerManager = (() => {
 
     // Don't show if previously dismissed
     if (isBannerDismissed()) {
-      console.log("[ServiceWorkerManager] Banner was dismissed, not showing");
+      devLog("[ServiceWorkerManager] Banner was dismissed, not showing");
       return;
     }
 
     // Don't show if no install prompt available
     if (!deferredPrompt) {
-      console.log(
+      devLog(
         "[ServiceWorkerManager] No install prompt available, not showing banner"
       );
       return;
     }
 
-    console.log("[ServiceWorkerManager] Showing install banner");
+    devLog("[ServiceWorkerManager] Showing install banner");
 
     // Create banner
     const banner = document.createElement("div");
@@ -602,7 +627,7 @@ const ServiceWorkerManager = (() => {
    * Track banner interactions
    */
   function trackBannerInteraction(action) {
-    console.log("[ServiceWorkerManager] Banner interaction:", action);
+    devLog("[ServiceWorkerManager] Banner interaction:", action);
     // You can add analytics tracking here if needed
   }
 
@@ -623,22 +648,22 @@ const ServiceWorkerManager = (() => {
    */
   async function registerBackgroundSync(tag = "sync-workout-data") {
     if (!registration) {
-      console.warn(
+      devWarn(
         "[ServiceWorkerManager] No service worker registration available"
       );
       return;
     }
 
     if (!isBackgroundSyncSupported()) {
-      console.log("[ServiceWorkerManager] Background Sync not supported");
+      devLog("[ServiceWorkerManager] Background Sync not supported");
       return;
     }
 
     try {
       await registration.sync.register(tag);
-      console.log(`[ServiceWorkerManager] Background sync registered: ${tag}`);
+      devLog(`[ServiceWorkerManager] Background sync registered: ${tag}`);
     } catch (error) {
-      console.error(
+      logError(
         "[ServiceWorkerManager] Background sync registration failed:",
         error
       );
@@ -653,7 +678,7 @@ const ServiceWorkerManager = (() => {
 
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data && event.data.type === "SYNC_COMPLETE") {
-        console.log("[ServiceWorkerManager] Sync completed:", event.data);
+        devLog("[ServiceWorkerManager] Sync completed:", event.data);
 
         // Show notification to user
         if (event.data.success) {
@@ -672,7 +697,7 @@ const ServiceWorkerManager = (() => {
    */
   function showSyncNotification(message, type = "info") {
     // Simple console log for now - can be enhanced with UI notification
-    console.log(`[ServiceWorkerManager] Sync notification (${type}):`, message);
+    devLog(`[ServiceWorkerManager] Sync notification (${type}):`, message);
 
     // Dispatch custom event for other modules to listen to
     window.dispatchEvent(
@@ -686,10 +711,10 @@ const ServiceWorkerManager = (() => {
    * Initialize the service worker manager
    */
   async function init() {
-    console.log("[ServiceWorkerManager] Initializing...");
+    devLog("[ServiceWorkerManager] Initializing...");
 
     if (!isSupported()) {
-      console.warn(
+      devWarn(
         "[ServiceWorkerManager] Service workers not supported, skipping initialization"
       );
       return;
@@ -710,14 +735,14 @@ const ServiceWorkerManager = (() => {
 
       // Check if Background Sync is supported
       if (isBackgroundSyncSupported()) {
-        console.log("[ServiceWorkerManager] Background Sync API is supported");
+        devLog("[ServiceWorkerManager] Background Sync API is supported");
       } else {
-        console.log("[ServiceWorkerManager] Background Sync API not supported");
+        devLog("[ServiceWorkerManager] Background Sync API not supported");
       }
 
-      console.log("[ServiceWorkerManager] Initialized successfully");
+      devLog("[ServiceWorkerManager] Initialized successfully");
     } catch (error) {
-      console.error("[ServiceWorkerManager] Initialization failed:", error);
+      logError("[ServiceWorkerManager] Initialization failed:", error);
     }
   }
 

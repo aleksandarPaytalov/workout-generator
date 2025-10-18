@@ -22,23 +22,23 @@ const ExerciseGenerator = (() => {
     const checkDependencies = () => {
         // Check ExerciseDatabase
         if (typeof ExerciseDatabase === 'undefined') {
-            console.log('ExerciseGenerator: ExerciseDatabase not yet available');
+            Logger.devLog('ExerciseGenerator: ExerciseDatabase not yet available');
             return false;
         }
         
         if (typeof ExerciseDatabase.isReady !== 'function' || !ExerciseDatabase.isReady()) {
-            console.log('ExerciseGenerator: ExerciseDatabase not ready');
+            Logger.devLog('ExerciseGenerator: ExerciseDatabase not ready');
             return false;
         }
         
         // Check Validators
         if (typeof Validators === 'undefined') {
-            console.log('ExerciseGenerator: Validators not yet available');
+            Logger.devLog('ExerciseGenerator: Validators not yet available');
             return false;
         }
         
         if (typeof Validators.isReady !== 'function' || !Validators.isReady()) {
-            console.log('ExerciseGenerator: Validators not ready');
+            Logger.devLog('ExerciseGenerator: Validators not ready');
             return false;
         }
         
@@ -56,7 +56,7 @@ const ExerciseGenerator = (() => {
         }
         
         initAttempts++;
-        console.log(`ExerciseGenerator: Initialization attempt ${initAttempts}`);
+        Logger.devLog(`ExerciseGenerator: Initialization attempt ${initAttempts}`);
         
         if (!checkDependencies()) {
             if (initAttempts < 10) {
@@ -68,7 +68,7 @@ const ExerciseGenerator = (() => {
             return;
         }
         
-        console.log('ExerciseGenerator: Module initialized successfully');
+        Logger.devLog('ExerciseGenerator: Module initialized successfully');
         isInitialized = true;
     };
     
@@ -427,3 +427,4 @@ if (typeof ExerciseGenerator === 'undefined') {
 if (typeof window !== 'undefined') {
     window.ExerciseGenerator = ExerciseGenerator;
 }
+

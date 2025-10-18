@@ -190,6 +190,37 @@ const Logger = (() => {
     return isDevelopment();
   };
 
+  /**
+   * Development-only console.log wrapper
+   * Only logs in development mode
+   * @public
+   */
+  const devLog = (...args) => {
+    if (isDevelopment()) {
+      console.log(...args);
+    }
+  };
+
+  /**
+   * Development-only console.warn wrapper
+   * Only logs in development mode
+   * @public
+   */
+  const devWarn = (...args) => {
+    if (isDevelopment()) {
+      console.warn(...args);
+    }
+  };
+
+  /**
+   * Production-safe console.error wrapper
+   * Always logs errors (even in production)
+   * @public
+   */
+  const logError = (...args) => {
+    console.error(...args);
+  };
+
   // Public API
   return {
     debug,
@@ -199,6 +230,9 @@ const Logger = (() => {
     configure,
     getConfig,
     isDevMode,
+    devLog,
+    devWarn,
+    logError,
   };
 })();
 
@@ -206,4 +240,3 @@ const Logger = (() => {
 if (typeof window !== "undefined") {
   window.Logger = Logger;
 }
-

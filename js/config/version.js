@@ -4,7 +4,7 @@
  * Format: MAJOR.MINOR.PATCH (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)
  */
 
-const APP_VERSION = "1.5.7"; // Fixed production logging and GitHub Pages service worker paths
+const APP_VERSION = "1.5.8"; // Completely silent console in production - all logs dev-only
 
 // Make available globally
 window.APP_VERSION = APP_VERSION;

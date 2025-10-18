@@ -259,7 +259,7 @@ const ExerciseDatabase = (() => {
                 totalExercises += exercises.length;
             }
             
-            console.log(`ExerciseDatabase: Module initialized with ${MUSCLE_GROUP_LIST.length} muscle groups and ${totalExercises} total exercises`);
+            Logger.devLog(`ExerciseDatabase: Module initialized with ${MUSCLE_GROUP_LIST.length} muscle groups and ${totalExercises} total exercises`);
             isInitialized = true;
             
         } catch (error) {
@@ -466,3 +466,4 @@ if (typeof ExerciseDatabase === 'undefined') {
 if (typeof window !== 'undefined') {
     window.ExerciseDatabase = ExerciseDatabase;
 }
+

@@ -22,13 +22,13 @@ const PDFExport = (() => {
     }
 
     if (typeof window.jspdf !== "undefined") {
-      console.log("PDFExport: jsPDF library loaded successfully");
+      Logger.devLog("PDFExport: jsPDF library loaded successfully");
     } else {
       console.warn("PDFExport: jsPDF library not found");
     }
 
     isInitialized = true;
-    console.log("PDFExport: Module initialized");
+    Logger.devLog("PDFExport: Module initialized");
   };
 
   /**
@@ -191,7 +191,7 @@ const PDFExport = (() => {
 
     // Download the PDF
     doc.save("my-workout.pdf");
-    console.log("PDFExport: PDF downloaded successfully");
+    Logger.devLog("PDFExport: PDF downloaded successfully");
   };
 
   /**
@@ -293,7 +293,7 @@ const PDFExport = (() => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    console.log("PDFExport: Text file downloaded successfully");
+    Logger.devLog("PDFExport: Text file downloaded successfully");
   };
 
   /**
@@ -330,4 +330,5 @@ if (typeof PDFExport === "undefined") {
 if (typeof window !== "undefined") {
   window.PDFExport = PDFExport;
 }
+
 

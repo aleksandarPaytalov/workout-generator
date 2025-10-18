@@ -22,17 +22,17 @@ const Validators = (() => {
     const checkDependencies = () => {
         // Check if ExerciseDatabase is available and ready
         if (typeof ExerciseDatabase === 'undefined') {
-            console.log('Validators: ExerciseDatabase not yet available');
+            Logger.devLog('Validators: ExerciseDatabase not yet available');
             return false;
         }
         
         if (typeof ExerciseDatabase.isReady !== 'function') {
-            console.log('Validators: ExerciseDatabase missing isReady method');
+            Logger.devLog('Validators: ExerciseDatabase missing isReady method');
             return false;
         }
         
         if (!ExerciseDatabase.isReady()) {
-            console.log('Validators: ExerciseDatabase not ready');
+            Logger.devLog('Validators: ExerciseDatabase not ready');
             return false;
         }
         
@@ -50,7 +50,7 @@ const Validators = (() => {
         }
         
         initAttempts++;
-        console.log(`Validators: Initialization attempt ${initAttempts}`);
+        Logger.devLog(`Validators: Initialization attempt ${initAttempts}`);
         
         if (!checkDependencies()) {
             if (initAttempts < 10) {
@@ -62,7 +62,7 @@ const Validators = (() => {
             return;
         }
         
-        console.log('Validators: Module initialized successfully');
+        Logger.devLog('Validators: Module initialized successfully');
         isInitialized = true;
     };
     
@@ -309,3 +309,4 @@ if (typeof Validators === 'undefined') {
 if (typeof window !== 'undefined') {
     window.Validators = Validators;
 }
+
