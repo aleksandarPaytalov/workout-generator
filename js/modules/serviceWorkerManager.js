@@ -38,6 +38,25 @@ const ServiceWorkerManager = (() => {
   }
 
   /**
+   * Get the base path for the application
+   * Handles both root deployment and subdirectory deployment (e.g., GitHub Pages)
+   * @returns {string} Base path with trailing slash
+   */
+  function getBasePath() {
+    // Get the base path from the current location
+    const path = window.location.pathname;
+
+    // If we're at root or index.html, return root
+    if (path === "/" || path === "/index.html") {
+      return "/";
+    }
+
+    // Extract base path (everything before index.html or the last segment)
+    const basePath = path.substring(0, path.lastIndexOf("/") + 1);
+    return basePath || "/";
+  }
+
+  /**
    * Register the service worker
    * @returns {Promise<ServiceWorkerRegistration>}
    */
@@ -50,12 +69,15 @@ const ServiceWorkerManager = (() => {
     try {
       console.log("[ServiceWorkerManager] Registering service worker...");
 
-      registration = await navigator.serviceWorker.register(
-        "/service-worker.js",
-        {
-          scope: "/",
-        }
-      );
+      const basePath = getBasePath();
+      const swPath = `${basePath}service-worker.js`;
+
+      console.log("[ServiceWorkerManager] Base path:", basePath);
+      console.log("[ServiceWorkerManager] Service worker path:", swPath);
+
+      registration = await navigator.serviceWorker.register(swPath, {
+        scope: basePath,
+      });
 
       console.log(
         "[ServiceWorkerManager] Service worker registered successfully"

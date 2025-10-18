@@ -24,6 +24,9 @@
       return;
     }
 
+    // Detect environment
+    const isDev = Logger.isDevMode();
+
     // Configure logger with application-specific settings
     Logger.configure({
       // Master switch - set to false to disable ALL logging (including errors)
@@ -35,7 +38,8 @@
       // - 'info': Show info, warn, and error logs
       // - 'warn': Show only warnings and errors
       // - 'error': Show only errors
-      level: "info",
+      // In production, set to 'error' to only show critical errors
+      level: isDev ? "info" : "error",
 
       // Show timestamp in log messages
       // Example: [14:30:45] ModuleName: Message
@@ -53,42 +57,30 @@
       colorize: true,
     });
 
-    // Log configuration status
-    const config = Logger.getConfig();
-    const isDev = Logger.isDevMode();
-
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("🔧 Logger Configuration Initialized");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log(`Environment: ${isDev ? "🛠️  Development" : "🚀 Production"}`);
-    console.log(`Enabled: ${config.enabled ? "✅ Yes" : "❌ No"}`);
-    console.log(`Log Level: ${config.level.toUpperCase()}`);
-    console.log(
-      `Show Timestamps: ${config.showTimestamp ? "✅ Yes" : "❌ No"}`
-    );
-    console.log(
-      `Show Module Names: ${config.showModuleName ? "✅ Yes" : "❌ No"}`
-    );
-    console.log(`Colorize Output: ${config.colorize ? "✅ Yes" : "❌ No"}`);
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
+    // Only show configuration status in development
     if (isDev) {
+      const config = Logger.getConfig();
+
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("🔧 Logger Configuration Initialized");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log(`Environment: 🛠️  Development`);
+      console.log(`Enabled: ${config.enabled ? "✅ Yes" : "❌ No"}`);
+      console.log(`Log Level: ${config.level.toUpperCase()}`);
+      console.log(
+        `Show Timestamps: ${config.showTimestamp ? "✅ Yes" : "❌ No"}`
+      );
+      console.log(
+        `Show Module Names: ${config.showModuleName ? "✅ Yes" : "❌ No"}`
+      );
+      console.log(`Colorize Output: ${config.colorize ? "✅ Yes" : "❌ No"}`);
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(
         "%c💡 Development Mode Active",
         "color: #3b82f6; font-weight: bold;"
       );
       console.log(
-        "%cAll debug and info logs are visible. In production, only warnings and errors will be logged.",
-        "color: #6b7280;"
-      );
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    } else {
-      console.log(
-        "%c🚀 Production Mode Active",
-        "color: #10b981; font-weight: bold;"
-      );
-      console.log(
-        "%cDebug and info logs are hidden. Only warnings and errors will be logged.",
+        "%cAll debug and info logs are visible. In production, only errors will be logged.",
         "color: #6b7280;"
       );
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

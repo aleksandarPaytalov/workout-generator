@@ -4,7 +4,7 @@
  */
 
 // Cache version - increment this when you want to force cache update
-const CACHE_VERSION = "v1.2.1";
+const CACHE_VERSION = "v1.2.2";
 const CACHE_NAME = `workout-generator-${CACHE_VERSION}`;
 
 // Cache configuration
@@ -14,89 +14,114 @@ const CACHE_CONFIG = {
   maxEntries: 100, // Maximum number of cached entries
 };
 
-// Files to cache for offline functionality
-const ASSETS_TO_CACHE = [
+/**
+ * Get the base path for the application
+ * Handles both root deployment and subdirectory deployment (e.g., GitHub Pages)
+ * @returns {string} Base path with trailing slash
+ */
+function getBasePath() {
+  // Get the service worker's own location
+  const swPath = self.location.pathname;
+
+  // Extract base path (everything before service-worker.js)
+  const basePath = swPath.substring(0, swPath.lastIndexOf("/") + 1);
+  return basePath || "/";
+}
+
+// Get the base path once when service worker loads
+const BASE_PATH = getBasePath();
+
+// Files to cache for offline functionality (relative paths)
+const ASSETS_TO_CACHE_RELATIVE = [
   // Core HTML
-  "/",
-  "/index.html",
-  "/offline.html",
+  "",
+  "index.html",
+  "offline.html",
 
   // Manifest
-  "/manifest.json",
+  "manifest.json",
 
   // CSS Files
-  "/css/all-styles.css",
-  "/css/animations.css",
-  "/css/components.css",
-  "/css/history-animations.css",
-  "/css/history-base.css",
-  "/css/history-card-actions.css",
-  "/css/history-card-base.css",
-  "/css/history-card-exercises.css",
-  "/css/history-card-header.css",
-  "/css/history-card-rating-notes.css",
-  "/css/history-card-responsive.css",
-  "/css/history-card-stats.css",
-  "/css/history-pagination.css",
-  "/css/history-search.css",
-  "/css/history-states.css",
-  "/css/history.css",
-  "/css/main.css",
-  "/css/mobile.css",
-  "/css/reset.css",
-  "/css/stats.css",
-  "/css/theme-toggle.css",
-  "/css/theme.css",
-  "/css/timer.css",
-  "/css/typography.css",
-  "/css/utilities.css",
-  "/css/variables.css",
-  "/css/components/timer-settings.css",
+  "css/all-styles.css",
+  "css/animations.css",
+  "css/components.css",
+  "css/history-animations.css",
+  "css/history-base.css",
+  "css/history-card-actions.css",
+  "css/history-card-base.css",
+  "css/history-card-exercises.css",
+  "css/history-card-header.css",
+  "css/history-card-rating-notes.css",
+  "css/history-card-responsive.css",
+  "css/history-card-stats.css",
+  "css/history-pagination.css",
+  "css/history-search.css",
+  "css/history-states.css",
+  "css/history.css",
+  "css/main.css",
+  "css/mobile.css",
+  "css/reset.css",
+  "css/stats.css",
+  "css/theme-toggle.css",
+  "css/theme.css",
+  "css/timer.css",
+  "css/typography.css",
+  "css/utilities.css",
+  "css/variables.css",
+  "css/components/timer-settings.css",
 
   // JavaScript Files
-  "/js/all-scripts.js",
-  "/js/app.js",
-  "/js/components/historyUI.js",
-  "/js/components/timerUI.js",
-  "/js/config/loggerConfig.js",
-  "/js/config/version.js",
-  "/js/modules/audioManager.js",
-  "/js/modules/dragDrop.js",
-  "/js/modules/exerciseDatabase.js",
-  "/js/modules/exerciseGenerator.js",
-  "/js/modules/footerController.js",
-  "/js/modules/historyController.js",
-  "/js/modules/pdfExport.js",
-  "/js/modules/storageManager.js",
-  "/js/modules/themeController.js",
-  "/js/modules/timerController.js",
-  "/js/modules/timerSettings.js",
-  "/js/modules/uiController.js",
-  "/js/modules/validators.js",
-  "/js/modules/workoutHistory.js",
-  "/js/modules/workoutTimer.js",
-  "/js/modules/serviceWorkerManager.js",
-  "/js/modules/offlineIndicator.js",
-  "/js/modules/installGuide.js",
-  "/js/modules/dropdownMenu.js",
-  "/js/utils/logger.js",
-  "/js/utils/sanitizer.js",
+  "js/all-scripts.js",
+  "js/app.js",
+  "js/components/historyUI.js",
+  "js/components/timerUI.js",
+  "js/config/loggerConfig.js",
+  "js/config/version.js",
+  "js/modules/audioManager.js",
+  "js/modules/dragDrop.js",
+  "js/modules/exerciseDatabase.js",
+  "js/modules/exerciseGenerator.js",
+  "js/modules/footerController.js",
+  "js/modules/historyController.js",
+  "js/modules/pdfExport.js",
+  "js/modules/storageManager.js",
+  "js/modules/themeController.js",
+  "js/modules/timerController.js",
+  "js/modules/timerSettings.js",
+  "js/modules/uiController.js",
+  "js/modules/validators.js",
+  "js/modules/workoutHistory.js",
+  "js/modules/workoutTimer.js",
+  "js/modules/serviceWorkerManager.js",
+  "js/modules/offlineIndicator.js",
+  "js/modules/installGuide.js",
+  "js/modules/dropdownMenu.js",
+  "js/utils/logger.js",
+  "js/utils/sanitizer.js",
 
   // CSS for PWA features
-  "/css/install-guide.css",
+  "css/install-guide.css",
 
   // PWA Icons
-  "/assets/icons/icon-72x72.png",
-  "/assets/icons/icon-96x96.png",
-  "/assets/icons/icon-128x128.png",
-  "/assets/icons/icon-144x144.png",
-  "/assets/icons/icon-152x152.png",
-  "/assets/icons/icon-192x192.png",
-  "/assets/icons/icon-384x384.png",
-  "/assets/icons/icon-512x512.png",
-  "/assets/icons/icon-maskable-192x192.png",
-  "/assets/icons/icon-maskable-512x512.png",
+  "assets/icons/icon-72x72.png",
+  "assets/icons/icon-96x96.png",
+  "assets/icons/icon-128x128.png",
+  "assets/icons/icon-144x144.png",
+  "assets/icons/icon-152x152.png",
+  "assets/icons/icon-192x192.png",
+  "assets/icons/icon-384x384.png",
+  "assets/icons/icon-512x512.png",
+  "assets/icons/icon-maskable-192x192.png",
+  "assets/icons/icon-maskable-512x512.png",
 ];
+
+// Convert relative paths to absolute paths with base path
+const ASSETS_TO_CACHE = ASSETS_TO_CACHE_RELATIVE.map((path) => {
+  if (path === "") {
+    return BASE_PATH;
+  }
+  return BASE_PATH + path;
+});
 
 /**
  * Cache Management Functions
