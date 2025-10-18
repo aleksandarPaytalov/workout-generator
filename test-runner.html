@@ -368,8 +368,35 @@
       </div>
     </div>
 
+    <!-- Hidden DOM elements for UIController tests -->
+    <div id="test-dom-elements" style="display: none">
+      <form id="workoutForm">
+        <input type="range" id="exerciseCount" min="1" max="20" value="10" />
+        <span id="exerciseCountValue">10</span>
+        <input type="radio" name="operationMode" value="regenerate" checked />
+        <input type="checkbox" name="muscleGroups" value="chest" checked />
+        <button type="button" id="generateBtn">Generate</button>
+        <button type="button" id="clearBtn">Clear</button>
+      </form>
+      <div id="emptyState"></div>
+      <div id="loadingState"></div>
+      <div id="errorState">
+        <span id="errorMessage"></span>
+      </div>
+      <div id="workoutListContainer">
+        <ul id="workoutList"></ul>
+      </div>
+      <span id="currentExerciseCount"></span>
+      <span id="modeIndicator"></span>
+      <div id="workoutActions">
+        <button id="startWorkoutTimerBtn">Start Timer</button>
+        <button id="exportPdfBtn">Export PDF</button>
+        <button id="shuffleBtn">Shuffle</button>
+      </div>
+    </div>
+
     <!-- Test Framework -->
-    <script src="tests/testFramework.js"></script>
+    <script src="tests/testFramework.js?v=3"></script>
 
     <!-- Utility Modules (required by other modules) -->
     <script src="js/utils/logger.js"></script>

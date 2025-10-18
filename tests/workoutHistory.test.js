@@ -38,9 +38,10 @@ describe("WorkoutHistory", () => {
   // Clear storage before each test
   beforeEach(() => {
     localStorage.clear();
-    if (StorageManager.isReady()) {
-      StorageManager.clearHistory();
-    }
+    // Initialize StorageManager first (dependency)
+    StorageManager.init();
+    // Then initialize WorkoutHistory
+    WorkoutHistory.init();
   });
 
   // Clean up after each test

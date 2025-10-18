@@ -39,10 +39,8 @@ describe("StorageManager", () => {
   // Clear localStorage before each test
   beforeEach(() => {
     localStorage.clear();
-    // Re-initialize the module
-    if (StorageManager.isReady()) {
-      StorageManager.clearHistory();
-    }
+    // Initialize the module
+    StorageManager.init();
   });
 
   // Clean up after each test
