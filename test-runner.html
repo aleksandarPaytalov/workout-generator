@@ -1,383 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Workout Generator - Unit Tests</title>
     <style>
-        :root {
-            --color-success: #16a34a;
-            --color-error: #dc2626;
-            --color-warning: #d97706;
-            --color-info: #2563eb;
-            --color-bg: #f8fafc;
-            --color-surface: #ffffff;
-            --color-border: #e2e8f0;
-            --color-text: #0f172a;
-            --color-text-muted: #64748b;
-        }
+      :root {
+        --color-success: #16a34a;
+        --color-error: #dc2626;
+        --color-warning: #d97706;
+        --color-info: #2563eb;
+        --color-bg: #f8fafc;
+        --color-surface: #ffffff;
+        --color-border: #e2e8f0;
+        --color-text: #0f172a;
+        --color-text-muted: #64748b;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .test-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: var(--color-surface);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .test-header {
+        background: linear-gradient(135deg, var(--color-info), #1d4ed8);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .test-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .test-controls {
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: var(--color-info);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #1d4ed8;
+      }
+
+      .btn-secondary {
+        background: var(--color-border);
+        color: var(--color-text);
+      }
+
+      .btn-secondary:hover {
+        background: #cbd5e1;
+      }
+
+      .test-summary {
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--color-border);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .summary-card {
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+      }
+
+      .summary-card.total {
+        background: var(--color-info);
+        color: white;
+      }
+
+      .summary-card.passed {
+        background: var(--color-success);
+        color: white;
+      }
+
+      .summary-card.failed {
+        background: var(--color-error);
+        color: white;
+      }
+
+      .summary-card.skipped {
+        background: var(--color-warning);
+        color: white;
+      }
+
+      .summary-number {
+        font-size: 2rem;
+        font-weight: bold;
+        display: block;
+      }
+
+      .test-results {
+        padding: 2rem;
+      }
+
+      .test-suite {
+        margin-bottom: 2rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .test-suite-header {
+        background: var(--color-bg);
+        padding: 1rem;
+        border-bottom: 1px solid var(--color-border);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .test-suite-header:hover {
+        background: #f1f5f9;
+      }
+
+      .test-suite-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .test-suite-stats {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .stat {
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 500;
+      }
+
+      .stat.passed {
+        background: var(--color-success);
+        color: white;
+      }
+
+      .stat.failed {
+        background: var(--color-error);
+        color: white;
+      }
+
+      .test-suite-body {
+        display: none;
+      }
+
+      .test-suite.expanded .test-suite-body {
+        display: block;
+      }
+
+      .test-case {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .test-case:last-child {
+        border-bottom: none;
+      }
+
+      .test-case.passed {
+        background: rgba(22, 163, 74, 0.05);
+      }
+
+      .test-case.failed {
+        background: rgba(220, 38, 38, 0.05);
+      }
+
+      .test-case.skipped {
+        background: rgba(217, 119, 6, 0.05);
+      }
+
+      .test-name {
+        flex: 1;
+      }
+
+      .test-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .test-status.passed {
+        background: var(--color-success);
+        color: white;
+      }
+
+      .test-status.failed {
+        background: var(--color-error);
+        color: white;
+      }
+
+      .test-status.skipped {
+        background: var(--color-warning);
+        color: white;
+      }
+
+      .test-duration {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+      }
+
+      .error-details {
+        padding: 1rem;
+        background: rgba(220, 38, 38, 0.1);
+        border-left: 4px solid var(--color-error);
+        margin-top: 0.5rem;
+        font-family: monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: var(--color-text-muted);
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color-border);
+        border-radius: 50%;
+        border-top-color: var(--color-info);
+        animation: spin 1s linear infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .progress-bar {
+        height: 4px;
+        background: var(--color-border);
+        border-radius: 2px;
+        overflow: hidden;
+        margin: 1rem 0;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--color-info);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      @media (max-width: 768px) {
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .test-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: var(--color-surface);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .test-header {
-            background: linear-gradient(135deg, var(--color-info), #1d4ed8);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .test-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+          padding: 10px;
         }
 
         .test-controls {
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--color-border);
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--color-info);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secondary {
-            background: var(--color-border);
-            color: var(--color-text);
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e1;
+          flex-direction: column;
+          align-items: stretch;
         }
 
         .test-summary {
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--color-border);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .summary-card {
-            padding: 1rem;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .summary-card.total {
-            background: var(--color-info);
-            color: white;
-        }
-
-        .summary-card.passed {
-            background: var(--color-success);
-            color: white;
-        }
-
-        .summary-card.failed {
-            background: var(--color-error);
-            color: white;
-        }
-
-        .summary-card.skipped {
-            background: var(--color-warning);
-            color: white;
-        }
-
-        .summary-number {
-            font-size: 2rem;
-            font-weight: bold;
-            display: block;
+          grid-template-columns: 1fr;
         }
 
         .test-results {
-            padding: 2rem;
+          padding: 1rem;
         }
-
-        .test-suite {
-            margin-bottom: 2rem;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .test-suite-header {
-            background: var(--color-bg);
-            padding: 1rem;
-            border-bottom: 1px solid var(--color-border);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .test-suite-header:hover {
-            background: #f1f5f9;
-        }
-
-        .test-suite-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .test-suite-stats {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .stat {
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-
-        .stat.passed {
-            background: var(--color-success);
-            color: white;
-        }
-
-        .stat.failed {
-            background: var(--color-error);
-            color: white;
-        }
-
-        .test-suite-body {
-            display: none;
-        }
-
-        .test-suite.expanded .test-suite-body {
-            display: block;
-        }
-
-        .test-case {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--color-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .test-case:last-child {
-            border-bottom: none;
-        }
-
-        .test-case.passed {
-            background: rgba(22, 163, 74, 0.05);
-        }
-
-        .test-case.failed {
-            background: rgba(220, 38, 38, 0.05);
-        }
-
-        .test-case.skipped {
-            background: rgba(217, 119, 6, 0.05);
-        }
-
-        .test-name {
-            flex: 1;
-        }
-
-        .test-status {
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .test-status.passed {
-            background: var(--color-success);
-            color: white;
-        }
-
-        .test-status.failed {
-            background: var(--color-error);
-            color: white;
-        }
-
-        .test-status.skipped {
-            background: var(--color-warning);
-            color: white;
-        }
-
-        .test-duration {
-            color: var(--color-text-muted);
-            font-size: 0.85rem;
-            margin-left: 0.5rem;
-        }
-
-        .error-details {
-            padding: 1rem;
-            background: rgba(220, 38, 38, 0.1);
-            border-left: 4px solid var(--color-error);
-            margin-top: 0.5rem;
-            font-family: monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--color-text-muted);
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--color-border);
-            border-radius: 50%;
-            border-top-color: var(--color-info);
-            animation: spin 1s linear infinite;
-            margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--color-border);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--color-info);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .test-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .test-summary {
-                grid-template-columns: 1fr;
-            }
-
-            .test-results {
-                padding: 1rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="test-container">
-        <div class="test-header">
-            <h1>🧪 Workout Generator Tests</h1>
-            <p>Comprehensive unit testing suite for all modules</p>
-        </div>
+      <div class="test-header">
+        <h1>🧪 Workout Generator Tests</h1>
+        <p>Comprehensive unit testing suite for all modules</p>
+      </div>
 
-        <div class="test-controls">
-            <button class="btn btn-primary" id="runAllTests">Run All Tests</button>
-            <button class="btn btn-secondary" id="runFailedTests">Re-run Failed</button>
-            <button class="btn btn-secondary" id="clearResults">Clear Results</button>
-            <label>
-                <input type="checkbox" id="stopOnFirstFailure"> Stop on first failure
-            </label>
-            <label>
-                <input type="checkbox" id="verboseOutput" checked> Verbose output
-            </label>
-        </div>
+      <div class="test-controls">
+        <button class="btn btn-primary" id="runAllTests">Run All Tests</button>
+        <button class="btn btn-secondary" id="runFailedTests">
+          Re-run Failed
+        </button>
+        <button class="btn btn-secondary" id="clearResults">
+          Clear Results
+        </button>
+        <label>
+          <input type="checkbox" id="stopOnFirstFailure" /> Stop on first
+          failure
+        </label>
+        <label>
+          <input type="checkbox" id="verboseOutput" checked /> Verbose output
+        </label>
+      </div>
 
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
 
-        <div class="test-summary" id="testSummary" style="display: none;">
-            <div class="summary-card total">
-                <span class="summary-number" id="totalTests">0</span>
-                <span>Total Tests</span>
-            </div>
-            <div class="summary-card passed">
-                <span class="summary-number" id="passedTests">0</span>
-                <span>Passed</span>
-            </div>
-            <div class="summary-card failed">
-                <span class="summary-number" id="failedTests">0</span>
-                <span>Failed</span>
-            </div>
-            <div class="summary-card skipped">
-                <span class="summary-number" id="skippedTests">0</span>
-                <span>Skipped</span>
-            </div>
+      <div class="test-summary" id="testSummary" style="display: none">
+        <div class="summary-card total">
+          <span class="summary-number" id="totalTests">0</span>
+          <span>Total Tests</span>
         </div>
+        <div class="summary-card passed">
+          <span class="summary-number" id="passedTests">0</span>
+          <span>Passed</span>
+        </div>
+        <div class="summary-card failed">
+          <span class="summary-number" id="failedTests">0</span>
+          <span>Failed</span>
+        </div>
+        <div class="summary-card skipped">
+          <span class="summary-number" id="skippedTests">0</span>
+          <span>Skipped</span>
+        </div>
+      </div>
 
-        <div class="test-results" id="testResults">
-            <div class="loading">
-                <div class="spinner"></div>
-                Ready to run tests...
-            </div>
+      <div class="test-results" id="testResults">
+        <div class="loading">
+          <div class="spinner"></div>
+          Ready to run tests...
         </div>
+      </div>
     </div>
 
     <!-- Test Framework -->
     <script src="tests/testFramework.js"></script>
-    
-    <!-- Application Modules (for testing) -->
+
+    <!-- Utility Modules (required by other modules) -->
+    <script src="js/utils/logger.js"></script>
+    <script src="js/utils/sanitizer.js"></script>
+    <script src="js/config/loggerConfig.js"></script>
+
+    <!-- Application Modules (for testing) - Load in dependency order -->
+    <!-- Core modules -->
+    <script src="js/modules/themeController.js"></script>
+    <script src="js/modules/storageManager.js"></script>
     <script src="js/modules/exerciseDatabase.js"></script>
     <script src="js/modules/validators.js"></script>
     <script src="js/modules/exerciseGenerator.js"></script>
+
+    <!-- Feature modules -->
+    <script src="js/modules/workoutHistory.js"></script>
     <script src="js/modules/pdfExport.js"></script>
     <script src="js/modules/dragDrop.js"></script>
+    <script src="js/modules/uiController.js"></script>
 
-    <!-- Test Modules -->
+    <!-- Timer modules -->
+    <script src="js/modules/timerSettings.js"></script>
+    <script src="js/modules/audioManager.js"></script>
+    <script src="js/modules/workoutTimer.js"></script>
+
+    <!-- Test Modules - Organized by module -->
+    <!-- Core module tests -->
     <script src="tests/exerciseDatabase.test.js"></script>
     <script src="tests/validators.test.js"></script>
     <script src="tests/exerciseGenerator.test.js"></script>
+
+    <!-- Storage and history tests -->
+    <script src="tests/storageManager.test.js"></script>
+    <script src="tests/workoutHistory.test.js"></script>
+
+    <!-- UI and theme tests -->
+    <script src="tests/themeController.test.js"></script>
+    <script src="tests/uiController.test.js"></script>
+
+    <!-- Feature module tests -->
     <script src="tests/pdfExport.test.js"></script>
     <script src="tests/dragDrop.test.js"></script>
 
+    <!-- Timer module tests -->
+    <script src="tests/timerSettings.test.js"></script>
+    <script src="tests/audioManager.test.js"></script>
+    <script src="tests/workoutTimer.test.js"></script>
+
     <!-- Test Runner -->
     <script src="tests/testRunner.js"></script>
-</body>
+  </body>
 </html>
