@@ -38,30 +38,37 @@
 /* Theme icons */
 .theme-icon {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 24px;
   transition: opacity 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 /* Light mode: show sun, hide moon */
 [data-theme="light"] .theme-icon-sun {
   opacity: 1;
-  transform: rotate(0deg) scale(1);
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
 }
 
 [data-theme="light"] .theme-icon-moon {
   opacity: 0;
-  transform: rotate(180deg) scale(0.5);
+  transform: translate(-50%, -50%) rotate(180deg) scale(0.5);
 }
 
 /* Dark mode: hide sun, show moon */
 [data-theme="dark"] .theme-icon-sun {
   opacity: 0;
-  transform: rotate(-180deg) scale(0.5);
+  transform: translate(-50%, -50%) rotate(-180deg) scale(0.5);
 }
 
 [data-theme="dark"] .theme-icon-moon {
   opacity: 1;
-  transform: rotate(0deg) scale(1);
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
 }
 
 /* Mobile responsive styles */

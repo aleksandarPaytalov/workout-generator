@@ -219,15 +219,17 @@
 .workout-header::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  width: calc(100% - 4px);
   height: 4px;
   background: linear-gradient(
     90deg,
     var(--color-primary) 0%,
     var(--color-primary-hover) 100%
   );
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
 
 .workout-title {
