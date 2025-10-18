@@ -276,7 +276,7 @@ const WorkoutTimer = (() => {
    * @param {number} totalExercises - Total number of exercises in workout
    */
   const setCurrentExercise = (exercise, index = 0, totalExercises = 1) => {
-    if (!exercise) {
+    if (!exercise || typeof exercise !== "object" || !exercise.name) {
       Logger.error("WorkoutTimer", "Invalid exercise object");
       return false;
     }

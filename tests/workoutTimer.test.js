@@ -140,9 +140,13 @@ describe("WorkoutTimer", () => {
       const state = WorkoutTimer.getTimerState();
 
       assert.isObject(state);
-      assert.hasProperty(state, "isRunning");
+      // Note: isRunning is a computed value, not stored in state
+      // The state object contains isPaused and phase
       assert.hasProperty(state, "isPaused");
       assert.hasProperty(state, "phase");
+      assert.hasProperty(state, "exercise");
+      assert.hasProperty(state, "currentSet");
+      assert.hasProperty(state, "currentCycle");
     });
 
     it("should get current phase", () => {
@@ -175,9 +179,9 @@ describe("WorkoutTimer", () => {
     it("should get progress information", () => {
       const progress = WorkoutTimer.getProgress();
 
-      assert.isObject(progress);
-      assert.hasProperty(progress, "percentage");
-      assert.isNumber(progress.percentage);
+      assert.isNumber(progress);
+      assert.isTrue(progress >= 0);
+      assert.isTrue(progress <= 100);
     });
   });
 

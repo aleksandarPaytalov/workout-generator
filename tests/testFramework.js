@@ -279,6 +279,15 @@ const TestFramework = (() => {
         throw new AssertionError(`${message}. Got: ${value}`);
       }
     },
+
+    /**
+     * Assert inequality (opposite of equal)
+     */
+    notEqual(actual, expected, message = "Values should not be equal") {
+      if (actual === expected) {
+        throw new AssertionError(`${message}.\nBoth values are: ${actual}`);
+      }
+    },
   };
 
   /**

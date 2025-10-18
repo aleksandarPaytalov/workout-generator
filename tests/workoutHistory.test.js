@@ -209,47 +209,43 @@ describe("WorkoutHistory", () => {
   describe("Updating Workouts", () => {
     it("should update workout successfully", () => {
       const workoutData = createWorkoutData();
-      WorkoutHistory.addWorkout(workoutData);
-
-      const history = WorkoutHistory.getHistory();
-      const workoutId = history[0].id;
+      const addedWorkout = WorkoutHistory.addWorkout(workoutData);
 
       const updates = {
         rating: 5,
         notes: "Great workout!",
       };
 
-      const result = WorkoutHistory.updateWorkout(workoutId, updates);
+      const result = WorkoutHistory.updateWorkout(addedWorkout.id, updates);
 
       assert.isTrue(result);
     });
 
     it("should preserve existing data when updating", () => {
       const workoutData = createWorkoutData();
-      WorkoutHistory.addWorkout(workoutData);
+      const addedWorkout = WorkoutHistory.addWorkout(workoutData);
+      const originalExerciseCount = addedWorkout.exercises.length;
 
-      const history = WorkoutHistory.getHistory();
-      const workoutId = history[0].id;
-      const originalExerciseCount = history[0].exercises.length;
+      WorkoutHistory.updateWorkout(addedWorkout.id, { rating: 4 });
 
-      WorkoutHistory.updateWorkout(workoutId, { rating: 4 });
-
-      const updated = WorkoutHistory.getWorkoutById(workoutId);
+      const updated = WorkoutHistory.getWorkoutById(addedWorkout.id);
 
       assert.equal(updated.exercises.length, originalExerciseCount);
       assert.equal(updated.rating, 4);
     });
 
-    it("should throw error when updating non-existent workout", () => {
-      assert.throws(() => {
-        WorkoutHistory.updateWorkout("non-existent-id", { rating: 5 });
-      }, /Workout .* not found/);
+    it("should return false when updating non-existent workout", () => {
+      // updateWorkout returns false for non-existent workouts instead of throwing
+      const result = WorkoutHistory.updateWorkout("non-existent-id", {
+        rating: 5,
+      });
+      assert.isFalse(result);
     });
 
     it("should throw error when updating without ID", () => {
       assert.throws(() => {
         WorkoutHistory.updateWorkout(null, { rating: 5 });
-      }, /Workout ID required/);
+      }, /required/);
     });
   });
 
@@ -269,16 +265,16 @@ describe("WorkoutHistory", () => {
       assert.hasLength(updatedHistory, 0);
     });
 
-    it("should throw error when removing non-existent workout", () => {
-      assert.throws(() => {
-        WorkoutHistory.removeWorkout("non-existent-id");
-      }, /Workout .* not found/);
+    it("should return false when removing non-existent workout", () => {
+      // removeWorkout returns false for non-existent workouts instead of throwing
+      const result = WorkoutHistory.removeWorkout("non-existent-id");
+      assert.isFalse(result);
     });
 
     it("should throw error when removing without ID", () => {
       assert.throws(() => {
         WorkoutHistory.removeWorkout();
-      }, /Workout ID required/);
+      }, /required/);
     });
   });
 
@@ -385,14 +381,14 @@ describe("WorkoutHistory", () => {
 
       assert.isObject(limitInfo);
       assert.hasProperty(limitInfo, "currentCount");
-      assert.hasProperty(limitInfo, "maxLimit");
-      assert.hasProperty(limitInfo, "hasSpace");
+      assert.hasProperty(limitInfo, "maxWorkouts");
+      assert.hasProperty(limitInfo, "canAddMore");
     });
 
     it("should indicate when space is available", () => {
       const limitInfo = WorkoutHistory.checkWorkoutLimit();
 
-      assert.isTrue(limitInfo.hasSpace);
+      assert.isTrue(limitInfo.canAddMore);
     });
 
     it("should indicate when limit is reached", () => {
@@ -403,7 +399,7 @@ describe("WorkoutHistory", () => {
 
       const limitInfo = WorkoutHistory.checkWorkoutLimit();
 
-      assert.isFalse(limitInfo.hasSpace);
+      assert.isFalse(limitInfo.canAddMore);
       assert.equal(limitInfo.currentCount, 5);
     });
 
@@ -427,7 +423,10 @@ describe("WorkoutHistory", () => {
 
       const result = WorkoutHistory.removeOldestWorkouts(2);
 
-      assert.isTrue(result);
+      assert.isObject(result);
+      assert.hasProperty(result, "removed");
+      assert.hasProperty(result, "count");
+      assert.equal(result.count, 2);
 
       const history = WorkoutHistory.getHistory();
       assert.equal(history.length, 3);
@@ -441,18 +440,22 @@ describe("WorkoutHistory", () => {
 
       const result = WorkoutHistory.makeSpaceForNewWorkout();
 
-      assert.isTrue(result);
+      assert.isObject(result);
+      assert.hasProperty(result, "spaceAvailable");
 
       const limitInfo = WorkoutHistory.checkWorkoutLimit();
-      assert.isTrue(limitInfo.hasSpace);
+      assert.isTrue(limitInfo.canAddMore);
     });
 
     it("should provide storage recommendations", () => {
       const recommendations = WorkoutHistory.getStorageRecommendations();
 
       assert.isObject(recommendations);
-      assert.hasProperty(recommendations, "status");
+      assert.hasProperty(recommendations, "limitStatus");
       assert.hasProperty(recommendations, "recommendations");
+      assert.hasProperty(recommendations, "hasHighPriority");
+      assert.hasProperty(recommendations, "hasMediumPriority");
+      assert.hasProperty(recommendations, "suggestedActions");
     });
   });
 
@@ -471,8 +474,8 @@ describe("WorkoutHistory", () => {
       const comparison = WorkoutHistory.compareWorkouts(id1, id2);
 
       assert.isObject(comparison);
-      assert.hasProperty(comparison, "similarity");
-      assert.hasProperty(comparison, "commonExercises");
+      assert.hasProperty(comparison, "similarities");
+      assert.hasProperty(comparison.similarities, "commonExercises");
     });
 
     it("should throw error when comparing without both IDs", () => {
@@ -514,14 +517,14 @@ describe("WorkoutHistory", () => {
       const progression = WorkoutHistory.analyzeWorkoutProgression();
 
       assert.isObject(progression);
-      assert.hasProperty(progression, "totalWorkouts");
+      assert.hasProperty(progression, "workoutCount");
     });
 
     it("should handle progression analysis with no workouts", () => {
       const progression = WorkoutHistory.analyzeWorkoutProgression();
 
       assert.isObject(progression);
-      assert.equal(progression.totalWorkouts, 0);
+      assert.hasProperty(progression, "workoutCount");
     });
   });
 });

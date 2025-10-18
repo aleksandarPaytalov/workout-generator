@@ -9,12 +9,15 @@
 describe("UIController", () => {
   beforeEach(() => {
     // Initialize required dependencies
-    ExerciseDatabase.init();
-    Validators.init();
-    ExerciseGenerator.init();
-    PDFExport.init();
+    // Note: ExerciseDatabase, Validators, and ExerciseGenerator are auto-initialized
+    // Only PDFExport and UIController need explicit initialization
+    if (PDFExport.init) {
+      PDFExport.init();
+    }
     // Initialize UIController
-    UIController.init();
+    if (UIController.init) {
+      UIController.init();
+    }
   });
 
   describe("Module Initialization", () => {
@@ -104,15 +107,15 @@ describe("UIController", () => {
     });
 
     it("should handle rendering null workout", () => {
-      assert.doesNotThrow(() => {
+      assert.throws(() => {
         UIController.renderWorkoutList(null);
-      });
+      }, /expects an array/);
     });
 
     it("should handle rendering undefined workout", () => {
-      assert.doesNotThrow(() => {
+      assert.throws(() => {
         UIController.renderWorkoutList(undefined);
-      });
+      }, /expects an array/);
     });
   });
 

@@ -476,13 +476,25 @@ const WorkoutHistory = (() => {
         return false;
       }
 
-      // Update the workout in the array
-      workouts[index] = updatedWorkout;
+      // Store the original workout
+      const originalWorkout = workouts[index];
 
-      // Save the entire updated array back to localStorage
-      // We need to clear and re-save all workouts to avoid duplicates
-      storageManager.clearHistory();
-      workouts.forEach((workout) => storageManager.saveWorkout(workout));
+      // Merge the updates with the existing workout, preserving id and timestamp
+      const updatedWorkoutData = {
+        ...originalWorkout,
+        ...updatedWorkout,
+        id: originalWorkout.id, // Always preserve the original ID
+        timestamp: originalWorkout.timestamp, // Always preserve the original timestamp
+      };
+
+      // Update the workout in the array
+      workouts[index] = updatedWorkoutData;
+
+      // Save the updated array directly to localStorage
+      localStorage.setItem(
+        "workout-generator-history",
+        JSON.stringify(workouts)
+      );
 
       Logger.debug(
         "WorkoutHistory",
