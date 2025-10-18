@@ -35,7 +35,7 @@
       // - 'info': Show info, warn, and error logs
       // - 'warn': Show only warnings and errors
       // - 'error': Show only errors
-      level: "debug",
+      level: "info",
 
       // Show timestamp in log messages
       // Example: [14:30:45] ModuleName: Message

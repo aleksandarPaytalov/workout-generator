@@ -30,6 +30,7 @@ const WorkoutApp = (() => {
       ];
 
       // Optional modules that enhance functionality
+      // Note: Timer modules are checked during initialization, not here
       const optionalModules = [
         "StorageManager",
         "WorkoutHistory",
@@ -37,11 +38,6 @@ const WorkoutApp = (() => {
         "FooterController",
         "PDFExport",
         "DragDrop",
-        "TimerSettings",
-        "WorkoutTimer",
-        "TimerUI",
-        "TimerController",
-        "AudioManager",
       ];
 
       for (const moduleName of requiredModules) {
@@ -57,20 +53,12 @@ const WorkoutApp = (() => {
         }
       }
 
-      // Check optional modules and warn if missing
+      // Check optional modules - only warn if completely missing
       for (const moduleName of optionalModules) {
         if (typeof window[moduleName] === "undefined") {
           Logger.warn(
             "WorkoutApp",
             `Optional module "${moduleName}" not found - some features may be limited`
-          );
-        } else if (
-          typeof window[moduleName].isReady === "function" &&
-          !window[moduleName].isReady()
-        ) {
-          Logger.warn(
-            "WorkoutApp",
-            `Optional module "${moduleName}" is not ready - some features may be limited`
           );
         }
       }
